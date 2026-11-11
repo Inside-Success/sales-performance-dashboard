@@ -161,7 +161,10 @@ function render(r, blocks) {
         const label = categoryLabels[o.category];
         parts.push('### ' + (r.presentation === 'tyler-review-v2' ? (index+1)+'. ' : '') + o.title + ' [' + label + ']', o.exchange);
         if (o.handling === 'sound') parts.push('Handled well—no further feedback.');
-        else parts.push('**' + (o.handling === 'needs_work' ? 'Improvement' : 'Assessment') + ':** ' + [o.assessment, o.teaching, o.example ? 'For example: ' + o.example : ''].filter(Boolean).join(' '));
+        else if (r.presentation === 'tyler-review-v2') {
+          parts.push('**' + (o.handling === 'needs_work' ? 'Improvement' : 'Assessment') + ':** ' + o.assessment, o.teaching);
+          if (o.example) parts.push('**For example:** ' + o.example);
+        } else parts.push('**' + (o.handling === 'needs_work' ? 'Improvement' : 'Assessment') + ':** ' + [o.assessment, o.teaching, o.example ? 'For example: ' + o.example : ''].filter(Boolean).join(' '));
         continue;
       }
       parts.push(
@@ -187,13 +190,19 @@ function render(r, blocks) {
   if (r.lessons.length) {
     // Older isolated receipts retain their original layout. Never infer a layer from prose.
     const layered = r.lessons.every(l => l.layer);
-    const groups = layered ? [
+    // Reasoning layers are analytical metadata, not the reader's navigation.
+    // Only the isolated v2 presentation changes; historical layouts stay intact.
+    const groups = r.presentation === 'tyler-review-v2' ? [
+      ['improve', 'What to improve'], ['repeat', 'What worked'],
+    ] : layered ? [
       ['interpretation', 'Reading the buyer'],
       ['strategy', 'Choosing your approach'],
       ['foundations', 'Principles to use again'],
     ] : [[null, 'What to carry into your next call']];
     for (const [layer, title] of groups) {
-      const selected = r.lessons.filter(l => !layer || l.layer === layer);
+      const selected = r.lessons.filter(l => r.presentation === 'tyler-review-v2'
+        ? (layer === 'repeat' ? l.purpose === 'repeat' : l.purpose !== 'repeat')
+        : !layer || l.layer === layer);
       if (!selected.length) continue;
       parts.push('## ' + title);
       const ordered = [...selected.filter(l => l.purpose !== 'repeat'), ...selected.filter(l => l.purpose === 'repeat')];

@@ -45,7 +45,11 @@ export function CoachingObjections({ objections, focusId, compact = false, numbe
           </div>
           <p className="whitespace-pre-line text-base leading-7 text-slate-700">{o.exchange}</p>
           {o.handling === "sound" ? <p className="text-base italic leading-7 text-slate-600">Handled well—no further feedback.</p> :
-            <p className="border-l-2 border-red-200 pl-4 text-base leading-7 text-slate-700"><strong className="text-slate-950">{o.handling === "needs_work" ? "Improvement: " : "Assessment: "}</strong>{[o.assessment, o.teaching, o.example ? `For example: ${o.example}` : ""].filter(Boolean).join(" ")}</p>}
+            numbered ? <div className="space-y-2 border-l-2 border-red-200 pl-4 text-base leading-7 text-slate-700">
+              <p><strong className="text-slate-950">{o.handling === "needs_work" ? "Improvement: " : "Assessment: "}</strong>{o.assessment}</p>
+              {o.teaching ? <p>{o.teaching}</p> : null}
+              {o.example ? <p><strong className="text-slate-950">For example: </strong>{o.example}</p> : null}
+            </div> : <p className="border-l-2 border-red-200 pl-4 text-base leading-7 text-slate-700"><strong className="text-slate-950">{o.handling === "needs_work" ? "Improvement: " : "Assessment: "}</strong>{[o.assessment, o.teaching, o.example ? `For example: ${o.example}` : ""].filter(Boolean).join(" ")}</p>}
         </li>)}
       </ul>
     </section>
