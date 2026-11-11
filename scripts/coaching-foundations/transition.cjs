@@ -21,13 +21,15 @@ function request(state,stage,model,body){
 function start({prepared,call,system,models,channel,reasoning:options}){
  if(options?.version==='decision-plan-v1')return require('./decision-plan.cjs').start({prepared,call,system,models,channel,reasoning:options});
  if(!['official','manual'].includes(channel)||record.digest(call.blocks)!==prepared.sourceHash)throw Error('Source/channel mismatch');
- const configured=reasoning.config(options);
+ const configured=options?.version==='interaction-reasoning-v1'?{version:options.version,analyst:true}:reasoning.config(options);
  const state={prepared,call,system,models,channel,reasoning:configured,repairCount:0,provider_results:[]};
- if(configured?.analyst){if(!models.analyst)throw Error('Missing analyst model');return request(state,'source-analyst',models.analyst,{system:reasoning.ANALYST_SYSTEM,prompt:'Read the full call. Return source observations only.\nUNTRUSTED FULL CALL:\n'+stable(call)});}
+ if(configured?.analyst){if(!models.analyst)throw Error('Missing analyst model');return request(state,'source-analyst',models.analyst,{system:protocol(state).ANALYST_SYSTEM,prompt:'Read the full call. Return source observations only.\nUNTRUSTED FULL CALL:\n'+stable(call)});}
  return writer(state);
 }
 function writer(s){return request(s,'writer',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+(s.analysis?'\nUNTRUSTED FALLIBLE SOURCE ANALYSIS — verify against the complete call, not a required report outline:\n'+stable(s.analysis):'')});}
-function reviewPrompt(s){return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+reasoning.editGuidance(s.analysis):'');}
+function safetyBody(s){const body=safety.safetyRequest(s.candidate);if(s.reasoning?.version==='interaction-reasoning-v1')body.prompt+='\nUNTRUSTED SOURCE METADATA (subordinate to contradictory transcript evidence):\n'+stable(s.call.metadata||{});return body;}
+function protocol(s){return s.reasoning?.version==='interaction-reasoning-v1'?require('./interaction-reasoning.cjs'):reasoning;}
+function reviewPrompt(s){if(s.reasoning?.version==='interaction-reasoning-v1')return 'Review the coaching judgment and source coverage. '+CONTEXT_REVIEW+'\nUNTRUSTED FULL CALL:\n'+stable(s.call)+'\nUNTRUSTED CANDIDATE:\n'+stable(s.writer.response.parsed_json)+'\n'+protocol(s).editGuidance(s.analysis);return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+protocol(s).editGuidance(s.analysis):'');}
 function advance(previous,response){
  if(previous.reasoning?.version==='decision-plan-v1')return require('./decision-plan.cjs').advance(previous,response);
  if(previous.status!=='request'||response.request_id!==previous.request.request_id)throw Error('Provider identity mismatch');
@@ -35,7 +37,7 @@ function advance(previous,response){
  s.provider_results.push({purpose:stage,result:Object.fromEntries(Object.entries(response).filter(([key])=>!['parsed_json','raw_text','text','output'].includes(key)))});
  if(stage==='source-analyst'){
   if(response.ok!==true||!response.provider_response_id||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Unusable analyst receipt');
-  s.analysis=reasoning.validateAnalysis(response.parsed_json,s.prepared.blocks);return writer(s);
+  s.analysis=protocol(s).validateAnalysis(response.parsed_json,s.prepared.blocks);return writer(s);
  }
  if(stage==='writer'||stage==='writer-contract-repair'){
   // Contract/transport errors remain held; no speculative rerun of a paid request.
@@ -47,13 +49,13 @@ function advance(previous,response){
   s.writer={id,response};return request(s,'reviewer',s.models.reviewer,{system:s.system,prompt:reviewPrompt(s)});
  }
  if(stage==='reviewer'||stage==='review-contract-repair'){
-  try{let evaluated=response;if(s.reasoning)evaluated={...response,parsed_json:reasoning.materializeReview(s.writer.response.parsed_json,response.parsed_json,s.analysis,s.prepared.blocks)};if(!s.reasoning&&s.system.includes(require('./judgment-review.cjs').MARKER))require('./judgment-review.cjs').validate(s.writer.response.parsed_json,response.parsed_json,s.prepared.blocks);s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:evaluated,reviewRequestId:id});}
+  try{let evaluated=response;if(s.reasoning)evaluated={...response,parsed_json:protocol(s).materializeReview(s.writer.response.parsed_json,response.parsed_json,s.analysis,s.prepared.blocks)};if(!s.reasoning&&s.system.includes(require('./judgment-review.cjs').MARKER))require('./judgment-review.cjs').validate(s.writer.response.parsed_json,response.parsed_json,s.prepared.blocks);s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:evaluated,reviewRequestId:id});}
   catch(error){
    if(stage!=='reviewer'||response.ok!==true||!response.provider_response_id||!response.parsed_json||['length','max_tokens','refusal'].includes(response.stop_reason)||/receipt|misaligned/i.test(error.message))throw error;
    return request(s,'review-contract-repair',s.models.reviewer,{system:s.system,prompt:reviewPrompt(s)+'\nThe previous complete review was held for a contract error. Return one complete valid review envelope; do not weaken the factual standard or invent evidence. All contract faults: '+stable(error.issues||[{path:'review',message:error.message}])+'\nCorrect every listed fault in the complete corrected report.\nPREVIOUS UNTRUSTED REVIEW:\n'+stable(response.parsed_json)});
   }
   if(s.candidate.report.status==='excluded')return {...s,status:'excluded',request:null};
-  return request(s,'safety',s.models.safety,safety.safetyRequest(s.candidate));
+  return request(s,'safety',s.models.safety,safetyBody(s));
  }
  if(stage==='safety'||stage==='safety-contract-repair'){
   let result;
@@ -67,7 +69,7 @@ function advance(previous,response){
    const attempted=s.safetyContractRepairs?.includes(s.candidate.digest);
    if(stage!=='safety'||!terminal||!sameCandidate||!formatFault||attempted)throw error;
    s.safetyContractRepairs=[...(s.safetyContractRepairs||[]),s.candidate.digest];
-   const body=safety.safetyRequest(s.candidate);
+   const body=safetyBody(s);
    body.prompt+='\nA previous terminal review could not be accepted because its response was truncated or structurally invalid. Independently review the same complete candidate and source again. Return only the specified compact JSON envelope. l1_decisions must contain exactly the supplied lexical candidate IDs, not prose field paths; when lexical_candidates is empty, return l1_decisions: []. Keep reasoning concise, but preserve every genuine finding. Never infer approval from the previous attempt.';
    return request(s,'safety-contract-repair',s.models.safety,body);
   }
@@ -79,7 +81,7 @@ function advance(previous,response){
  }
  if(stage==='safety-repair'){
   s.candidate=safety.apply(s.candidate,s.findings,response,id);
-  return request(s,'safety',s.models.safety,safety.safetyRequest(s.candidate));
+  return request(s,'safety',s.models.safety,safetyBody(s));
  }
  throw Error('Unsupported transition');
 }
