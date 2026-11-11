@@ -2,7 +2,7 @@
 
 ## Authorization and scope
 
-Moonis authorized the previously isolated identity/interaction candidate for production, targeted reliability fixes, and safe recovery of three reports. Preserve other threads' changes, historical reports, current governed knowledge, compliance/scoring separation, and rollback. This document records work in progress; it is not a deployment receipt.
+Moonis authorized the previously isolated identity/interaction candidate for production, targeted reliability fixes, and safe recovery of three reports. Preserve other threads' changes, historical reports, current governed knowledge, compliance/scoring separation, and rollback. The release and all three recoveries are complete; the chronological checkpoints below retain the evidence available at each stage.
 
 ## Release behavior
 
@@ -29,6 +29,8 @@ Reader/checkpoint support must deploy before switching parents. A new core recei
 ## Required completion evidence
 
 Record exact commits/deployment/core versions, live parent verification, each recovered report's source/public ID and downstream document/dashboard receipts, authenticated UI checks, final cost/usage, unresolved issues, and rollback state here after verification. Until then, production replacement and recovery are **not complete**.
+
+The final verification section below satisfies this gate.
 
 ## Pre-cutover evidence
 
@@ -57,3 +59,23 @@ Rollback: compare the current parents to their saved installed snapshots, restor
 ### Checkpoint compatibility follow-up
 
 Live verification found that the provider checkpoint's structural validator still required `corrected_report` for a factual review, while the new source-grounded protocol returns justified `edits`. The core correctly materialized and validated that review, but the checkpoint misleadingly said failed. The follow-up recognizes the edit envelope, validates its verdict, findings, unique allowed targets and quotation/disposition shapes, and retains full source/candidate validation in the core. It does not treat a provider checkpoint as report approval. Both old and new review formats have regression coverage; 331 coaching tests pass. Recovery's genuine bounded writer/format repairs remain recorded as such.
+
+## Final verification and assessment
+
+PR420 merged as `125e3338be3bb30d3f19df031b9c35a8620d334c`; its CI passed and the production domain resolved to Ready deployment `dpl_2rdXoPrTTwKs9qGGYmzp8gmVx2jc`. Published workflow versions still match the cutover receipts. The old core remains available. Temporary paid-lab and source-check workflows are inactive; normal recovery schedules are unchanged.
+
+All three native recoveries completed, with one dashboard artifact per automatic source and the original public ID preserved for the manual report:
+
+| Call | Native execution | Delivered report | New usage-priced recovery cost |
+|---|---|---|---|
+| Gustavo / Seyed, manual | 1702783 | [Manual report](https://sales-performance-dashboard-rose.vercel.app/self-report/b2d733938e7a411ba5b67cc5b4ae40c9) | $0.867549847 |
+| Rich / Desiree, automatic | 1702881 | [Report 9649](https://sales-performance-dashboard-rose.vercel.app/call/9649) | $0.709508191 |
+| Keith / Tara, automatic | 1702976 | [Report 9650](https://sales-performance-dashboard-rose.vercel.app/call/9650) | $0.339082466 |
+
+Both automatic source claims are done; both parents have successful document, normal Slack and dashboard delivery receipts. The manual callback and durable delivery receipt confirm completed/delivered. The saved Google Docs were read and match the final coaching content. Authenticated production UI checks confirm all three are Enhanced, with working source links and the preserved details-card layout. An older report remains Legacy. The old records' source payload digests are unchanged: 9,613 official reports `d3e6e25f6619e44d1df9823c51efba3d` and 120 previously completed manual reports `cdcbf57f1df3f932b836fd6ff92c7a93`.
+
+New recovery usage totals $1.916140504, including $0.2277285 of the existing separate compliance path. All new request attempts are 1 and all are terminal; no uncertain paid request was replayed. Together with $1.873258706 of isolated verification, this implementation added $3.789399210 in tracked provider usage. Cumulative isolated testing plus these recoveries is $75.139804933, below the authorized $100 ceiling. These are usage-priced estimates, not an invoice reconciliation or a representative cost-per-call forecast. Historical failed attempts and the pre-fix false reviewer status remain preserved; they are not unresolved missing reports. The current validator fixes future status classification without rewriting the historical receipts.
+
+Final reports were reviewed against source context, not merely compared with previous model output. Rich's production report explicitly retains the promised inclusions sheet and separates confirmed agreement delivery from unconfirmed sheet delivery. Keith's review removes unjustified continued pursuit after his refusal, credits Tara's concrete alternative, and preserves his own promise to reconnect without inventing an appointment. Gustavo's report separates value, funds, review time, contractual protection and confidence; it identifies the actual refusal and does not recommend post-refusal pursuit. His report is longer because the call has multiple substantive objections. Its inherited manual metadata still lacks the prospect name (the Doc subtitle says Unknown and the UI says Seyed's feedback); the coaching body correctly identifies Gustavo. This is a presentation limitation, not a failed recovery or invented identity update.
+
+The system is live and the verified results support this replacement. This is not proof of zero future model/provider failures or a new unseen accuracy benchmark: the three calls are targeted recovery cases. Bounded repairs were actually needed and exercised; final independent review stayed mandatory. No additional prompt tuning was made to force these calls to pass, and no unrelated production systems were changed.
