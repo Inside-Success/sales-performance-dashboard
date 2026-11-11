@@ -5,6 +5,7 @@ const {canonical}=require('../../src/lib/coaching-canonical.cjs');
 const stable=value=>JSON.stringify(canonical(value));
 const contract=require('../../src/lib/foundations-contract.cjs');
 const safety=require('./safety.cjs');
+const reasoning=require('./source-reasoning.cjs');
 const {REVIEW_ADAPTER}=require('./review-guidance.cjs');
 const {CONTEXT_REVIEW}=require('./lesson-selection.cjs');
 function prompt(call,stage,prior){
@@ -17,14 +18,23 @@ function request(state,stage,model,body){
  const id=record.digest({source:state.prepared.sourceHash,sourceId:state.prepared.sourceId,policy:state.prepared.policyHash,stage,model,...body});
  return {...state,status:'request',request:{request_id:id,case_id:state.prepared.sourceId,stage,model,...body}};
 }
-function start({prepared,call,system,models,channel}){
+function start({prepared,call,system,models,channel,reasoning:options}){
  if(!['official','manual'].includes(channel)||record.digest(call.blocks)!==prepared.sourceHash)throw Error('Source/channel mismatch');
- return request({prepared,call,system,models,channel,repairCount:0,provider_results:[]},'writer',models.writer,{system,prompt:prompt(call,'coach')});
+ const configured=reasoning.config(options);
+ const state={prepared,call,system,models,channel,reasoning:configured,repairCount:0,provider_results:[]};
+ if(configured?.analyst){if(!models.analyst)throw Error('Missing analyst model');return request(state,'source-analyst',models.analyst,{system:reasoning.ANALYST_SYSTEM,prompt:'Read the full call. Return source observations only.\nUNTRUSTED FULL CALL:\n'+stable(call)});}
+ return writer(state);
 }
+function writer(s){return request(s,'writer',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+(s.analysis?'\nUNTRUSTED FALLIBLE SOURCE ANALYSIS — verify against the complete call, not a required report outline:\n'+stable(s.analysis):'')});}
+function reviewPrompt(s){return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+reasoning.editGuidance(s.analysis):'');}
 function advance(previous,response){
  if(previous.status!=='request'||response.request_id!==previous.request.request_id)throw Error('Provider identity mismatch');
  const s=structuredClone(previous),stage=s.request.stage,id=s.request.request_id;
  s.provider_results.push({purpose:stage,result:Object.fromEntries(Object.entries(response).filter(([key])=>!['parsed_json','raw_text','text','output'].includes(key)))});
+ if(stage==='source-analyst'){
+  if(response.ok!==true||!response.provider_response_id||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Unusable analyst receipt');
+  s.analysis=reasoning.validateAnalysis(response.parsed_json,s.prepared.blocks);return writer(s);
+ }
  if(stage==='writer'||stage==='writer-contract-repair'){
   // Contract/transport errors remain held; no speculative rerun of a paid request.
   if(response.ok!==true||!response.provider_response_id||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Unusable writer receipt');
@@ -32,13 +42,13 @@ function advance(previous,response){
    if(stage!=='writer'||!response.parsed_json)throw error;
    return request(s,'writer-contract-repair',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+'\nReturn a complete valid report correcting only the contract fault. Preserve supported judgment and evidence. All contract faults: '+stable(error.issues||[{path:'report',message:error.message}])+'\nCorrect every listed fault in one response. Recheck every objection and lesson, not just the first fault. Keep supported judgments, evidence and classification unchanged; do not remove a finding or change handling merely to satisfy the contract. Do not invent generic filler.\nPREVIOUS UNTRUSTED REPORT:\n'+stable(response.parsed_json)});
   }
-  s.writer={id,response};return request(s,'reviewer',s.models.reviewer,{system:s.system,prompt:prompt(s.call,'review',response.parsed_json)});
+  s.writer={id,response};return request(s,'reviewer',s.models.reviewer,{system:s.system,prompt:reviewPrompt(s)});
  }
  if(stage==='reviewer'||stage==='review-contract-repair'){
-  try{if(s.system.includes(require('./judgment-review.cjs').MARKER))require('./judgment-review.cjs').validate(s.writer.response.parsed_json,response.parsed_json,s.prepared.blocks);s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:response,reviewRequestId:id});}
+  try{let evaluated=response;if(s.reasoning)evaluated={...response,parsed_json:reasoning.materializeReview(s.writer.response.parsed_json,response.parsed_json,s.analysis,s.prepared.blocks)};if(!s.reasoning&&s.system.includes(require('./judgment-review.cjs').MARKER))require('./judgment-review.cjs').validate(s.writer.response.parsed_json,response.parsed_json,s.prepared.blocks);s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:evaluated,reviewRequestId:id});}
   catch(error){
    if(stage!=='reviewer'||response.ok!==true||!response.provider_response_id||!response.parsed_json||['length','max_tokens','refusal'].includes(response.stop_reason)||/receipt|misaligned/i.test(error.message))throw error;
-   return request(s,'review-contract-repair',s.models.reviewer,{system:s.system,prompt:prompt(s.call,'review',s.writer.response.parsed_json)+'\nThe previous complete review was held for a contract error. Return one complete valid review envelope; do not weaken the factual standard or invent evidence. All contract faults: '+stable(error.issues||[{path:'review',message:error.message}])+'\nCorrect every listed fault in the complete corrected report.\nPREVIOUS UNTRUSTED REVIEW:\n'+stable(response.parsed_json)});
+   return request(s,'review-contract-repair',s.models.reviewer,{system:s.system,prompt:reviewPrompt(s)+'\nThe previous complete review was held for a contract error. Return one complete valid review envelope; do not weaken the factual standard or invent evidence. All contract faults: '+stable(error.issues||[{path:'review',message:error.message}])+'\nCorrect every listed fault in the complete corrected report.\nPREVIOUS UNTRUSTED REVIEW:\n'+stable(response.parsed_json)});
   }
   if(s.candidate.report.status==='excluded')return {...s,status:'excluded',request:null};
   return request(s,'safety',s.models.safety,safety.safetyRequest(s.candidate));

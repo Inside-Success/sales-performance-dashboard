@@ -4,7 +4,7 @@ const transition=require('./transition.cjs');
 const {documents}=require('./delivery.cjs');
 async function run({prepared,call,prompts,provider,store,channel,models}){
  if(store.scope!=='isolated')throw Error('Isolated sink required');
- let state=transition.start({prepared,call,system:prompts.system,models,channel});
+ let state=transition.start({prepared,call,system:prompts.system,models,channel,reasoning:prompts.reasoning});
  while(state.status==='request')state=transition.advance(state,await provider(state.request));
  if(state.status==='excluded')return {status:'excluded',candidate:state.candidate};
  if(state.status!=='completed')throw Error('Missing terminal outcome');
