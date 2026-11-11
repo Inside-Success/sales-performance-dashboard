@@ -277,6 +277,22 @@ function providerErrors(stage,value){
   else{
    if(typeof value?.pass!=='boolean'||!Array.isArray(value.findings))throw Error('Invalid audit');
    if(value.findings.some(f=>!f||typeof f.issue!=='string'||!f.issue.trim()||!Array.isArray(f.evidence_ids)||f.evidence_ids.some(id=>typeof id!=='string'||!/^T\d{4,}$/.test(id))))throw Error('Invalid audit findings');
+   if(Object.hasOwn(value,'edits')){
+    // This is a transport envelope, not a corrected report. The core applies
+    // justified edits and verifies exact source quotations before acceptance.
+    const text=x=>typeof x==='string'&&Boolean(x.trim());
+    const quote=q=>q&&/^T\d{4,}$/.test(q.id)&&text(q.text);
+    if(!Array.isArray(value.edits)||value.edits.length>40||value.corrected_report!=null||value.change_ledger!=null||!Array.isArray(value.observation_dispositions))throw Error('Invalid edit review envelope');
+    if(value.pass?(value.findings.length||value.edits.length):(!value.findings.length||!value.edits.length))throw Error('Contradictory edit audit');
+    const seen=new Set();
+    for(const e of value.edits){
+     if(!e||!text(e.target)||seen.has(e.target)||!text(e.reason)||!quote(e.source_quote)||!Object.hasOwn(e,'value'))throw Error('Invalid review edit');seen.add(e.target);
+     if(!/^(summary|exclusion_reason|offer_family|show|outcome|focus_id|next_steps|(?:objections|lessons):[^:]+)$/.test(e.target))throw Error('Forbidden review edit target');
+     if(Object.hasOwn(e,'after_id')&&e.after_id!==null&&!text(e.after_id))throw Error('Invalid review placement');
+    }
+    const ids=new Set();for(const d of value.observation_dispositions){if(!d||!text(d.id)||ids.has(d.id)||!['retained','refined','dismissed'].includes(d.decision)||!text(d.reason)||!quote(d.source_quote))throw Error('Invalid observation disposition');ids.add(d.id);}
+    return [];
+   }
    if(value.pass){if(value.findings.length||value.corrected_report!==null)throw Error('Contradictory audit');}
    else{if(!value.findings.length)throw Error('Missing correction rationale');structural(value.corrected_report);}
   }
