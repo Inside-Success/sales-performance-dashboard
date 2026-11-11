@@ -5,6 +5,7 @@ const {canonical}=require('../../src/lib/coaching-canonical.cjs');
 const stable=value=>JSON.stringify(canonical(value));
 const contract=require('../../src/lib/foundations-contract.cjs');
 const safety=require('./safety.cjs');
+const reliability=require('./audit-reliability.cjs');
 const reasoning=require('./source-reasoning.cjs');
 const {REVIEW_ADAPTER}=require('./review-guidance.cjs');
 const {CONTEXT_REVIEW}=require('./lesson-selection.cjs');
@@ -16,18 +17,19 @@ function prompt(call,stage,prior){
 }
 function request(state,stage,model,body){
  const id=record.digest({source:state.prepared.sourceHash,sourceId:state.prepared.sourceId,policy:state.prepared.policyHash,stage,model,...body});
- return {...state,status:'request',request:{request_id:id,case_id:state.prepared.sourceId,stage,model,...body}};
+ return {...state,...(reliability.enabled(state)&&['safety','safety-contract-repair'].includes(stage)?{auditCandidateDigest:state.candidate.digest}:{}),status:'request',request:{request_id:id,case_id:state.prepared.sourceId,stage,model,...body}};
 }
 function start({prepared,call,system,models,channel,reasoning:options}){
  if(options?.version==='decision-plan-v1')return require('./decision-plan.cjs').start({prepared,call,system,models,channel,reasoning:options});
  if(!['official','manual'].includes(channel)||record.digest(call.blocks)!==prepared.sourceHash)throw Error('Source/channel mismatch');
- const configured=['interaction-reasoning-v1','interaction-identity-v1'].includes(options?.version)?{version:options.version,analyst:true,...(options.identityCatalog?{identityCatalog:options.identityCatalog}:{})}:reasoning.config(options);
+ const configured=['interaction-reasoning-v1','interaction-identity-v1'].includes(options?.version)?{version:options.version,analyst:true,...(options.auditProtocol?{auditProtocol:options.auditProtocol}:{}),...(options.identityCatalog?{identityCatalog:options.identityCatalog}:{})}:reasoning.config(options);
+ if(options?.auditProtocol&&!reliability.enabled({reasoning:options}))throw Error('Unknown audit protocol');
  const state={prepared,call,system,models,channel,reasoning:configured,repairCount:0,provider_results:[]};
  if(configured?.analyst){if(!models.analyst)throw Error('Missing analyst model');return request(state,'source-analyst',models.analyst,{system:protocol(state).analystSystem?protocol(state).analystSystem(state.reasoning):protocol(state).ANALYST_SYSTEM,prompt:'Read the full call. Return source observations only.\nUNTRUSTED FULL CALL:\n'+stable(call)});}
  return writer(state);
 }
 function writer(s){return request(s,'writer',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+(s.analysis?'\nUNTRUSTED FALLIBLE SOURCE ANALYSIS — verify against the complete call, not a required report outline:\n'+stable(s.analysis):'')});}
-function safetyBody(s){const body=safety.safetyRequest(s.candidate);if(['interaction-reasoning-v1','interaction-identity-v1'].includes(s.reasoning?.version))body.prompt+='\nUNTRUSTED SOURCE METADATA (subordinate to contradictory transcript evidence):\n'+stable(s.call.metadata||{});if(s.reasoning?.version==='interaction-identity-v1')body.prompt+='\nAUDIT RESPONSE BINDING (copy exactly; do not calculate or rewrite):\n'+stable({candidate_digest:s.candidate.digest})+'\nComplete the required pass/findings/l1_decisions envelope from your independent full-source audit. The binding above must be copied unchanged.';return body;}
+function safetyBody(s){const body=safety.safetyRequest(s.candidate);if(['interaction-reasoning-v1','interaction-identity-v1'].includes(s.reasoning?.version))body.prompt+='\nUNTRUSTED SOURCE METADATA (subordinate to contradictory transcript evidence):\n'+stable(s.call.metadata||{});if(s.reasoning?.version==='interaction-identity-v1'&&!reliability.enabled(s))body.prompt+='\nAUDIT RESPONSE BINDING (copy exactly; do not calculate or rewrite):\n'+stable({candidate_digest:s.candidate.digest})+'\nComplete the required pass/findings/l1_decisions envelope from your independent full-source audit. The binding above must be copied unchanged.';return reliability.enabled(s)?reliability.auditBody(s,body):body;}
 function protocol(s){if(s.reasoning?.version==='interaction-identity-v1')return require('./identity-reasoning.cjs');return s.reasoning?.version==='interaction-reasoning-v1'?require('./interaction-reasoning.cjs'):reasoning;}
 function reviewPrompt(s){if(['interaction-reasoning-v1','interaction-identity-v1'].includes(s.reasoning?.version))return 'Review the coaching judgment and source coverage. '+CONTEXT_REVIEW+'\nUNTRUSTED FULL CALL:\n'+stable(s.call)+'\nUNTRUSTED CANDIDATE:\n'+stable(s.writer.response.parsed_json)+'\n'+protocol(s).editGuidance(s.analysis);return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+protocol(s).editGuidance(s.analysis):'');}
 function advance(previous,response){
@@ -59,14 +61,20 @@ function advance(previous,response){
  }
  if(stage==='safety'||stage==='safety-contract-repair'){
   let result;
-  try{result=safety.assess(s.candidate,response,id);}catch(error){
+  try{result=safety.assess(s.candidate,reliability.enabled(s)?reliability.boundResponse(s,response):response,id);}catch(error){
+   if(reliability.enabled(s)&&error.message==='Unmapped, stale or non-prose safety finding'){
+    reliability.validateFindings(s.candidate,response.parsed_json?.findings);
+    if(s.adjudicationUsed)throw error;
+    s.adjudicationUsed=true;s.adjudicationFindings=response.parsed_json.findings;
+    return request(s,'safety-adjudication',s.models.reviewer,reliability.adjudicationRequest(s,s.adjudicationFindings));
+   }
    // Only a confirmed terminal response may receive one new format review.
    // Unknown outcomes/refusals remain held. Only the isolated identity protocol
    // may discard a terminal mismatched digest and request a fresh full audit.
    // The mismatched receipt never establishes safety approval or edits the candidate.
    const terminal=response.ok===true&&response.provider_response_id&&['stop','end_turn','length','max_tokens'].includes(response.stop_reason);
    const parsed=response.parsed_json;
-   const sameCandidate=!parsed||parsed.candidate_digest===s.candidate.digest;
+   const sameCandidate=reliability.enabled(s)?(!parsed||!Object.hasOwn(parsed,'candidate_digest')):(!parsed||parsed.candidate_digest===s.candidate.digest);
    const freshAudit=s.reasoning?.version==='interaction-identity-v1'&&['stop','end_turn'].includes(response.stop_reason)&&
     /^[a-f0-9]{64}$/.test(parsed?.candidate_digest||'')&&!sameCandidate&&
     typeof parsed.pass==='boolean'&&Array.isArray(parsed.findings)&&parsed.pass===(parsed.findings.length===0);
@@ -76,13 +84,21 @@ function advance(previous,response){
    s.safetyContractRepairs=[...(s.safetyContractRepairs||[]),s.candidate.digest];
    const body=safetyBody(s);
    body.prompt+='\nA previous terminal review could not be accepted because its response was truncated or structurally invalid. Independently review the same complete candidate and source again. Return only the specified compact JSON envelope. l1_decisions must contain exactly the supplied lexical candidate IDs, not prose field paths; when lexical_candidates is empty, return l1_decisions: []. Keep reasoning concise, but preserve every genuine finding. Never infer approval from the previous attempt.';
-   return request(s,'safety-contract-repair',s.models.safety,body);
+   return request(s,'safety-contract-repair',s.models.safetyFormat||s.models.safety,body);
   }
   s.candidate=result.candidate;
   if(!result.findings.length)return {...s,status:'completed',request:null,payload:record.publish(s.candidate,{sourceId:s.prepared.sourceId,channel:s.channel})};
-  if(s.repairCount>=1)throw Error('Safety remains held after one repair');
+  if(s.repairCount>=1){
+   if(!reliability.enabled(s)||s.adjudicationUsed)throw Error('Safety remains held after one repair');
+   s.adjudicationUsed=true;s.adjudicationFindings=result.findings;
+   return request(s,'safety-adjudication',s.models.reviewer,reliability.adjudicationRequest(s,result.findings));
+  }
   s.findings=result.findings;s.repairCount++;
   return request(s,'safety-repair',s.models.reviewer,safety.repairRequest(s.candidate,result.findings));
+ }
+ if(stage==='safety-adjudication'){
+  s.candidate=reliability.adjudicate(s,response);s.auditAdjudication=s.candidate.auditAdjudication;
+  return request(s,'safety',s.models.safety,safetyBody(s));
  }
  if(stage==='safety-repair'){
   s.candidate=safety.apply(s.candidate,s.findings,response,id);

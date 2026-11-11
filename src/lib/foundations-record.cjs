@@ -2,7 +2,8 @@
 const {digest}=require('./coaching-canonical.cjs');
 const contract=require('./foundations-contract.cjs');
 const LEGACY_GENERATION='magic-mike-foundations-candidate-2026-11-06';
-const GENERATION='magic-mike-tyler-coaching-2026-11-10';
+const PREVIOUS_GENERATION='magic-mike-tyler-coaching-2026-11-10';
+const GENERATION='magic-mike-tyler-coaching-2026-11-12';
 const copy=value=>structuredClone(value);
 function required(value,label){if(typeof value!=='string'||!value.trim())throw Error('Missing '+label);return value;}
 function receipt(response,expected){
@@ -52,7 +53,7 @@ function publish(candidate,{sourceId,channel}){
  return {coaching_version:GENERATION,reviewed_coaching_v3:{...reviewed,source_id:sourceId,channel,source_hash:prepared.sourceHash,source_blocks:prepared.blocks,knowledge_manifest:prepared.knowledgeManifest||null,policy_revision:prepared.policyRevision,policy_hash:prepared.policyHash,policy_text:prepared.policyText,evidence_index:prepared.blocks.map(({id,timestamp})=>({id,timestamp:timestamp||null}))},markdown:contract.render(candidate.report,prepared.blocks)};
 }
 function read(payload,sourceId,channel){
- if(![GENERATION,LEGACY_GENERATION].includes(payload?.coaching_version))return null;
+ if(![GENERATION,PREVIOUS_GENERATION,LEGACY_GENERATION].includes(payload?.coaching_version))return null;
  const r=payload.reviewed_coaching_v3;
  if(!r||r.report?.status!=='completed'||!r.writerRequestId||!r.reviewRequestId||!r.safety?.requestId||digest(r.policy_text)!==r.policy_hash||r.source_id!==sourceId||r.channel!==channel||!r.safety?.pass||r.digest!==digest(r.report)||r.safety.candidateDigest!==r.digest)throw Error('Invalid bound report');
  if(r.source_blocks!==undefined&&(!Array.isArray(r.source_blocks)||digest(r.source_blocks)!==r.source_hash))throw Error("Invalid bound transcript");

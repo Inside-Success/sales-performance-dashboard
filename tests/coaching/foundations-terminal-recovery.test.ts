@@ -62,3 +62,21 @@ describe('failed paid receipt replay',()=>{
  it.each(['foundations_writer_contract_repair_v3','foundations_review_contract_repair_v3','compliance'])('does not reopen %s',stage=>expect(terminal.retainedContractReceipt(stage,saved)).toBe(false));
  it.each([{stop_reason:'refusal'},{stop_reason:'length'},{ok:false},{parsed_json:null},{provider_response_id:null},{usage:null},{parse_error:'bad'}])('holds unsafe retained receipt %j',patch=>expect(terminal.retainedContractReceipt('foundations_writer_v3',{...saved,...patch})).toBeFalsy());
 });
+
+describe('identity-scoped exclusion handoff',()=>{
+ it('reconstructs policy from parent authority and rejects a child policy substitution',()=>{
+  const identity=require('../../scripts/coaching-foundations/identity-reasoning.cjs');
+  const analysis={version:identity.VERSION,observations:[],offer_identity:{family:'reality',show:'Unknown',reason:'Casting context.',evidence:[{id:'T0001',text:'casting'}]}};
+  const reasoning={version:identity.VERSION};
+  const scoped=identity.bind({prepared,system:prepared.policyText,analysis,reasoning}).prepared;
+  const result:any=excluded('official');result.reasoning=reasoning;result.analysis=analysis;result.candidate.prepared=scoped;
+  expect(boundary.bindState(parent,result,'official',prepared).coaching_raw.status).toBe('refused');
+  result.candidate.prepared.policyText+=' Invented policy';result.candidate.prepared.policyHash=record.digest(result.candidate.prepared.policyText);
+  expect(()=>boundary.bindState(parent,result,'official',prepared)).toThrow('Unverified');
+ });
+ it('returns a terminal failed format retry as evidence, never as permission to retry it',()=>{
+  const r=receipt({request_id:'exact',stage:'safety-contract-repair'},null);r.stop_reason='length';
+  expect(terminal.repairableSafetyReceipt('foundations_safety_contract_repair_v3',r)).toBe(true);
+  expect(terminal.repairableSafetyReceipt('compliance',r)).toBe(false);
+ });
+});
