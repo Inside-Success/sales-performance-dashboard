@@ -7,6 +7,11 @@ function replaceRuntime(code){
  if(start<0||end<start||code.indexOf(last,end+last.length)!==-1)throw Error('Runtime anchor drift');
  return code.slice(0,start)+runtime()+code.slice(end+last.length);
 }
+function replaceDocumentRuntime(code){
+ const first='var FOUNDATIONS = (() => {',last='  return require_stdin();\n})();\n',start=code.indexOf(first),end=code.indexOf(last,start);
+ if(start!==0||end<start||code.indexOf(last,end+last.length)!==-1)throw Error('Document runtime anchor drift');
+ return require('./workflow-adapters.cjs').bundle()+code.slice(end+last.length);
+}
 function assignment(code,name,value){const expression=new RegExp('^const '+name+'=.*;$','gm'),matches=code.match(expression);if(matches?.length!==1)throw Error('Configuration anchor drift: '+name);return code.replace(expression,()=>`const ${name}=${JSON.stringify(value)};`);}
 function patchParents(baselines,{coreWorkflowId,knowledgeTemplate,models,modelConfigs,reasoning}){
  if(!coreWorkflowId||coreWorkflowId==='cslaPe5OU7T3VpFs'||!knowledgeTemplate||reasoning?.auditProtocol!=='request-bound-audit-v1')throw Error('Explicit new core/config required');
@@ -17,6 +22,7 @@ function patchParents(baselines,{coreWorkflowId,knowledgeTemplate,models,modelCo
  // Only explicit generation dispatch literals change; old data and in-flight snapshots remain intact.
  code=code.replaceAll(JSON.stringify(PREVIOUS),JSON.stringify(GENERATION));
  if(code.includes('const structuredClone=value=>JSON.parse(JSON.stringify(value));'))code=replaceRuntime(code);
+ if(code.startsWith('var FOUNDATIONS = (() => {'))code=replaceDocumentRuntime(code);
  n.parameters.jsCode=code;}
  const initial=w.nodes.find(n=>n.name===start);let code=assignment(initial.parameters.jsCode,'knowledgeTemplate',knowledgeTemplate);
  const old=code.match(/^p\.foundations_input=.*;$/gm);if(old?.length!==1)throw Error('Foundations input anchor drift');
@@ -29,4 +35,4 @@ function patchParents(baselines,{coreWorkflowId,knowledgeTemplate,models,modelCo
  }return out;
 }
 function patchProvider(baseline){const w=structuredClone(baseline),fn=require('../../src/lib/foundations-terminal-receipt.cjs').repairableSafetyReceipt.toString();for(const name of ['Restore Cached Result','Validate Result']){const n=w.nodes.find(n=>n.name===name),s=n?.parameters.jsCode;const begin=s?.indexOf('const repairableSafetyReceipt=function repairableSafetyReceipt('),end=s?.indexOf('\n};',begin);if(begin<0||end<begin)throw Error('Provider predicate anchor drift');n.parameters.jsCode=s.slice(0,begin)+'const repairableSafetyReceipt='+fn+';'+s.slice(end+3);}return w;}
-module.exports={patchParents,patchProvider,replaceRuntime};
+module.exports={patchParents,patchProvider,replaceRuntime,replaceDocumentRuntime};
