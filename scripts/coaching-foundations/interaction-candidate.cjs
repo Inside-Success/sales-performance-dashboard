@@ -8,6 +8,7 @@ function compose(source,layers){
  const start=system.indexOf('REPORT ADAPTER:'),end=system.indexOf(selection.LESSON_SELECTION,start);
  if(start<0||end<start)throw Error('Unknown adapter boundary');
  system=system.slice(0,start)+system.slice(end);
+ for(const boundary of [base.PRESENTATION,selection.COACHING_SCOPE])if(system.split(boundary).length!==2)throw Error('Unrecognized interaction instruction boundary');
  const modules=layered.IDS.map(id=>({id,text:fs.readFileSync(path.join(__dirname,'layers',id+'.md'),'utf8')}));
  // Authority and four owning modules replace the presentation slot, not append a second layout.
  system=system.replace(base.PRESENTATION,[layered.AUTHORITY,...modules.map(x=>x.text),layered.PRESENTATION].join('\n'));

@@ -1,6 +1,6 @@
 # Coaching foundations evaluation — isolated only
 
-Latest isolated phase: [November 11 decision-plan evaluation](DECISION-PLAN-2026-11-11.md). Earlier results, budgets and experiment procedures below are historical records, not the latest candidate verdict. The current authorized cumulative ceiling is $70. Production remains unchanged.
+Latest isolated phase: [November 11 interaction-first evaluation](INTERACTION-COACHING-2026-11-11.md). Earlier results, budgets and experiment procedures below are historical records, not the latest candidate verdict. The current authorized cumulative ceiling is $100, with a $10 incremental cap on this round. Production remains unchanged.
 
 Authorized November 5, 2026. Scope: substantive Call 2 selling for main documentaries, Next Level CEO, and reality. No Call 1 rollout, production publication, Slack delivery, source mutations, or accepted report writes.
 
