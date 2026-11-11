@@ -1,5 +1,7 @@
 # Layered coaching judgment — isolated revision, November 11
 
+Latest follow-up: [Editorial finalization and source-reviewed results](EDITORIAL-FINALIZATION-2026-11-11.md). The historical results below are retained; use the follow-up for the current recommendation and connected verification status.
+
 Status: v2 isolated implementation and bounded model evaluation complete; connected preview verification still blocked; candidate not approved for production. The v1 results below are retained as history. See the v2 findings at the end. Production generation, workflows, accepted reports, compliance and scoring remain unchanged.
 
 ## Why this revision exists

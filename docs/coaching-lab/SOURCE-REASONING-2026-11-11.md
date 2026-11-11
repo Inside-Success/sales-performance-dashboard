@@ -1,5 +1,7 @@
 # Source-first reasoning comparison — isolated, November 11
 
+Latest follow-up: [Editorial finalization and source-reviewed results](EDITORIAL-FINALIZATION-2026-11-11.md). The historical results below are retained; use the follow-up for the current recommendation and connected verification status.
+
 Status: isolated implementation and evaluation complete. Configuration B selected. Production is unchanged; this remains a draft, not a release authorization.
 
 ## Decision being tested
