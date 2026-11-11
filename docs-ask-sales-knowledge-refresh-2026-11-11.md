@@ -1,6 +1,6 @@
 # Magic Mike knowledge refresh — November 11, 2026
 
-Candidate prepared from the last verified November 10 training checkpoint `18ad70421bb0b0cac92d453a`. Candidate `d2a26a155b3ebcf74d9381a9` contains 2,618 active records: five additions, seventeen amendments and three superseded stale approver records. Publication pending; do not infer live status from this section.
+Published and production-answer-verified. Resumed the last verified November 10 training checkpoint `18ad70421bb0b0cac92d453a`. Published `d2a26a155b3ebcf74d9381a9` contains 2,618 active records: five additions, seventeen amendments and three superseded stale approver records. Dashboard PR418 and FAQ PR137 merged. Production READY `dpl_BA2gREprHqQS5XjYMVeqv2yF93g3`, commit `68e79f9` on the rose production alias.
 
 ## Source-backed changes
 
@@ -24,3 +24,7 @@ Slack search returned zero even for known recent messages. Direct histories succ
 Initial 548 FAQ tests and seven new retrieval checks passed. Sixteen isolated answers had no provider/output-validation errors; source review caught a stale Rich approver in the hospital answer. Reconciled three old approver records while retaining genuine-emergency proof/review requirements; Final 556 FAQ tests, 107 static checks, TypeScript and scoped ESLint passed. Three follow-up answers correctly use current leadership, preserve family-emergency review and maintain the Season 3 boundary. Total nineteen isolated answers cost an estimated $0.1713164 with no provider or validation failures; the initial stale-owner answer was corrected before publication. These focused checks do not prove every possible answer correct. Local dependencies were aligned to the existing lockfile after TypeScript found a locally missing `js-tiktoken`; no dependency manifests changed.
 
 Only knowledge data, tests, paired runtime export and documentation changed. Model, reasoning effort, prompts, retrieval logic, UI, Coaching and source systems unchanged. No Slack messages sent. Rollback: revert this knowledge release and paired export only, preserving unrelated main changes.
+
+## Production acceptance
+
+Three independent authenticated work-Chrome questions checked Island current season/conditional vacancy, automatic Call 2 reminders with preparation scope, and hospital-exception approver. All three saved answers carry `d2a26a155b3ebcf74d9381a9`, use GPT-5.6 Luna, have no errors or validation issues, and took 8.739–17.413 seconds. Private receipt: `production-verification.json`; screenshot: `live-answer.png`. Admin access succeeds. The matching publication receipt sets the November 11 Miami freshness date after these checks; it is separate from the knowledge hash.
