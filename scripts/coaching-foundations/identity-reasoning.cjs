@@ -7,11 +7,12 @@ Add offer_identity:{family:"main_istv|next_level_ceo|reality|mixed|unknown",show
 const ANALYST_SYSTEM=prior.ANALYST_SYSTEM.replaceAll(prior.VERSION,VERSION)+'\n'+IDENTITY;
 function analystSystem(options){if(!options.identityCatalog)return ANALYST_SYSTEM;const c=require('./identity-catalog.cjs');if(options.identityCatalog!==c.VERSION)throw Error('Unknown identity catalog');return ANALYST_SYSTEM+'\n'+c.TEXT;}
 function validateAnalysis(a,blocks){
+ a=structuredClone(a);
  prior.validateAnalysis({...a,version:prior.VERSION},blocks);
  const i=a.offer_identity;
  if(a.version!==VERSION||!i||!['main_istv','next_level_ceo','reality','mixed','unknown'].includes(i.family)||typeof i.show!=='string'||!i.show.trim()||typeof i.reason!=='string'||!i.reason.trim()||!Array.isArray(i.evidence)||i.evidence.length>12)throw Error('Invalid source identity');
  if(i.family!=='unknown'&&!i.evidence.length)throw Error('Identity requires direct source evidence');
- for(const q of i.evidence)if(typeof q.text!=='string'||!q.text.trim()||!blocks.find(b=>b.id===q.id)?.text.includes(q.text))throw Error('Unbound identity evidence');
+ try{i.evidence=i.evidence.map(q=>require('./source-quote.cjs').resolve(q,blocks));}catch{throw Error('Unbound identity evidence');}
  return a;
 }
 const SCOPE=`OFFER IDENTITY AUTHORITY:
@@ -22,7 +23,10 @@ function bind(state){
  const open='\n<governed_offer_knowledge>\n',close='\n</governed_offer_knowledge>\n';
  let system=state.system;
  if(limited){const at=system.indexOf(open),end=system.indexOf(close);if(at<0||end<at||system.split(open).length!==2||system.split(close).length!==2)throw Error('Missing scoped knowledge boundary');system=system.slice(0,at)+system.slice(end+close.length);}
- system+='\n'+SCOPE+'\n'+(limited?LIMITED:'Apply only the bound family and explicitly supported alternative-offer conditions from the governed sources.')+'\nBOUND SOURCE IDENTITY:\n'+JSON.stringify(identity);
+ // Fixed field order survives JSONB receipt roundtrips and preserves the normal
+ // original analyst schema order. Object insertion order is not source evidence.
+ const identityText=JSON.stringify({family:identity.family,show:identity.show,reason:identity.reason,evidence:identity.evidence.map(({id,text})=>({id,text}))});
+ system+='\n'+SCOPE+'\n'+(limited?LIMITED:'Apply only the bound family and explicitly supported alternative-offer conditions from the governed sources.')+'\nBOUND SOURCE IDENTITY:\n'+identityText;
  const prepared=record.prepare({sourceId:state.prepared.sourceId,blocks:state.prepared.blocks,policyRevision:state.prepared.policyRevision+':identity:'+record.digest(identity),policyText:system});
  prepared.knowledgeManifest={...state.prepared.knowledgeManifest,identity:{version:VERSION,...identity,limited,...(state.reasoning?.identityCatalog?{catalog:state.reasoning.identityCatalog,catalog_digest:record.digest(require('./identity-catalog.cjs').TEXT)}:{}),original_policy_hash:state.prepared.policyHash}};
  return {...state,system,prepared};
