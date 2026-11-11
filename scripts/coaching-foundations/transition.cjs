@@ -19,6 +19,7 @@ function request(state,stage,model,body){
  return {...state,status:'request',request:{request_id:id,case_id:state.prepared.sourceId,stage,model,...body}};
 }
 function start({prepared,call,system,models,channel,reasoning:options}){
+ if(options?.version==='decision-plan-v1')return require('./decision-plan.cjs').start({prepared,call,system,models,channel,reasoning:options});
  if(!['official','manual'].includes(channel)||record.digest(call.blocks)!==prepared.sourceHash)throw Error('Source/channel mismatch');
  const configured=reasoning.config(options);
  const state={prepared,call,system,models,channel,reasoning:configured,repairCount:0,provider_results:[]};
@@ -28,6 +29,7 @@ function start({prepared,call,system,models,channel,reasoning:options}){
 function writer(s){return request(s,'writer',s.models.writer,{system:s.system,prompt:prompt(s.call,'coach')+(s.analysis?'\nUNTRUSTED FALLIBLE SOURCE ANALYSIS — verify against the complete call, not a required report outline:\n'+stable(s.analysis):'')});}
 function reviewPrompt(s){return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+reasoning.editGuidance(s.analysis):'');}
 function advance(previous,response){
+ if(previous.reasoning?.version==='decision-plan-v1')return require('./decision-plan.cjs').advance(previous,response);
  if(previous.status!=='request'||response.request_id!==previous.request.request_id)throw Error('Provider identity mismatch');
  const s=structuredClone(previous),stage=s.request.stage,id=s.request.request_id;
  s.provider_results.push({purpose:stage,result:Object.fromEntries(Object.entries(response).filter(([key])=>!['parsed_json','raw_text','text','output'].includes(key)))});
