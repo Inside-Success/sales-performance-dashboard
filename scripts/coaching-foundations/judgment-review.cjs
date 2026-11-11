@@ -13,8 +13,8 @@ function validate(draft,audit,blocks){
  for(const o of changed){
   const p=proofs.find(p=>p.objection_id===o.id);
   if(!p||!defects.includes(p.defect)||['buyer_need','behavioral_defect','why_not_outcome_only','counterevidence'].some(k=>typeof p[k]!=='string'||!p[k].trim()))throw Error('Incomplete behavioral judgment justification');
-  const b=blocks.find(b=>b.id===p.source_quote?.id),q=p.source_quote?.text;
-  if(!b||typeof q!=='string'||q.trim().length<12||!b.text.includes(q))throw Error('Judgment justification quote is not source-bound');
+  let q;try{q=require('./source-quote.cjs').resolve(p.source_quote,blocks);}catch{throw Error('Judgment justification quote is not source-bound');}
+  if(q.text.length<12)throw Error('Judgment justification quote is not source-bound');
  }
 }
 module.exports={MARKER,GUIDANCE,validate};

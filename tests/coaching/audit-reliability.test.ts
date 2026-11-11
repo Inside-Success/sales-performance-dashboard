@@ -9,3 +9,12 @@ it('routes supported structured-field findings through one adjudication and fres
 it('retains evidence-supported prose after disagreement but never skips fresh audit',()=>{const s=state();s.repairCount=1;const f={path:'next_steps.0.text',before:'Send the benefits sheet.',reason:'No promise.'};const next=t.advance(s,response(s,{pass:false,findings:[f],l1_decisions:[]}));const decision={...f,after:f.before,reason:'The source explicitly offers it.',evidence:[{id:'T1',text:'and also the benefits sheet.'}]};expect(()=>t.advance(next,response(next,{decisions:[{...decision,evidence:[{id:'T1',text:'invented'}]}]}))).toThrow();const audit=t.advance(next,response(next,{decisions:[decision]}));expect(audit.request.stage).toBe('safety');expect(audit.request.prompt).toContain('FALLIBLE DISPUTE REVIEW');expect(()=>t.advance(audit,response(audit,{pass:false,findings:[f],l1_decisions:[]}))).toThrow();});
 it('never broadens identity, taxonomy, payment or evidence mutation authority',()=>{for(const path of ['offer_family','show','outcome.payment','next_steps.0.evidence_ids']){const s=state();expect(()=>t.advance(s,response(s,{pass:false,findings:[{path,before:path==='offer_family'?'main_istv':'wrong',reason:'change'}],l1_decisions:[]}))).toThrow();}});
 it('uses one distinct compact format request for terminal exhaustion, not uncertain outcomes',()=>{const s=state(),failed={...response(s,null),stop_reason:'length'};const next=t.advance(s,failed);expect(next.request.stage).toBe('safety-contract-repair');expect(next.request.model).toBe('sf');expect(()=>t.advance(next,{...failed,request_id:next.request.request_id})).toThrow();expect(()=>t.advance(s,{...failed,provider_response_id:null})).toThrow();});
+it('restores adjudication evidence typography without mutating receipts or skipping safety',()=>{
+ const s=state(),f={path:'next_steps.0.kind',before:'agreed',reason:'One-sided promise.'};
+ const next=t.advance(s,response(s,{pass:false,findings:[f],l1_decisions:[]}));
+ const receipt=response(next,{decisions:[{...f,after:'promised',evidence:[{id:'T1',text:'i will send  the agreement'}]}]});
+ const raw=JSON.stringify(receipt),out=t.advance(next,receipt);
+ expect(out.request.stage).toBe('safety');
+ expect(out.candidate.auditAdjudication.decisions[0].evidence[0].text).toBe('I will send the agreement');
+ expect(JSON.stringify(receipt)).toBe(raw);
+});

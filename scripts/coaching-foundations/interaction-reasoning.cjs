@@ -22,10 +22,11 @@ Different defensible emphasis, missing optional advice and harmless style are no
 function materializeReview(draft,audit,analysis,blocks){
  const normalized=base.materializeReview(draft,audit,analysis,blocks),final=normalized.corrected_report||draft;
  if(!Array.isArray(audit.coverage_additions)||audit.coverage_additions.length>32)throw Error('Missing source coverage review');
- const additions=audit.coverage_additions,ids=new Set((analysis?.observations||[]).map(x=>x.id));
+ const additions=normalized.coverage_additions,ids=new Set((analysis?.observations||[]).map(x=>x.id));
  for(const o of additions){if(typeof o.id!=='string'||!o.id.trim()||ids.has(o.id)||typeof o.observation!=='string'||!o.observation.trim()||!Array.isArray(o.evidence_ids)||!o.evidence_ids.length||o.evidence_ids.some(id=>!blocks.some(b=>b.id===id)))throw Error('Invalid coverage addition');ids.add(o.id);}
  // Reuse exact-quotation and disposition checks for additions.
  base.validateReview(final,{pass:true,change_ledger:[],observation_dispositions:additions}, {observations:additions},blocks);
+ for(const row of additions)row.source_quote=require('./source-quote.cjs').resolve(row.source_quote,blocks);
  for(const row of [...audit.observation_dispositions,...additions]){
   if(!Array.isArray(row.report_targets)||new Set(row.report_targets).size!==row.report_targets.length|| (row.decision==='dismissed'?row.report_targets.length!==0:row.report_targets.length===0))throw Error('Unaccounted visible coverage');
   for(const t of row.report_targets){const m=/^(objections|lessons):(.+)$/.exec(t);if(m?!final[m[1]]?.some(x=>x.id===m[2]):!['summary','outcome','next_steps'].includes(t)||!(t==='outcome'?final.outcome?.text:final[t]?.length))throw Error('Coverage refers to absent report content');}
