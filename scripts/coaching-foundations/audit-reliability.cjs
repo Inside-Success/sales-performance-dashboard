@@ -31,12 +31,13 @@ function adjudicationRequest(s,findings){
 }
 function adjudicate(s,response){
  if(response.ok!==true||!response.provider_response_id||!['stop','end_turn'].includes(response.stop_reason)||response.request_id!==s.request.request_id)throw Error('Unusable adjudication receipt');
- const ds=response.parsed_json?.decisions,fs=s.adjudicationFindings;
+ const ds=structuredClone(response.parsed_json?.decisions),fs=s.adjudicationFindings;
  validateFindings(s.candidate,fs);
  if(!Array.isArray(ds)||ds.length!==fs.length||new Set(ds.map(d=>d.path)).size!==ds.length)throw Error('Incomplete adjudication');
  const c=structuredClone(s.candidate);
  for(const d of ds){
-  if(!fs.some(f=>f.path===d.path&&f.before===d.before)||typeof d.after!=='string'||!d.after.trim()||!d.reason?.trim()||!Array.isArray(d.evidence)||!d.evidence.length||d.evidence.some(q=>!q.text?.trim()||!s.prepared.blocks.find(b=>b.id===q.id)?.text.includes(q.text)))throw Error('Unsupported adjudication');
+  if(!fs.some(f=>f.path===d.path&&f.before===d.before)||typeof d.after!=='string'||!d.after.trim()||!d.reason?.trim()||!Array.isArray(d.evidence)||!d.evidence.length)throw Error('Unsupported adjudication');
+  try{d.evidence=d.evidence.map(q=>require('./source-quote.cjs').resolve(q,s.prepared.blocks));}catch{throw Error('Unsupported adjudication');}
   const keys=d.path.split('.'),last=keys.pop();let parent=c.report;for(const k of keys)parent=parent[k];parent[last]=d.after;
  }
  contract.validate(c.report,c.prepared.blocks);c.digest=record.digest(c.report);c.safety=null;

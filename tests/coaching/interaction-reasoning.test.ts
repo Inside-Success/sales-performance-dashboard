@@ -12,3 +12,8 @@ it('keeps production unchanged and carries full source and metadata into the opt
 it('keeps final coverage honest when an edit removes its target',()=>{const removed={pass:false,findings:[{issue:'Resolved routine request',evidence_ids:['T1']}],edits:[{target:'objections:O1',value:null,reason:'No distinct teaching remains.',source_quote:q}],observation_dispositions:[disposition],coverage_additions:[]};expect(()=>r.materializeReview(draft,removed,analysis,blocks)).toThrow('absent');expect(()=>r.materializeReview(draft,{...removed,observation_dispositions:[{...disposition,decision:'dismissed',report_targets:[]}]},analysis,blocks)).not.toThrow();});
 
 it('holds an upstream instruction-boundary change instead of appending conflicting rules',()=>{const base=require('../../scripts/coaching-foundations/prompts.cjs'),selection=require('../../scripts/coaching-foundations/lesson-selection.cjs'),composer=require('../../scripts/coaching-foundations/interaction-candidate.cjs');const spy=vi.spyOn(base,'compose').mockReturnValue({system:'REPORT ADAPTER: old schema\n'+selection.LESSON_SELECTION+'\nchanged presentation',manifest:{}});try{expect(()=>composer.compose('fixture',[])).toThrow('instruction boundary');}finally{spy.mockRestore();}});
+it('restores source wording in coverage additions without changing raw review',()=>{
+ const changed={...audit,coverage_additions:[{...disposition,id:'C1',observation:'Request',evidence_ids:['T1'],source_quote:{id:'T1',text:'please send the terms so I can review them.'}}]};
+ const raw=JSON.stringify(changed),out=r.materializeReview(draft,changed,analysis,blocks);
+ expect(out.coverage_additions[0].source_quote.text).toBe(q.text);expect(JSON.stringify(changed)).toBe(raw);
+});
