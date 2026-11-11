@@ -144,6 +144,8 @@ describe('bounded terminal safety format repair',()=>{
   expect(retry.request.request_id).not.toBe(t.request.request_id);
   expect(retry.request.prompt).toContain(t.candidate.digest);
   expect(retry.request.prompt).toContain('full_transcript');
+  expect(retry.request.prompt).toContain('AUDIT RESPONSE BINDING (copy exactly; do not calculate or rewrite):');
+  expect(retry.request.prompt.indexOf('AUDIT RESPONSE BINDING')).toBeGreaterThan(retry.request.prompt.indexOf('full_transcript'));
   expect(transition.advance(JSON.parse(JSON.stringify(t)),bad).request).toEqual(retry.request);
   expect(()=>transition.advance(retry,{...bad,request_id:retry.request.request_id})).toThrow();
   expect(transition.advance(retry,pass(retry)).status).toBe('completed');

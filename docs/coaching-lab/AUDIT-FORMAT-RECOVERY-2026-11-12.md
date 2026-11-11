@@ -6,6 +6,8 @@ The identity-coaching candidate's call 9613 was held because the final safety re
 ## Change
 The opt-in `interaction-identity-v1` transition may discard a confirmed, normally completed, exact-request safety receipt with a well-formed but mismatched digest and request one new full safety audit. This uses the existing per-candidate format-repair allowance, not an additional retry loop. The new request has its own durable identity and usage accounting. Its full source, governed policy and candidate are unchanged; it receives no previous verdict to imitate.
 
+The isolated safety prompt also repeats the exact machine binding after the complete source and metadata, beside the output instructions. The first new audit repeated the original transposition; it was rejected and retained. That result motivated this generic output-format clarification, not a call-specific hash, waived check or altered coaching. A separately identified audit of this revised prompt is evaluated against the same candidate.
+
 Strict safety acceptance remains unchanged. Wrong outer request identity, missing provider receipt, refusal, unknown outcome, invalid digest and repeated format failure stay held. Genuine findings from the new audit still use the existing bounded prose repair and independent recheck. Production defaults are unchanged; only the isolated opt-in protocol receives this recovery behavior.
 
 ## Verification plan
