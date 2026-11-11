@@ -37,3 +37,23 @@ All three sources were reviewed against their full transcripts. Gustavo's report
 The initial DeepSeek format fallback produced a contradictory finding and was correctly held. Only the exceptional format fallback now uses Terra; the normal source analyst/writer/reviewer/safety configuration remains Terra/Sonnet/ Terra/DeepSeek. Earlier exact paid receipts were reused. The full compiled core/parent replay exposed an outdated embedded Google Doc reader before cutover; the scoped updater now refreshes both document readers. Six compiled official/manual paths pass with exact saved receipts, including document formatting and manual callback. Real isolated ingest/callback checks verify stored digests, deduplication and tampering rejection. Authenticated preview rendering was inspected. The static bundled-code return errors are heuristic: replay directly verifies the nodes actually return JSON items; connection/expression validation passed.
 
 A temporary authenticated read-only source check confirmed no Airtable reports for either automatic source and was deactivated. The two claims remain held until after verified cutover. The manual original has no successful document/delivery node. No source has been released or production replaced at this checkpoint.
+
+## Authorized cutover
+
+PR417 merged as `c731741fb25efb7d2f9d02d81bdb708da13042eb`. Production deployment `dpl_6wEiuX9YnsbSPn2SJaVKstn5CnkH` is Ready and the production domain resolves to it. Active generation is November 12. Authenticated production report9517 remains readable and is labeled Legacy.
+
+Published versions after exact pre-write baseline comparisons:
+- New core `8hyzTVNfQyneU5wL`: `efa5069b-dc21-47bb-be2c-ca4bc693d3b2`.
+- Provider `X9L4JtDbpkSCflxZ`: `656b7ef8-9e68-4826-a557-8dfd3feff983`.
+- Official parent: `f4016dc6-68c6-4d8e-b003-5cfb5b16c402`.
+- Manual parent: `0afe5d7a-b6e3-4547-9ee6-4400fafc211d`.
+
+The two exact automatic holds were changed to queued with source/owner/attempt compare-and-set checks; the existing recovery worker and schedules are unchanged. The original failed manual report was returned to processing under its original ID and its original authenticated payload was submitted once, receiving HTTP202. This is dispatch evidence, not completed recovery. Both temporary source reader and paid lab transport are inactive.
+
+Additional isolated verification spend: $1.873258706; cumulative tracked isolated testing $73.223664429, all requests settled. Live recovery costs and delivered report receipts are pending below.
+
+Rollback: compare the current parents to their saved installed snapshots, restore only those parents using the guarded private control script, and restore the previous active-generation setting (`magic-mike-tyler-coaching-2026-11-10`) on a subsequent deployment. Keep the new and old cores and additive readers for in-flight jobs and existing records. Do not restore an old whole repository over FAQ or other concurrent changes. Provider terminal-receipt retention is backward compatible and should remain unless evidence specifically requires reverting it.
+
+### Checkpoint compatibility follow-up
+
+Live verification found that the provider checkpoint's structural validator still required `corrected_report` for a factual review, while the new source-grounded protocol returns justified `edits`. The core correctly materialized and validated that review, but the checkpoint misleadingly said failed. The follow-up recognizes the edit envelope, validates its verdict, findings, unique allowed targets and quotation/disposition shapes, and retains full source/candidate validation in the core. It does not treat a provider checkpoint as report approval. Both old and new review formats have regression coverage; 331 coaching tests pass. Recovery's genuine bounded writer/format repairs remain recorded as such.

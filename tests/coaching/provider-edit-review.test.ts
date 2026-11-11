@@ -1,0 +1,7 @@
+import{it,expect}from'vitest';
+const {providerErrors}=require('../../src/lib/foundations-contract.cjs');
+const quote={id:'T0001',text:'Buyer asks for the agreement.'};
+const edited=()=>({pass:false,findings:[{issue:'Missing next step',evidence_ids:['T0001']}],edits:[{target:'summary',value:'Review the agreement.',reason:'Retain the buyer request',source_quote:quote}],observation_dispositions:[{id:'A1',decision:'retained',reason:'Supported request',source_quote:quote}]});
+it('accepts structurally valid edit reviews without inventing a corrected report',()=>{expect(providerErrors('foundations_reviewer_v3',edited())).toEqual([]);expect(providerErrors('foundations_reviewer_v3',{pass:true,findings:[],edits:[],observation_dispositions:[]})).toEqual([]);});
+it('rejects contradictions, missing quotations, duplicate targets and forbidden edits',()=>{for(const change of [(x:any)=>x.pass=true,(x:any)=>delete x.edits[0].source_quote,(x:any)=>x.edits.push(x.edits[0]),(x:any)=>x.edits[0].target='version',(x:any)=>x.observation_dispositions[0].decision='approved']){const x=edited();change(x);expect(providerErrors('foundations_reviewer_v3',x).length).toBeGreaterThan(0);}});
+it('preserves legacy reviewer contract checks',()=>{expect(providerErrors('foundations_reviewer_v3',{pass:true,findings:[],corrected_report:null})).toEqual([]);expect(providerErrors('foundations_reviewer_v3',{pass:false,findings:[{issue:'Missing',evidence_ids:['T0001']}],corrected_report:null}).length).toBeGreaterThan(0);});
