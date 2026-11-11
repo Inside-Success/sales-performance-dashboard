@@ -32,7 +32,9 @@ function start({prepared,call,system,models,channel,reasoning:options}){
 }
 function verifyRequest(s){const body=safety.safetyRequest(s.candidate);body.prompt+='\nMEANING PRESERVATION: Also compare every expressed item against the reviewed decision plan below. Check lost material qualifications, erased teaching, reversed judgments, invented promises, and altered chronology. Equivalent wording is acceptable. Do not reopen merely reasonable coaching choices. The plan is NOT ground truth: flag a real contradiction with source or offer facts even if the plan itself contains it. Report supported prose faults using the same exact whole-field findings contract; non-prose faults remain held.\nREVIEWED DECISION PLAN:\n'+stable(s.plan);return body;}
 function advance(previous,response){
- if(previous.status!=='request')throw Error('Invalid decision state');receipt(previous,response);
+ if(previous.status!=='request')throw Error('Invalid decision state');
+ const terminalVerification=previous.request.stage==='plan-verification'&&response?.request_id===previous.request.request_id&&response.ok===true&&response.provider_response_id&&['stop','end_turn','length','max_tokens'].includes(response.stop_reason);
+ if(!terminalVerification)receipt(previous,response);
  const s=structuredClone(previous),stage=s.request.stage,id=s.request.request_id;
  s.provider_results.push({purpose:stage,result:Object.fromEntries(Object.entries(response).filter(([k])=>!['parsed_json','raw_text','text','output'].includes(k)))});
  if(stage==='decision-plan'||stage==='decision-plan-repair'){
@@ -55,8 +57,15 @@ function advance(previous,response){
   s.candidate.decisionPlan={version:VERSION,planDigest:record.digest(s.plan),plannerRequestId:s.planner.id,judgmentReviewRequestId:s.candidate.reviewRequestId,expressionRequestId:id};
   return request(s,'plan-verification',s.models.safety,verifyRequest(s));
  }
- if(stage==='plan-verification'){
-  const result=safety.assess(s.candidate,response,id);s.candidate=result.candidate;
+ if(stage==='plan-verification'||stage==='plan-verification-format-repair'){
+  let result;try{result=safety.assess(s.candidate,response,id);}catch(e){
+   const same=!response.parsed_json||response.parsed_json.candidate_digest===s.candidate.digest;
+   const format=['length','max_tokens'].includes(response.stop_reason)||!response.parsed_json||/^(Incomplete safety adjudication|Conflicting safety decision)$/.test(e.message);
+   if(stage!=='plan-verification'||!terminalVerification||!same||!format||s.formatRepairs?.includes(s.candidate.digest))throw e;
+   s.formatRepairs=[...(s.formatRepairs||[]),s.candidate.digest];
+   const body=verifyRequest(s);body.prompt+='\nPrevious terminal response was truncated or structurally invalid. Independently verify the complete candidate; return the compact specified envelope, no omitted lexical IDs. No approval is inferred from that attempt.';
+   return request(s,'plan-verification-format-repair',s.models.safety,body);
+  }s.candidate=result.candidate;
   if(!result.findings.length)return {...s,status:'completed',request:null,payload:record.publish(s.candidate,{sourceId:s.prepared.sourceId,channel:s.channel})};
   if(s.repairCount>=1)throw Error('Decision verification held after bounded correction');
   s.findings=result.findings;s.repairCount++;
