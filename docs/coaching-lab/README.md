@@ -57,3 +57,5 @@ A complete paid reviewer response can still fail acceptance. Eligibility disagre
 Final presentation places lessons about repeating good practice after other distinct lessons, using a stable rendering order without editing the reviewed prose or mutating the accepted object. This display-only change was made after comparison; it does not change frozen coaching prompts or justify new model-quality claims.
 
 See [completed findings and recommendation](RESULTS.md). The isolated study is complete; no production rollout is authorized or claimed.
+
+- [Terminal audit-format recovery (November 12)](AUDIT-FORMAT-RECOVERY-2026-11-12.md): isolated one-audit recovery of the retained identity-coaching candidate; production remains unchanged.

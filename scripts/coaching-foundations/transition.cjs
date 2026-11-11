@@ -61,13 +61,18 @@ function advance(previous,response){
   let result;
   try{result=safety.assess(s.candidate,response,id);}catch(error){
    // Only a confirmed terminal response may receive one new format review.
-   // Unknown transport outcomes, refusals, stale digests and unmapped findings stay held.
+   // Unknown outcomes/refusals remain held. Only the isolated identity protocol
+   // may discard a terminal mismatched digest and request a fresh full audit.
+   // The mismatched receipt never establishes safety approval or edits the candidate.
    const terminal=response.ok===true&&response.provider_response_id&&['stop','end_turn','length','max_tokens'].includes(response.stop_reason);
    const parsed=response.parsed_json;
    const sameCandidate=!parsed||parsed.candidate_digest===s.candidate.digest;
+   const freshAudit=s.reasoning?.version==='interaction-identity-v1'&&['stop','end_turn'].includes(response.stop_reason)&&
+    /^[a-f0-9]{64}$/.test(parsed?.candidate_digest||'')&&!sameCandidate&&
+    typeof parsed.pass==='boolean'&&Array.isArray(parsed.findings)&&parsed.pass===(parsed.findings.length===0);
    const formatFault=['length','max_tokens'].includes(response.stop_reason)||!parsed||/^(Incomplete safety adjudication|Conflicting safety decision)$/.test(error.message);
    const attempted=s.safetyContractRepairs?.includes(s.candidate.digest);
-   if(stage!=='safety'||!terminal||!sameCandidate||!formatFault||attempted)throw error;
+   if(stage!=='safety'||!terminal||(!sameCandidate&&!freshAudit)||!formatFault||attempted)throw error;
    s.safetyContractRepairs=[...(s.safetyContractRepairs||[]),s.candidate.digest];
    const body=safetyBody(s);
    body.prompt+='\nA previous terminal review could not be accepted because its response was truncated or structurally invalid. Independently review the same complete candidate and source again. Return only the specified compact JSON envelope. l1_decisions must contain exactly the supplied lexical candidate IDs, not prose field paths; when lexical_candidates is empty, return l1_decisions: []. Keep reasoning concise, but preserve every genuine finding. Never infer approval from the previous attempt.';
