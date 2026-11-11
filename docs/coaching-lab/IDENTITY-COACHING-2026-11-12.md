@@ -43,3 +43,7 @@ The first source analyst correctly found the explicit Women in Power name but le
 
 ### Authenticated preview verification
 Code commit `cafa9468240593a52a6c6dbddc163226301a7ac8` passed GitHub reliability CI and Vercel preview build. The stable isolated alias points to that preview, never the production alias. Authenticated Chrome Profile 2 verified official Dorian188, documentary202 and the corresponding documentary manual report. The existing left-side details card, objection taxonomy, Improvement teaching and conditional next steps remain intact. Intake names were preserved; the source device-name fallback on202 is not changed by this show-identity revision.
+
+
+### Follow-up: held audit safely recovered
+The previously held9613 output is now accepted after the isolated [audit-format recovery](AUDIT-FORMAT-RECOVERY-2026-11-12.md). Coaching/source/digest are unchanged; invalid receipts were not accepted. The selected cohort therefore has10distinct accepted reports (seven real, three synthetic), with recovery of a known case rather than another fresh quality trial. This supersedes the operational hold in the original recommendation; the original results above remain an accurate chronological record. Cumulative settled usage estimate is$71.350405723. Production is unchanged.
