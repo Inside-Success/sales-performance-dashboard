@@ -28,7 +28,7 @@ describe('November 12 source conditions survive retrieval',()=>{
   expect(t).toContain('actual appointment/call evidence');
  });
  it('does not turn an internal marketing tax comment into a client deduction promise',()=>{
-  const t=evidence('Rudy says marketing writeoff, can I tell the client that?');
+  const t=evidence('Can I tell a prospect the license fee is a tax write-off because Rudy called it marketing?');
   expect(t).toContain('reps are not allowed to tell clients');
   expect(t).toContain('own accountant');
  });

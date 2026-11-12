@@ -24,10 +24,10 @@ Historical Master FAQ pagination gap remains. Two historical Google files and re
 
 ## Validation and release
 
-556 existing FAQ tests plus six new retrieval checks passed; 107 static checks, TypeScript and paired registry validation passed. Paid isolated answer review and authenticated production checks pending. Rollback: revert only this knowledge delta and paired export/receipt; retain unrelated Coaching/main commits and all historical source checkpoints.
+556 existing FAQ tests plus six new retrieval checks passed; 107 static checks, TypeScript and paired registry validation passed. Isolated review completed: 23 scenarios plus 12 focused reruns, no technical failures, approximately $0.297 API cost. The timing issue surfaced during evaluation and was corrected; all four final affected/variant checks passed. Partial classifications retain missing booking-link or case-specific approval limits. Authenticated production checks pending. Rollback: revert only this knowledge delta and paired export/receipt; retain unrelated Coaching/main commits and all historical source checkpoints.
 
 Private evidence: `.magic-mike-knowledge-refresh-2026-11-12`. Canonical next checkpoint is `KNOWLEDGE-CHECKPOINT-2026-11-12.json` only once marked published_verified.
 
-Evaluation found an obsolete same-week Call 2 claim in one of 23 initial answers; the current next-day SOP now supersedes the three duplicate legacy claims. Four affected/variant follow-up answers are being checked. Source review includes 126 successful thread reads and 1,154 distinct indexed messages after November 9; historical coverage gaps remain.
+Evaluation found an obsolete same-week Call 2 claim in one of 23 initial answers; the current next-day SOP now supersedes the three duplicate legacy claims. All four final affected/variant follow-up answers passed after governed relationship reconciliation. Source review includes 126 successful thread reads and 1,154 distinct indexed messages after November 9; historical coverage gaps remain.
 
 Nine historical cohort/Friday records now carry the current next-day booking SOP via the existing governing-evidence relationship table. This preserves cohort deadlines and the Friday exception while making the normal booking rule available alongside them; no retrieval algorithm changes.
