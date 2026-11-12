@@ -121,3 +121,5 @@ For dashboard/web changes:
 
 - See MAGIC-MIKE-DISLIKE-VOICE-FEEDBACK-2026-11-12.md. Optional voice input belongs only in coaching/FAQ dislike forms. Preserve explicit submission, typed fallback, exact context ownership and one-click likes.
 - Transcription uses only FEEDBACK_TRANSCRIPTION_OPENAI_API_KEY and gpt-transcribe. Never fall back to unrelated keys or replay pending/uncertain paid requests. Database feedback receipts and webhook acceptance are distinct from confirmed Sheet delivery; inspect exact receipts before resending.
+
+- November 12 reviewer recovery: see `docs/coaching-lab/REVIEWER-RECOVERY-2026-11-12.md`. Preserve exact terminal reviewer receipts, one bounded output repair, and independent source-bound eligibility confirmation. Official exclusion binding occurs in both `MM Reliable Coaching` and the later safety builder; update and replay the actual early consumer when changing its shared runtime. Manual binds in `MM Manual Build Factual Audit`. A workflow-success flag alone is not delivery proof; retained failed receipts are not unresolved calls once matching terminal delivery/exclusion receipts exist.
