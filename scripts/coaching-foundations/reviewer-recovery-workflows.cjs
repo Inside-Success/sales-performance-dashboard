@@ -21,8 +21,10 @@ function patchCore(baseline){
  return w;
 }
 function patchParent(baseline,channel){
- const w=structuredClone(baseline),name=channel==='official'?'MM Build Safety Screen Request':'MM Manual Build Factual Audit';
- const n=w.nodes.find(n=>n.name===name);if(!n?.parameters.jsCode.includes('bindState'))throw Error('Parent binding drift');
- n.parameters.jsCode=replaceRuntime(n.parameters.jsCode);return w;
+ const w=structuredClone(baseline),names=channel==='official'?['MM Reliable Coaching','MM Build Safety Screen Request']:['MM Manual Build Factual Audit'];
+ for(const name of names){
+ const n=w.nodes.find(n=>n.name===name);if(!n?.parameters.jsCode.includes('bindState'))throw Error('Parent binding drift: '+name);
+ n.parameters.jsCode=replaceRuntime(n.parameters.jsCode);
+ }return w;
 }
 module.exports={patchCore,patchProvider,patchParent};

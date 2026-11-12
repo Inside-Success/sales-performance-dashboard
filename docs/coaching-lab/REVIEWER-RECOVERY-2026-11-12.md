@@ -18,3 +18,13 @@ Recover only the two named held owners after confirming no artifact or active re
 
 ## Verification status
 Pre-release: shared and compiled native transitions agree on both saved real failures. Regression tests cover terminal output, unknown/refused outcomes, bounded repair, deterministic identity, exclusion confirmation, source quotes and missing receipts. Isolated PostgreSQL tests cover repeated receipt reuse, one attempt and stale ownership rejection. Production verification is recorded after deployment below.
+
+## Deployed verification
+PR437 merged as `72aaea33a842d0c0355f99942854037fe55f4e7d`; Vercel production deployment `dpl_ApHJnWb12CVerfY8FJbLPzPLPz9M` was READY at that exact revision. CI passed 438 tests across 60 files, the production build, TypeScript and existing recovery/accounting checks. Published workflow versions were read back: official `642f89f0-3e73-4778-97db-8887d43f52f4`, manual `e45e965c-8c21-4785-b33b-87184af67cfd`, core `fbd80616-b8d5-406d-825a-306e125cf303`, provider `ef96617b-644f-44bd-b197-61d7b4cf5af1`. Connections, credentials and settings matched the guarded baseline.
+
+At 19:02 UTC, the two exact held claims and recovery rows7572/7620 were released with owner/status guards and no existing artifacts or running provider requests. Shari's original terminal receipt was restored from execution1718401 with matching source, request, hash and owner; attempts remained one. Recovery uses the scheduled existing worker. Queueing is not delivery confirmation; final outcomes follow below.
+
+### Connected recovery follow-up
+Shari recovered as dashboard report9700 with Google Doc `1N0-Ij0Fbha0o3ylT46okgv5v79iCj2TZ4kPeEwJCoWY`, successful coaching Slack top/thread receipts, a done claim and delivered recovery row. Authenticated production rendering was checked, including Key takeaway, categories, next steps and no-payment outcome.
+
+Jason's independent eligibility review confirmed the casting-only exclusion using five exact source excerpts, but parent1720522 held the result because `MM Reliable Coaching` still contained the previous boundary runtime. The initial patch updated the later safety builder but missed this earlier official consumer. The follow-up updates both explicit official consumers, adds regression coverage requiring both, and replays Jason's actual saved parent input through the compiled patched node successfully. No provider request identity or receipt changes; the completed independent review must be reused. Manual's actual consumer was already updated. This is a deployment-consumer coverage correction, not a relaxation of exclusion checks.

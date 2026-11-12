@@ -47,3 +47,14 @@ it('handles the actual OpenAI decoder contract without mistaking transport failu
  expect(t.advance(s,r).request.stage).toBe('reviewer-output-repair');
  for(const patch of [{parse_error:'Provider response unavailable'},{parse_error:'Missing or invalid usage receipt'},{provider:'anthropic'},{stop_reason:'error'},{stop_reason:'refusal'}])expect(()=>t.advance(s,{...r,...patch})).toThrow();
 });
+it('updates both official exclusion consumers and the manual consumer without changing wiring',()=>{
+ const {runtime}=require('../../scripts/coaching-foundations/parent-workflows.cjs');
+ const {patchParent}=require('../../scripts/coaching-foundations/reviewer-recovery-workflows.cjs');
+ const stale=runtime().replaceAll('reviewer-eligibility-v1','stale-eligibility-v0');
+ for(const [channel,names] of [['official',['MM Reliable Coaching','MM Build Safety Screen Request']],['manual',['MM Manual Build Factual Audit']]] as const){
+  const before={nodes:names.map(name=>({name,parameters:{jsCode:stale+'\n// bindState consumer'}})),connections:{preserved:true}};
+  const next=patchParent(before,channel);expect(next.connections).toEqual(before.connections);
+  for(const n of next.nodes){expect(n.parameters.jsCode).toContain('reviewer-eligibility-v1');expect(n.parameters.jsCode).not.toContain('stale-eligibility-v0');}
+  expect(()=>patchParent({...before,nodes:before.nodes.slice(1)},channel)).toThrow('Parent binding drift');
+ }
+});
