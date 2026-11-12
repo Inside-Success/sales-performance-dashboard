@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isEnhancedReport } from "@/lib/report-version";
+import { VoiceFeedbackRecorder } from "./voice-feedback-recorder";
+import { appendVoiceText } from "@/lib/feedback-voice";
 import { cn } from "@/lib/utils";
 
 type FeedbackRating = "positive" | "negative";
@@ -19,7 +21,11 @@ type ReportFeedbackWidgetProps = {
   reportCoachingVersion?: unknown;
 };
 
-export function ReportFeedbackWidget({
+export function ReportFeedbackWidget(props: ReportFeedbackWidgetProps) {
+  return <ReportFeedbackSession key={`${props.reportType}:${props.reportId}`} {...props}/>;
+}
+
+function ReportFeedbackSession({
   reportType,
   reportId,
   repName,
@@ -32,6 +38,8 @@ export function ReportFeedbackWidget({
   const [name, setName] = useState(() => repName || "");
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [voiceBusy, setVoiceBusy] = useState(false);
+  const submissionId = useRef<string | null>(null);
   const commentRef = useRef<HTMLTextAreaElement>(null);
 
   const isSubmitting = status === "submitting";
@@ -47,6 +55,7 @@ export function ReportFeedbackWidget({
   if (!eligible) return null;
 
   async function submitFeedback(rating: FeedbackRating) {
+    if (voiceBusy) return;
     const normalizedName = name.trim();
     const normalizedComment = comment.trim();
 
@@ -64,6 +73,7 @@ export function ReportFeedbackWidget({
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          submission_id: submissionId.current ?? (submissionId.current = crypto.randomUUID()),
           rating,
           report_type: reportType,
           report_id: String(reportId),
@@ -126,7 +136,7 @@ export function ReportFeedbackWidget({
           <Button
             type="button"
             variant="outline"
-            disabled={isSubmitting || sent}
+            disabled={isSubmitting || sent || voiceBusy}
             className={cn(
               "h-11 rounded-xl px-4 text-sm font-bold transition-all active:scale-[0.98]",
               selectedRating === "positive"
@@ -146,7 +156,7 @@ export function ReportFeedbackWidget({
           <Button
             type="button"
             variant="outline"
-            disabled={isSubmitting || sent}
+            disabled={isSubmitting || sent || voiceBusy}
             className={cn(
               "h-11 rounded-xl px-4 text-sm font-bold transition-all active:scale-[0.98]",
               selectedRating === "negative"
@@ -186,11 +196,13 @@ export function ReportFeedbackWidget({
               className="magic-input"
             />
           </label>
+          <VoiceFeedbackRecorder context={{kind:"coaching", reportType, reportId:String(reportId)}} onTranscript={text => setComment(current => appendVoiceText(current, text))} onBusyChange={setVoiceBusy} disabled={isSubmitting}/>
           <label className="grid gap-1.5 text-sm font-bold text-slate-800">
             What was off in this report?
             <Textarea
               ref={commentRef}
               required
+              maxLength={5000}
               value={comment}
               onChange={(event) => setComment(event.target.value)}
               placeholder="Tell us what was inaccurate or missing - the more specific, the better."
@@ -200,11 +212,12 @@ export function ReportFeedbackWidget({
           {clientName ? (
             <p className="text-xs text-muted-foreground">Report: {clientName}</p>
           ) : null}
+          {comment.length > 5000 && <p role="alert" className="text-sm text-destructive">Please shorten your feedback to 5,000 characters before sending.</p>}
           {error ? <p className="text-sm font-medium text-destructive">{error}</p> : null}
           <div className="flex justify-end">
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || voiceBusy || comment.length > 5000}
               className="h-10 rounded-xl bg-[#DC2626] px-5 text-white shadow-[0_8px_20px_-10px_rgba(220,38,38,0.95)] hover:bg-[#B91C1C]"
             >
               {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : null}
