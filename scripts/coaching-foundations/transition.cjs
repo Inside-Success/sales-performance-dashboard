@@ -59,7 +59,20 @@ function advance(previous,response){
   }
   s.writer={id,response};return request(s,'reviewer',s.models.reviewer,{system:s.system,prompt:reviewPrompt(s)});
  }
- if(stage==='reviewer'||stage==='review-contract-repair'){
+ if(stage==='eligibility-review'){
+  s.candidate=require('./reviewer-recovery.cjs').accept(s,response);
+  return {...s,status:'excluded',request:null};
+ }
+ if(['reviewer','review-contract-repair','reviewer-output-repair'].includes(stage)){
+  const recovery=require('./reviewer-recovery.cjs');
+  const proposed=recovery.proposal(s.writer.response.parsed_json,response,s.prepared.blocks);
+  if(proposed){
+   s.eligibilityProposal={report:proposed,receipt:response};
+   return request(s,'eligibility-review',s.models.reviewer,recovery.body(s,proposed));
+  }
+  if(stage==='reviewer'&&require('../../src/lib/foundations-terminal-receipt.cjs').repairableReviewerReceipt('foundations_reviewer_v3',response)){
+   return request(s,'reviewer-output-repair',s.models.reviewer,{system:s.system,max_tokens:24000,prompt:reviewPrompt(s)+'\nThe previous terminal review exhausted its output allowance or returned invalid JSON. Independently review the same complete source and candidate; do not infer approval from that attempt. Return only the required compact justified-edits JSON envelope, with concise reasons and short exact evidence quotes. Preserve all material findings and required observation coverage. This is the single output-format recovery attempt.'});
+  }
   try{let evaluated=response;if(s.reasoning)evaluated={...response,parsed_json:protocol(s).materializeReview(s.writer.response.parsed_json,response.parsed_json,s.analysis,s.prepared.blocks)};if(!s.reasoning&&s.system.includes(require('./judgment-review.cjs').MARKER))require('./judgment-review.cjs').validate(s.writer.response.parsed_json,response.parsed_json,s.prepared.blocks);s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:evaluated,reviewRequestId:id});}
   catch(error){
    if(stage!=='reviewer'||response.ok!==true||!response.provider_response_id||!response.parsed_json||['length','max_tokens','refusal'].includes(response.stop_reason)||/receipt|misaligned/i.test(error.message))throw error;

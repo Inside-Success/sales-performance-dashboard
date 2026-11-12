@@ -28,3 +28,15 @@ function reusedReceipt(r) {
 }
 module.exports.retainedContractReceipt=retainedContractReceipt;
 module.exports.reusedReceipt=reusedReceipt;
+
+// Known terminal output only; unknown transport outcomes and refusals stay held.
+function repairableReviewerReceipt(stage,r) {
+ return ['foundations_reviewer_v3','foundations_reviewer_output_repair_v3'].includes(stage) &&
+  (r?.ok===true||(r?.ok===false&&r.provider==='openai'&&r.parse_error==='Invalid JSON object')) &&
+  typeof r.provider_response_id==='string' && Boolean(r.provider_response_id) &&
+  typeof r.request_id==='string' && Boolean(r.request_id) &&
+  ['stop','end_turn','length','max_tokens'].includes(r.stop_reason) &&
+  ['input_tokens','output_tokens'].every(k=>Number.isFinite(r.usage?.[k])&&r.usage[k]>=0) &&
+  (['length','max_tokens'].includes(r.stop_reason)||Boolean(r.parse_error)||!r.parsed_json);
+}
+module.exports.repairableReviewerReceipt=repairableReviewerReceipt;
