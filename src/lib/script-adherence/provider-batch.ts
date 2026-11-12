@@ -1,6 +1,7 @@
 import {randomUUID} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
 import {claimModel,receive} from './queue';
+import {ProviderError,submissionDisposition,submissionMatches} from './submission-recovery';
 export const terminalBatch=(s:string)=>['completed','failed','expired','cancelled'].includes(s);
 export function receiptMap(expected:string[],receipts:Array<{custom_id:string;[key:string]:unknown}>){
  const allowed=new Set(expected),out=new Map<string,typeof receipts[number]>();
@@ -12,30 +13,43 @@ const db=()=>neon(process.env.DATABASE_URL!);
 async function provider(path:string,body?:unknown){
  const key=process.env.ADHERENCE_OPENAI_API_KEY;if(!key)throw Error('Dedicated adherence credential unavailable');
  const response=await fetch('https://api.openai.com/v1/'+path,{method:body===undefined?'GET':'POST',headers:{Authorization:`Bearer ${key}`,...(body instanceof FormData?{}:{'Content-Type':'application/json'})},body:body===undefined?undefined:body instanceof FormData?body:JSON.stringify(body),signal:AbortSignal.timeout(40000),cache:'no-store'});
- if(!response.ok)throw Error(`Provider HTTP ${response.status}; saved submission state retained`);
+ if(!response.ok){let code:string|undefined;try{const body=await response.json();code=typeof body?.error?.code==='string'?body.error.code:undefined;}catch{}throw new ProviderError(response.status,response.headers.get('x-request-id'),code);}
  const reader=response.body?.getReader();if(!reader)throw Error('Empty provider response');const chunks:Uint8Array[]=[];let bytes=0;for(;;){const part=await reader.read();if(part.done)break;bytes+=part.value.byteLength;if(bytes>50_000_000){await reader.cancel();throw Error('Provider file exceeds bounded collector');}chunks.push(part.value);}const text=Buffer.concat(chunks).toString('utf8');return path.endsWith('/content')?text:JSON.parse(text);
 }
-type Batch={id:string;state:string;file_id:string|null;provider_id:string|null;submission_at:string|null};
+type Batch={id:string;state:string;file_id:string|null;provider_id:string|null;submission_at:string|null;error?:string|null};
+const uncertainHold='Submission unconfirmed; retained for reconciliation without paid replay';
+async function event(b:Batch,kind:string,detail:Record<string,unknown>={}){await db()`insert into script_adherence_submission_events(batch_id,kind,detail) values(${b.id},${kind},${JSON.stringify(detail)}::jsonb)`;}
+async function holdSubmission(b:Batch,reason:string){const sql=db();await sql.transaction([
+ sql`update script_adherence_provider_batches set state='held',provider_status=${reason===uncertainHold?'submission_unconfirmed':null},error=${reason},next_check_at=now()+interval '1 hour',updated_at=now() where id=${b.id} and provider_id is null and state in ('prepared','submitting','held')`,
+ sql`update script_adherence_jobs j set state='held',error=${reason},updated_at=now() from script_adherence_batch_members m join script_adherence_requests r on r.id=m.request_id where m.batch_id=${b.id} and j.id=m.job_id and r.status='reserved' and r.actual_microusd is null and ((j.state='draft_pending' and j.draft_request_id=r.id) or (j.state='review_pending' and j.review_request_id=r.id))`,
+ ]);}
 async function attach(b:Batch,p:{id:string;status:string}){
  const sql=db();await sql.transaction([
   sql`update script_adherence_provider_batches set provider_id=${p.id},provider_status=${p.status},state='running',error=null,updated_at=now() where id=${b.id} and (provider_id is null or provider_id=${p.id})`,
+  sql`update script_adherence_jobs j set state=case when j.draft_request_id=m.request_id then 'draft_pending' else 'review_pending' end,error=null,updated_at=now() from script_adherence_batch_members m where m.batch_id=${b.id} and j.id=m.job_id and j.state='held' and j.error=${uncertainHold} and (j.draft_request_id=m.request_id or j.review_request_id=m.request_id)`,
   sql`update script_adherence_requests set status='submitted',updated_at=now() where id in(select request_id from script_adherence_batch_members where batch_id=${b.id}) and status='reserved'`,
  ]);
 }
 async function reconcileSubmission(b:Batch,deadline:number){
- let after='';
+ let after='',complete=false;const matches=new Map<string,{id:string;status:string}>();
  for(let page=0;page<10&&Date.now()<deadline-45000;page++){
   const list=await provider(`batches?limit=100${after?'&after='+encodeURIComponent(after):''}`);
-  const matches=list.data.filter((p:{metadata?:{adherence_batch?:string}})=>p.metadata?.adherence_batch===b.id);
-  if(matches.length>1)throw Error('Multiple provider jobs for one manifest; review required');
-  if(matches.length){await attach(b,matches[0]);return;}
-  if(!list.has_more)break;after=list.last_id;
+  for(const p of list.data)if(submissionMatches(b,p))matches.set(p.id,p);
+  if(!list.has_more){complete=true;break;}if(!list.last_id||list.last_id===after)throw Error('Provider reconciliation cursor did not advance');after=list.last_id;
  }
- // Absence from a bounded list does not authorize another paid submission.
- const sql=db();await sql`update script_adherence_provider_batches set error='Submission unconfirmed; reconciliation retained without paid replay',next_check_at=now()+interval '30 minutes',updated_at=now() where id=${b.id}`;
+ if(matches.size>1){await holdSubmission(b,'Multiple provider jobs for one manifest; review required');throw Error('Multiple provider jobs for one manifest; review required');}
+ // Do not attach the first match before checking the complete bounded inventory for duplicates.
+ if(complete&&matches.size===1){await attach(b,[...matches.values()][0]);await event(b,'reconciled');return;}
+ const sql=db();
+ if(b.submission_at&&Date.now()-Date.parse(b.submission_at)>=3600000){
+  await holdSubmission(b,uncertainHold);
+  await sql`update script_adherence_provider_batches set next_check_at=now()+interval '1 hour',updated_at=now() where id=${b.id} and state='held' and provider_status='submission_unconfirmed'`;
+ }else await sql`update script_adherence_provider_batches set error='Submission unconfirmed; reconciliation retained without paid replay',next_check_at=now()+interval '30 minutes',updated_at=now() where id=${b.id}`;
+ // Incomplete reads and an absent batch never authorize an automatic paid retry.
 }
+
 async function submit(b:Batch,deadline:number){
- if(b.state==='submitting'){await reconcileSubmission(b,deadline);return;}
+ if(b.state==='submitting'||b.state==='held'){await reconcileSubmission(b,deadline);return;}
  const sql=db(),requests=await sql`select r.id,r.request_body from script_adherence_batch_members m join script_adherence_requests r on r.id=m.request_id where m.batch_id=${b.id} order by r.id`;
  if(!requests.length)throw Error('Empty provider batch');
  let file=b.file_id;
@@ -43,7 +57,22 @@ async function submit(b:Batch,deadline:number){
  // Persist intent BEFORE the paid operation. A timeout resumes via list/reconcile only.
  const claimed=await sql`update script_adherence_provider_batches set state='submitting',submission_at=now(),updated_at=now() where id=${b.id} and state='prepared' returning id`;
  if(!claimed.length)return;
- const p=await provider('batches',{input_file_id:file,endpoint:'/v1/chat/completions',completion_window:'24h',metadata:{adherence_batch:b.id,system:'magic-mike-script-adherence'}});
+ await event(b,'submission_intent',{fileId:file});
+ let p;
+ try{p=await provider('batches',{input_file_id:file,endpoint:'/v1/chat/completions',completion_window:'24h',metadata:{adherence_batch:b.id,system:'magic-mike-script-adherence'}});}
+ catch(e){
+  const disposition=submissionDisposition(e);
+  await event(b,disposition,{status:e instanceof ProviderError?e.status:null,requestId:e instanceof ProviderError?e.requestId:null,code:e instanceof ProviderError?e.code:null});
+  if(disposition==='retryable_rejection'){
+   const [r]=await sql`select count(*)::int as count from script_adherence_submission_events where batch_id=${b.id} and kind='retryable_rejection'`;
+   if(Number(r?.count)>=3)await holdSubmission(b,'Provider repeatedly rejected submission; review required');
+   else await sql`update script_adherence_provider_batches set state='prepared',error='Provider rejected submission with HTTP 429; bounded retry scheduled',next_check_at=now()+interval '30 minutes',updated_at=now() where id=${b.id} and state='submitting' and provider_id is null`;
+  }else if(disposition==='rejected')await holdSubmission(b,e instanceof Error?e.message:'Provider rejected submission');
+  else await sql`update script_adherence_provider_batches set error='Submission outcome uncertain; reconciling before any retry',next_check_at=now()+interval '10 minutes',updated_at=now() where id=${b.id}`;
+  return;
+ }
+ // A successful provider receipt followed by a DB failure must only reconcile, never re-POST.
+ await event(b,'accepted',{providerId:p.id,status:p.status});
  await attach(b,p);
 }
 async function hold(requestId:string,jobId:string,reason:string){const sql=db();await sql`update script_adherence_jobs set state='held',error=${reason},updated_at=now() where id=${jobId} and (draft_request_id=${requestId} or review_request_id=${requestId}) and state in ('draft_pending','review_pending')`;}
@@ -79,7 +108,7 @@ export async function runProviderBatch(){
   const configs=await sql`select * from script_adherence_control where id=true`,config=configs[0];
   if(!config||config.transport!=='batch')return {paused:true};
   // Existing paid batches are always collected, even when intake is paused.
-  const due=await sql`select * from script_adherence_provider_batches where state in ('prepared','submitting','running','collecting') and next_check_at<=now() order by case when state='collecting' then 0 else 1 end,next_check_at,created_at limit 4`;
+  const due=await sql`select * from script_adherence_provider_batches where (state in ('prepared','submitting','running','collecting') or (state='held' and provider_id is null and provider_status='submission_unconfirmed')) and next_check_at<=now() order by case when state='collecting' then 0 when state='held' then 2 else 1 end,next_check_at,created_at limit 4`;
   const failures:string[]=[];
   for(const b of due){if(Date.now()>deadline-(b.state==='prepared'?85000:45000))break;try{if(b.provider_id)await collect(b as Batch,deadline);else await submit(b as Batch,deadline);}catch(e){const message=e instanceof Error?e.message:'Batch operation failed';failures.push(message);await sql`update script_adherence_provider_batches set error=${message.slice(0,500)},next_check_at=now()+interval '10 minutes',updated_at=now() where id=${b.id}`;}}
   if(failures.length)throw Error(failures.join('; ').slice(0,500));

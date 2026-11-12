@@ -66,3 +66,68 @@ it('keeps the specific processor error when the scheduler reports a generic fail
  const {recordSchedulerFailure}=await import('@/lib/script-adherence/provider-batch');await recordSchedulerFailure('checker');
  expect(sql.mock.calls[0][0].join('')).toContain('error=coalesce(error,');
 });
+
+function prepared(){
+ sql.mockImplementation(async(parts:TemplateStringsArray)=>{const q=parts.join('');
+ if(q.includes('returning id'))return [{id:true}];
+ if(q.includes('select * from script_adherence_control'))return [{transport:'batch',enabled:false,canary_keys:[]}];
+ if(q.includes('select * from script_adherence_provider_batches'))return [{id:'local',state:'prepared',file_id:'file_saved',provider_id:null}];
+ if(q.includes('select r.id,r.request_body'))return [{id:'r',request_body:{model:'test'}}];
+ if(q.includes("kind='retryable_rejection'"))return [{count:1}];return [];
+ });
+}
+it('reschedules a confirmed 429 rejection without uploading or reserving again',async()=>{
+ prepared();fetcher.mockResolvedValue(new Response(JSON.stringify({error:{code:'rate_limit_exceeded'}}),{status:429,headers:{'x-request-id':'req-rejected'}}));
+ await runProviderBatch();expect(fetcher).toHaveBeenCalledTimes(1);expect(claimModel).not.toHaveBeenCalled();
+ expect(sql.mock.calls.some(c=>c[0].join('').includes("state='prepared',error='Provider rejected"))).toBe(true);
+ expect(sql.mock.calls.some(c=>c.some(v=>typeof v==='string'&&v.includes('req-rejected')))).toBe(true);
+});
+it('holds a confirmed permanent rejection without treating it as pending analysis',async()=>{
+ prepared();fetcher.mockResolvedValue(new Response(JSON.stringify({error:{code:'invalid_request'}}),{status:400}));
+ await runProviderBatch();expect(sql.transaction).toHaveBeenCalledOnce();expect(fetcher).toHaveBeenCalledOnce();
+ expect(sql.mock.calls.some(c=>c[0].join('').includes("j set state='held'"))).toBe(true);
+});
+it.each([500,408,409])('never resets an uncertain HTTP %i submission for retry',async(status)=>{
+ prepared();fetcher.mockResolvedValue(new Response('{}',{status}));await runProviderBatch();
+ expect(sql.mock.calls.some(c=>c[0].join('').includes("set state='prepared'"))).toBe(false);
+ expect(fetcher).toHaveBeenCalledOnce();
+});
+it('network timeout retains the paid intent and cannot retry',async()=>{
+ prepared();fetcher.mockRejectedValue(new Error('timeout'));await runProviderBatch();
+ expect(fetcher).toHaveBeenCalledOnce();expect(sql.mock.calls.some(c=>c[0].join('').includes("set state='prepared'"))).toBe(false);
+});
+it('quarantines an hour-old unconfirmed submission without a paid replay or lost reservation',async()=>{
+ sql.mockResolvedValueOnce([{id:true}]).mockResolvedValueOnce([{transport:'batch',enabled:false,canary_keys:[]}]).mockResolvedValueOnce([{id:'local',state:'submitting',provider_id:null,file_id:'file_saved',submission_at:'2026-01-01T00:00:00Z'}]);
+ fetcher.mockResolvedValue(new Response(JSON.stringify({data:[],has_more:false})));
+ await runProviderBatch();expect(sql.transaction).toHaveBeenCalledOnce();expect(fetcher.mock.calls.every(c=>c[1].method==='GET')).toBe(true);
+ expect(sql.mock.calls.some(c=>c[0].join('').includes('script_adherence_budget'))).toBe(false);
+});
+it('finds a batch by exact input file on a later page and restores only its matching held jobs',async()=>{
+ sql.mockResolvedValueOnce([{id:true}]).mockResolvedValueOnce([{transport:'batch',enabled:false,canary_keys:[]}]).mockResolvedValueOnce([{id:'local',state:'held',provider_id:null,file_id:'file_saved'}]);
+ fetcher.mockResolvedValueOnce(new Response(JSON.stringify({data:[],has_more:true,last_id:'cursor'}))).mockResolvedValueOnce(new Response(JSON.stringify({data:[{id:'batch_existing',status:'completed',input_file_id:'file_saved'}],has_more:false})));
+ await runProviderBatch();expect(fetcher).toHaveBeenCalledTimes(2);expect(fetcher.mock.calls.every(c=>c[1].method==='GET')).toBe(true);expect(sql.transaction).toHaveBeenCalledOnce();
+});
+it('does not attach the first of duplicate matches on different pages',async()=>{
+ sql.mockResolvedValueOnce([{id:true}]).mockResolvedValueOnce([{transport:'batch',enabled:false,canary_keys:[]}]).mockResolvedValueOnce([{id:'local',state:'submitting',provider_id:null,file_id:'f'}]);
+ fetcher.mockResolvedValueOnce(new Response(JSON.stringify({data:[{id:'one',metadata:{adherence_batch:'local'}}],has_more:true,last_id:'one'}))).mockResolvedValueOnce(new Response(JSON.stringify({data:[{id:'two',input_file_id:'f'}],has_more:false})));
+ await expect(runProviderBatch()).rejects.toThrow('Multiple provider');expect(sql.mock.calls.some(c=>c[0].join('').includes('set provider_id='))).toBe(false);
+});
+it('does not re-POST an accepted batch when database attachment fails',async()=>{
+ prepared();fetcher.mockResolvedValue(new Response(JSON.stringify({id:'batch_paid',status:'validating'})));sql.transaction.mockRejectedValueOnce(new Error('DB unavailable'));
+ await expect(runProviderBatch()).rejects.toThrow('DB unavailable');expect(fetcher).toHaveBeenCalledOnce();
+ expect(sql.mock.calls.some(c=>c[0].join('').includes("set state='prepared'"))).toBe(false);
+ expect(sql.mock.calls.some(c=>c.some(v=>typeof v==='string'&&v.includes('batch_paid')))).toBe(true);
+});
+it('holds after three confirmed rate-limit rejections rather than retrying forever',async()=>{
+ prepared();const prior=sql.getMockImplementation()!;sql.mockImplementation(async(...args)=>args[0].join('').includes("kind='retryable_rejection'")?[{count:3}]:prior(...args));
+ fetcher.mockResolvedValue(new Response(JSON.stringify({error:{code:'rate_limit_exceeded'}}),{status:429}));await runProviderBatch();expect(sql.transaction).toHaveBeenCalledOnce();
+ expect(sql.mock.calls.some(c=>c[0].join('').includes("set state='prepared'"))).toBe(false);
+});
+it('does not retry insufficient credit as a transient rate limit',async()=>{
+ prepared();fetcher.mockResolvedValue(new Response(JSON.stringify({error:{code:'insufficient_quota'}}),{status:429}));await runProviderBatch();expect(sql.transaction).toHaveBeenCalledOnce();
+});
+it('does not attach or replay from an incomplete ten-page provider inventory',async()=>{
+ sql.mockResolvedValueOnce([{id:true}]).mockResolvedValueOnce([{transport:'batch',enabled:false,canary_keys:[]}]).mockResolvedValueOnce([{id:'local',state:'submitting',provider_id:null,file_id:'f'}]);
+ let page=0;fetcher.mockImplementation(async()=>new Response(JSON.stringify({data:page===0?[{id:'one',input_file_id:'f'}]:[],has_more:true,last_id:String(++page)})));
+ await runProviderBatch();expect(fetcher).toHaveBeenCalledTimes(10);expect(sql.transaction).not.toHaveBeenCalled();expect(fetcher.mock.calls.every(c=>c[1].method==='GET')).toBe(true);
+});
