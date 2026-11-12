@@ -112,7 +112,7 @@ function validate(r, blocks) {
   const arrays = ['objections', 'lessons', 'next_steps'].every(key => Array.isArray(r[key]));
   if (!arrays) fail('arrays');
   if (r.status === 'excluded' && (!text(r.exclusion_reason) || !arrays || r.objections.length || r.lessons.length || r.next_steps.length || r.focus_id)) fail('exclusion');
-  if (r.presentation === 'tyler-review-v2' && r.status === 'completed' && (typeof r.summary !== 'string' || r.summary.split('\n').filter(x=>x.trim()).length !== 2)) fail('Hook and subheadline require two nonempty lines');
+  if (r.presentation === 'tyler-review-v2' && r.status === 'completed' && (typeof r.summary !== 'string' || ![1,2].includes(r.summary.split('\n').filter(x=>x.trim()).length))) fail('Takeaway requires one paragraph (legacy two-line summaries remain supported)');
   const seen = new Set();
   for (const group of ['objections', 'lessons']) {
     for (const [index, entry] of (Array.isArray(r[group]) ? r[group] : []).entries()) {
@@ -153,7 +153,7 @@ function render(r, blocks) {
   if (r.status === "excluded")
     return "Not enough applicable selling evidence: " + r.exclusion_reason;
   const compact = ['tyler-review-v1','tyler-review-v2'].includes(r.presentation);
-  const parts = compact ? ["# Call coaching", "## Coaching snapshot", r.summary] : ["# Call coaching", "**Outcome:** " + r.outcome.text];
+  const parts = compact ? ["# Call coaching", r.presentation === "tyler-review-v2" ? "## Key takeaway" : "## Coaching snapshot", r.presentation === "tyler-review-v2" ? require("./coaching-key-takeaway.cjs").keyTakeaway(r.summary) : r.summary] : ["# Call coaching", "**Outcome:** " + r.outcome.text];
   if (r.objections.length) {
     parts.push("## Objections and how you handled them");
     for (const [index,o] of orderedObjections(r, blocks).entries()) {

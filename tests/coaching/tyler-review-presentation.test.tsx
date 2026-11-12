@@ -38,7 +38,7 @@ it('fails closed on missing or duplicated pinned reasoning instructions',()=>{
  }
 });
 
-it('v2 renders a hook, subheadline and numbered source-order objections while preserving safety',()=>{
+it('v2 renders a fixed takeaway heading and numbered source-order objections while preserving safety',()=>{
  const r=report();r.presentation='tyler-review-v2';r.summary='Make the next conversation count\nInclude the decision partner while respecting a later refusal.';
  r.objections[1].exchange='He wanted his wife present.\n\nThe rep offered a joint conversation.';
  c.validate(r,blocks);
@@ -47,7 +47,10 @@ it('v2 renders a hook, subheadline and numbered source-order objections while pr
  const html=renderToStaticMarkup(<CoachingReportContent report={{source_payload:{...p,source_airtable_record_id:"fixture"}}} reportType="official" reportId="fixture"/>);
  expect(html).toContain('1. Wife discussion');expect(html).toContain('Make the next conversation count');expect(html).toContain('whitespace-pre-line');
  expect(require('../../scripts/coaching-foundations/safety.cjs').fields(r).map((f:{path:string})=>f.path)).toContain('summary');
- expect(()=>c.validate({...r,summary:'Missing subheadline'},blocks)).toThrow('two nonempty lines');
+ expect(()=>c.validate({...r,summary:'A clear takeaway.'},blocks)).not.toThrow();
+ expect(()=>c.validate({...r,summary:'one\ntwo\nthree'},blocks)).toThrow('Takeaway requires');
+ expect(html).toContain('>Key takeaway</h2>');
+ expect(html).not.toContain('>Make the next conversation count</h2>');
  const repaired=a.repair(x,x.digest,[{path:'summary',before:r.summary,after:'A grounded hook\nA grounded subheadline.'}]);expect(repaired.safety).toBeNull();
  expect(()=>a.publish(repaired,{sourceId:'fixture',channel:'official'})).toThrow('Unreviewed');
  expect(()=>c.acceptReview(r,{pass:false,findings:[{issue:'downgrade',evidence_ids:[]}],corrected_report:report()},blocks)).toThrow('presentation revision');
