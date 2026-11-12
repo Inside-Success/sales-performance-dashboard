@@ -12,7 +12,9 @@ function validateAnalysis(a,blocks){
  const i=a.offer_identity;
  if(a.version!==VERSION||!i||!['main_istv','next_level_ceo','reality','mixed','unknown'].includes(i.family)||typeof i.show!=='string'||!i.show.trim()||typeof i.reason!=='string'||!i.reason.trim()||!Array.isArray(i.evidence)||i.evidence.length>12)throw Error('Invalid source identity');
  if(i.family!=='unknown'&&!i.evidence.length)throw Error('Identity requires direct source evidence');
- try{i.evidence=i.evidence.map(q=>require('./source-quote.cjs').resolve(q,blocks));}catch{throw Error('Unbound identity evidence');}
+ const issues=[];
+ i.evidence=i.evidence.map((q,index)=>{try{return require('./source-quote.cjs').resolve(q,blocks);}catch(error){issues.push({path:'offer_identity.evidence.'+index,block_id:q?.id,message:error.message});return q;}});
+ if(issues.length){const error=new Error('Unbound identity evidence');error.code='ANALYST_IDENTITY_EVIDENCE';error.issues=issues;throw error;}
  return a;
 }
 const SCOPE=`OFFER IDENTITY AUTHORITY:
