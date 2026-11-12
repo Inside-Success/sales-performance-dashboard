@@ -20,12 +20,27 @@ Add optional voice-to-text only to dislike/Needs changes feedback in coaching (o
 - FAQ continues using `ask_sales_faq_feedback` as its durable record and the same existing Sheet mirror/review flows. New dislikes use exact submission-ID deduplication plus SQL account/message/assistant ownership checks; an exact retry does not forward twice. Existing likes and old clients keep the original path.
 - Transcription itself creates no feedback rating/Sheet row and uses no n8n execution. Only explicit final submission forwards feedback. Coaching Sheet-bound strings are escaped as plain text for the current USER_ENTERED collector; stored original text is preserved.
 
-## Verification evidence (in progress)
+## Verification evidence
 
 - Dedicated-key real provider pilot: a system-generated 10-second recording returned HTTP 200 in 2,308ms. Negation survived exactly: `I did not refuse the payment.` Provider duration usage was 10 seconds; estimated published-rate cost $0.00075. One saved intent/receipt prevents accidental replay. This is synthetic speech, not a claim about real reps, noise or accents.
 - Production additive storage initialized and that exact pilot receipt imported under explicit verification context, with `notSubmittedAsRepFeedback=true`. Re-reading its UUID returned the completed receipt without another provider request. No rep rating, Sheet row or coaching report was created by this pilot.
 - Focused tests cover recorder lifecycle, permissions, silence, two-minute cutoff, cancellation/late callbacks, concurrent microphone attempts, transcription identity, timeouts, dedicated-key isolation, exact FAQ ownership, real isolated PostgreSQL rate limits/deduplication, and coaching save-before-forward behavior. Hosted acceptance and final counts will be recorded after checks/deployment.
-- Production build passed; TypeScript/scoped ESLint passed before final changes and will be rerun on the final commit. Broad FAQ run had ten timeouts in the unchanged source-preservation suite while build/tests overlapped; isolated rerun is pending. Do not report that first run as fully passing.
+- Final GitHub feedback gate passed: 67 tests, TypeScript and scoped ESLint. Coaching reliability gate passed all 59 test files, the eight safety/recovery verifier scripts, TypeScript and production build. Vercel preview and production builds passed.
+- Broad local FAQ run: 609 assertions passed and ten exceeded the default five-second timeout in the unchanged `v5-14-source-preservation` suite while local build/checks overlapped. An isolated default-timeout rerun reduced this to three timeouts. Diagnostic rerun with a 30-second allowance passed all 27 assertions. Test code and project timeout configuration were not changed. This does not turn the initial run into an all-pass result.
+
+## Hosted acceptance
+
+- PR #434 merged as `0c3e465b5fde99cc6e70290de7bd0c6260927689`; production deployment `dpl_Dcocuck3MNo8J4XB3R4cGaGKb3nJ` is READY on the intended project/team. Concurrent PR #433 changed adherence recovery files only and was preserved.
+- Authenticated live official report 9649 and an existing Enhanced manual report both showed the recorder only after opening Needs changes. Existing report content and source links remained available. The shared widget resets unsent state when navigating to another report.
+- On FAQ, opened an existing saved conversation without generating an answer. Not helpful opened the recorder and existing comment box. Typing enabled Submit; clearing text disabled it. No feedback was submitted and no fake negative review was added to production analytics.
+- Desktop and 390px mobile checks passed for coaching and FAQ, without document horizontal overflow. Microphone controls were not activated against ambient real audio. Temporary viewport overrides were reset. Captured browser error logs were empty on both checked surfaces.
+- Screenshots: `/tmp/magic-mike-voice-faq-desktop.png`, `/tmp/magic-mike-voice-faq-mobile.png`, `/tmp/magic-mike-voice-coaching-desktop.png`, `/tmp/magic-mike-voice-coaching-mobile.png`.
+- The temporary local task-key file was removed after the pilot; the dedicated production sensitive variable remains. Credential scan of staged changes passed. No unrelated provider environment variables or n8n workflows were changed.
+- Live POSTs to transcription, coaching feedback and FAQ feedback all returned 401 without a session. Re-reading the exact synthetic-pilot receipt after deployment returned `complete` without a new provider call; no rating/Sheet row was submitted.
+
+## Honest limits
+
+The recorder lifecycle and both submission paths are covered by automated tests, isolated real PostgreSQL, a real provider fixture and authenticated hosted UI checks. The full browser microphone → live endpoint flow with actual speech remains Moonis's requested final check. The synthetic pilot is not an accuracy guarantee across devices, accents or noisy audio. No provider fallback or hidden rewriting is used. A transcription failure preserves typing; uncertainty is held rather than automatically charged again.
 
 ## Operations and rollback
 
