@@ -144,6 +144,16 @@ const maintainedRelationships: Record<string, string[]> = {
   "operational_c19404089ff40541": ["hubspot-daily-stats-cutover-2026-10-03"],
 
   [v514.V514_CURRENT_PRICES_AND_PLANS_POLICY.id]: ["main-lite-complete-deliverables", "main-standard-complete-deliverables", "main-vip-complete-deliverables", v514.V514_CALL2_QUOTE_SEQUENCE_POLICY.id],
+  // Cohort deadlines constrain reschedules; they do not replace the current next-day booking default.
+  operational_b9d10ad5f9742efa: ["manual-booking-calendar-sops-2026-10-07"],
+  operational_ea9828f2c4a5b6cc: ["manual-booking-calendar-sops-2026-10-07"],
+  operational_4d491fe7edab2068: ["manual-booking-calendar-sops-2026-10-07"],
+  operational_a299a347bdd89861: ["manual-booking-calendar-sops-2026-10-07"],
+  claim_27c4932a2e2b2707__a1: ["manual-booking-calendar-sops-2026-10-07"],
+  claim_27c4932a2e2b2707__a5: ["manual-booking-calendar-sops-2026-10-07"],
+  claim_0de0110a15158df9__a2: ["manual-booking-calendar-sops-2026-10-07"],
+  claim_0de0110a15158df9__a4: ["manual-booking-calendar-sops-2026-10-07"],
+  curated_8a9c0c6ea1953a5a: ["manual-booking-calendar-sops-2026-10-07"],
   kr_7ace400fcdf68db9: ["active-show-list-resource"],
   operational_112edff8e7218415: ["reapply-context-and-current-guidance"],
 };
