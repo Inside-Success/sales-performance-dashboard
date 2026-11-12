@@ -1,6 +1,6 @@
 # Magic Mike FAQ knowledge refresh — November 12, 2026
 
-Status: candidate validated; publication and authenticated production verification pending.
+Status: published and authenticated production-answer-verified. Dashboard PR426 and FAQ PR139 merged; production commit `1461604`, READY deployment `dpl_3vtfakd7DPwsHhSNgXkv2sDMT2F3`.
 
 ## Scope and findings
 
@@ -24,10 +24,12 @@ Historical Master FAQ pagination gap remains. Two historical Google files and re
 
 ## Validation and release
 
-556 existing FAQ tests plus six new retrieval checks passed; 107 static checks, TypeScript and paired registry validation passed. Isolated review completed: 23 scenarios plus 12 focused reruns, no technical failures, approximately $0.297 API cost. The timing issue surfaced during evaluation and was corrected; all four final affected/variant checks passed. Partial classifications retain missing booking-link or case-specific approval limits. Authenticated production checks pending. Rollback: revert only this knowledge delta and paired export/receipt; retain unrelated Coaching/main commits and all historical source checkpoints.
+556 existing FAQ tests plus six new retrieval checks passed; 107 static checks, TypeScript and paired registry validation passed. Isolated review completed: 23 scenarios plus 12 focused reruns, no technical failures, approximately $0.297 API cost. The timing issue surfaced during evaluation and was corrected; all four final affected/variant checks passed. Partial classifications retain missing booking-link or case-specific approval limits. Three authenticated production answers and persisted knowledge hash verified with no technical errors or validation issues. Rollback: revert only this knowledge delta and paired export/receipt; retain unrelated Coaching/main commits and all historical source checkpoints.
 
-Private evidence: `.magic-mike-knowledge-refresh-2026-11-12`. Canonical next checkpoint is `KNOWLEDGE-CHECKPOINT-2026-11-12.json` only once marked published_verified.
+Private evidence: `.magic-mike-knowledge-refresh-2026-11-12`. Resume `KNOWLEDGE-CHECKPOINT-2026-11-12.json` (published_verified).
 
 Evaluation found an obsolete same-week Call 2 claim in one of 23 initial answers; the current next-day SOP now supersedes the three duplicate legacy claims. All four final affected/variant follow-up answers passed after governed relationship reconciliation. Source review includes 126 successful thread reads and 1,154 distinct indexed messages after November 9; historical coverage gaps remain.
 
 Nine historical cohort/Friday records now carry the current next-day booking SOP via the existing governing-evidence relationship table. This preserves cohort deadlines and the Friday exception while making the normal booking rule available alongside them; no retrieval algorithm changes.
+
+Final GitHub release check: **562 FAQ tests**, 107 static checks, TypeScript, scoped lint and production build passed. Three live answer latencies: 11.455s, 13.292s, 10.28s. Publication-date receipt is recorded only after these checks. Testing establishes these cases, not universal answer accuracy.
