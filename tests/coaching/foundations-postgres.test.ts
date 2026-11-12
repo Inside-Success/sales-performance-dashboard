@@ -77,3 +77,12 @@ it('replays the exact malformed writer receipt at zero new cost without reacquir
  const rows=await state.db!.query<{status:string;attempts:number}>('select status,attempts from coaching_provider_checkpoints where source_id=$1',[id.source_id]);
  expect(rows.rows[0]).toEqual({status:'failed',attempts:1});
 });
+
+it('retains a truncated reviewer receipt and resumes it repeatedly without repurchase or approval',async()=>{
+ const id=identity('terminal-reviewer'),claim=await providerCheckpoint({action:'claim',...id});
+ const terminal={...result,ok:false,provider:'openai',stop_reason:'length',parsed_json:null,parse_error:'Invalid JSON object',usage:{input_tokens:100,output_tokens:12000},costs:{total_cost_usd:0.3}};
+ expect((await providerCheckpoint({action:'complete',...id,token:claim.token!,result:terminal})).status).toBe('repair_required');
+ for(let i=0;i<3;i++){const resumed=await providerCheckpoint({action:'claim',...id});expect(resumed.status).toBe('repair_required');expect(resumed.result.costs.total_cost_usd).toBe(0);expect(resumed.result.provider_response_id).toBe(terminal.provider_response_id);}
+ expect((await state.db!.query('select status,attempts,last_error from coaching_provider_checkpoints where source_id=$1',[id.source_id])).rows[0]).toEqual({status:'failed',attempts:1,last_error:'Terminal reviewer response requires bounded repair'});
+ await expect(providerCheckpoint({action:'complete',...id,token:randomUUID(),result:terminal})).rejects.toThrow('ownership changed');
+});

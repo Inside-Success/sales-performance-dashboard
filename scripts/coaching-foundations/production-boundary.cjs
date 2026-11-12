@@ -26,7 +26,13 @@ function excludedProjection(result, expected) {
  if(!expected||expected.sourceId!==result.source_id||!p||p.sourceId!==result.source_id||p.sourceHash!==expected.sourceHash||p.policyHash!==expected.policyHash||p.policyRevision!==expected.policyRevision||record.digest(p.blocks)!==p.sourceHash||record.digest(p.policyText)!==p.policyHash||c.digest!==record.digest(c.report)||c.report?.status!=='excluded'||result.payload!=null)throw Error('Unverified coaching exclusion binding');
  require('../../src/lib/foundations-contract.cjs').validate(c.report,p.blocks);
  const receipts=result.provider_results||[];
- for(const [id,stages] of [[c.writerRequestId,['writer','writer-contract-repair']],[c.reviewRequestId,['reviewer','review-contract-repair']]]) {
+ const eligibility=c.eligibilityReview;
+ if(eligibility){
+  if(eligibility.version!=='reviewer-eligibility-v1'||eligibility.proposalRequestId!==c.writerRequestId||eligibility.proposalDigest!==c.digest||c.writerRequestId===c.reviewRequestId||!eligibility.reason?.trim()||!eligibility.evidence?.length||!receipts.some(x=>['writer','writer-contract-repair'].includes(x.purpose)&&x.result?.request_id===eligibility.originalWriterRequestId&&x.result.ok===true&&x.result.provider_response_id&&!['length','max_tokens','refusal'].includes(x.result.stop_reason)))throw Error('Unverified eligibility adjudication');
+  for(const q of eligibility.evidence)require('./source-quote.cjs').resolve(q,p.blocks);
+ }
+
+ for(const [id,stages] of [[c.writerRequestId,eligibility?['reviewer','review-contract-repair','reviewer-output-repair']:['writer','writer-contract-repair']],[c.reviewRequestId,eligibility?['eligibility-review']:['reviewer','review-contract-repair','reviewer-output-repair']]]) {
   if(!id||!receipts.some(x=>stages.includes(x.purpose)&&x.result?.request_id===id&&x.result.ok===true&&x.result.provider_response_id&&!['length','max_tokens','refusal'].includes(x.result.stop_reason)))throw Error('Unverified coaching exclusion review');
  }
  return {status:'refused',call_status:'refused',refusal_reason:c.report.exclusion_reason,coaching_version:record.GENERATION,
