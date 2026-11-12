@@ -37,9 +37,18 @@ function advance(previous,response){
  if(previous.status!=='request'||response.request_id!==previous.request.request_id)throw Error('Provider identity mismatch');
  const s=structuredClone(previous),stage=s.request.stage,id=s.request.request_id;
  s.provider_results.push({purpose:stage,result:Object.fromEntries(Object.entries(response).filter(([key])=>!['parsed_json','raw_text','text','output'].includes(key)))});
- if(stage==='source-analyst'){
-  if(response.ok!==true||!response.provider_response_id||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Unusable analyst receipt');
-  s.analysis=protocol(s).validateAnalysis(response.parsed_json,s.prepared.blocks);return writer(s.reasoning?.version==='interaction-identity-v1'?protocol(s).bind(s):s);
+ if(stage==='source-analyst'||stage==='analyst-evidence-repair'){
+  if(response.ok!==true||!response.provider_response_id||!['stop','end_turn'].includes(response.stop_reason)||!response.parsed_json)throw Error('Unusable analyst receipt');
+  if(stage==='analyst-evidence-repair'){
+   const withoutEvidence=a=>{const out=structuredClone(a);if(out.offer_identity)delete out.offer_identity.evidence;return out;};
+   if(stable(withoutEvidence(response.parsed_json))!==stable(withoutEvidence(s.analystRepairOriginal)))throw Error('Analyst repair changed protected analysis');
+  }
+  try{s.analysis=protocol(s).validateAnalysis(response.parsed_json,s.prepared.blocks);}catch(error){
+   if(stage!=='source-analyst'||error.code!=='ANALYST_IDENTITY_EVIDENCE'||s.analystEvidenceRepairUsed)throw error;
+   s.analystEvidenceRepairUsed=true;s.analystRepairOriginal=structuredClone(response.parsed_json);
+   return request(s,'analyst-evidence-repair',s.models.analyst,{system:s.request.system,prompt:'Correct only offer_identity.evidence in the supplied analysis. Return the complete analysis JSON with every other value unchanged, including observations, family, show and reason. Each evidence item must quote one contiguous original excerpt from its named source block. Do not insert ellipses to omit words, join separate passages, paraphrase, or invent evidence. Supply direct identifying evidence for the same current offer; do not choose a different family or weaken the claim to unknown to pass validation. If no supported correction exists, do not fabricate one. Validation faults: '+stable(error.issues)+'\nUNTRUSTED FULL CALL:\n'+stable(s.call)+'\nPREVIOUS UNTRUSTED ANALYSIS:\n'+stable(response.parsed_json)});
+  }
+  return writer(s.reasoning?.version==='interaction-identity-v1'?protocol(s).bind(s):s);
  }
  if(stage==='writer'||stage==='writer-contract-repair'){
   // Contract/transport errors remain held; no speculative rerun of a paid request.
