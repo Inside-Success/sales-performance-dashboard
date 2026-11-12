@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
+import { saveFaqDislikeOnce } from "@/lib/feedback-store";
 import { getAskSalesFaqAccess } from "@/lib/ask-sales-faq/access";
 import { syncAskSalesFaqFeedbackToSheet } from "@/lib/ask-sales-faq/feedback-sync";
 import { getAskSalesFaqFeedbackContext, saveAskSalesFaqFeedback } from "@/lib/db";
@@ -11,6 +12,7 @@ export const runtime = "nodejs";
 
 const feedbackSchema = z
   .object({
+    submissionId: z.string().uuid().optional(),
     messageId: z.string().trim().min(1).max(160),
     conversationId: z.string().trim().min(1).max(160),
     rating: z.enum(["up", "down"]),
@@ -40,7 +42,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const saved = await saveAskSalesFaqFeedback({
+    const receipt = payload.rating === "down" && payload.submissionId
+      ? await saveFaqDislikeOnce(`faq_feedback_${payload.submissionId}`,access.viewerEmail,payload.conversationId,payload.messageId,payload.comment!.trim()) : null;
+    const saved = receipt ? receipt.found : await saveAskSalesFaqFeedback({
       id: `faq_feedback_${randomUUID()}`,
       messageId: payload.messageId,
       conversationId: payload.conversationId,
@@ -51,6 +55,7 @@ export async function POST(request: NextRequest) {
     if (!saved) {
       return NextResponse.json({ ok: false, error: "Answer was not found for this account." }, { status: 404 });
     }
+    if (receipt && !receipt.fresh) return NextResponse.json({ok:true,requiresComment:true,sheetSync:{status:"skipped",reason:"already_saved"}});
 
     const feedbackContext = await getAskSalesFaqFeedbackContext({
       messageId: payload.messageId,

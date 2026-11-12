@@ -1,4 +1,6 @@
 "use client";
+import { VoiceFeedbackRecorder } from "@/components/dashboard/voice-feedback-recorder";
+import { appendVoiceText, type VoiceContext } from "@/lib/feedback-voice";
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -193,6 +195,7 @@ export function AskSalesFaqChat() {
   const [deletingConversation, setDeletingConversation] = useState<AskSalesFaqConversationSummary | null>(null);
   const [conversationActionError, setConversationActionError] = useState<string | null>(null);
   const [conversationActionSaving, setConversationActionSaving] = useState(false);
+  const feedbackSubmissionIds = useRef<Record<string, {signature:string;id:string}>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
@@ -630,6 +633,10 @@ export function AskSalesFaqChat() {
   async function saveFeedback(message: ChatMessage, rating: "up" | "down", comment = "") {
     if (!activeConversationId || message.role !== "assistant") return;
 
+    const signature = JSON.stringify([activeConversationId, message.id, rating, comment]);
+    const prior = feedbackSubmissionIds.current[message.id];
+    const submissionId = prior?.signature === signature ? prior.id : crypto.randomUUID();
+    feedbackSubmissionIds.current[message.id] = {signature,id:submissionId};
     const nextFeedback: FeedbackState = {
       rating,
       comment,
@@ -642,6 +649,7 @@ export function AskSalesFaqChat() {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
+          submissionId: rating === "down" ? submissionId : undefined,
           messageId: message.id,
           conversationId: activeConversationId,
           rating,
@@ -803,6 +811,8 @@ export function AskSalesFaqChat() {
                 feedback={feedbackByMessageId[message.id]}
                 onPositive={() => void saveFeedback(message, "up")}
                 onNegative={() => startNegativeFeedback(message.id)}
+                voiceContext={activeConversationId ? {kind:"faq", conversationId:activeConversationId, messageId:message.id} : undefined}
+                onFeedbackTranscript={(text) => setFeedbackByMessageId(current => ({...current, [message.id]: {...(current[message.id] || {rating:"down" as const,status:"commenting" as const,comment:""}),comment:appendVoiceText(current[message.id]?.comment || "",text)}}))}
                 onFeedbackComment={(comment) => updateFeedbackComment(message.id, comment)}
                 onSubmitNegative={(comment) => void saveFeedback(message, "down", comment)}
               />
@@ -1387,6 +1397,8 @@ function MessageRow({
   onPositive,
   onNegative,
   onFeedbackComment,
+  voiceContext,
+  onFeedbackTranscript,
   onSubmitNegative,
 }: {
   message: ChatMessage;
@@ -1394,6 +1406,8 @@ function MessageRow({
   onPositive: () => void;
   onNegative: () => void;
   onFeedbackComment: (comment: string) => void;
+  voiceContext?: VoiceContext;
+  onFeedbackTranscript: (text: string) => void;
   onSubmitNegative: (comment: string) => void;
 }) {
   if (message.role === "user") {
@@ -1446,6 +1460,8 @@ function MessageRow({
           feedback={feedback}
           onPositive={onPositive}
           onNegative={onNegative}
+          voiceContext={voiceContext}
+          onFeedbackTranscript={onFeedbackTranscript}
           onFeedbackComment={onFeedbackComment}
           onSubmitNegative={onSubmitNegative}
         />
@@ -1689,6 +1705,8 @@ function FeedbackControls({
   onPositive,
   onNegative,
   onFeedbackComment,
+  voiceContext,
+  onFeedbackTranscript,
   onSubmitNegative,
 }: {
   message: ChatMessage;
@@ -1696,8 +1714,11 @@ function FeedbackControls({
   onPositive: () => void;
   onNegative: () => void;
   onFeedbackComment: (comment: string) => void;
+  voiceContext?: VoiceContext;
+  onFeedbackTranscript: (text: string) => void;
   onSubmitNegative: (comment: string) => void;
 }) {
+  const [voiceBusy, setVoiceBusy] = useState(false);
   if (message.id.startsWith("local-safe-")) return null;
 
   if (feedback?.status === "saved") {
@@ -1725,7 +1746,7 @@ function FeedbackControls({
         <button
           type="button"
           onClick={onPositive}
-          disabled={feedback?.status === "saving"}
+          disabled={feedback?.status === "saving" || voiceBusy}
           aria-label="Helpful"
           className="grid size-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 transition-all hover:border-slate-300 hover:text-slate-800 active:scale-95 disabled:opacity-50"
         >
@@ -1734,7 +1755,7 @@ function FeedbackControls({
         <button
           type="button"
           onClick={onNegative}
-          disabled={feedback?.status === "saving"}
+          disabled={feedback?.status === "saving" || voiceBusy}
           aria-label="Not helpful"
           className={cn(
             "grid size-8 place-items-center rounded-lg border bg-white transition-all active:scale-95 disabled:opacity-50",
@@ -1754,25 +1775,28 @@ function FeedbackControls({
           className="mt-2.5 max-w-md rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
           onSubmit={(event) => {
             event.preventDefault();
-            if (feedback.comment.trim()) onSubmitNegative(feedback.comment.trim());
+            if (!voiceBusy && feedback.comment.trim() && feedback.comment.length <= 4000) onSubmitNegative(feedback.comment.trim());
           }}
         >
-          <label className="mb-1.5 block text-[13px] font-bold text-slate-700" htmlFor={`feedback-${message.id}`}>
+          {voiceContext && <VoiceFeedbackRecorder key={JSON.stringify(voiceContext)} context={voiceContext} onTranscript={onFeedbackTranscript} onBusyChange={setVoiceBusy}/>}
+          <label className="mb-1.5 mt-3 block text-[13px] font-bold text-slate-700" htmlFor={`feedback-${message.id}`}>
             What was wrong?
           </label>
           <Textarea
             id={`feedback-${message.id}`}
             value={feedback.comment}
+            maxLength={4000}
             onChange={(event) => onFeedbackComment(event.target.value)}
             rows={2}
             className="min-h-20 resize-none text-sm"
             placeholder="Tell us what was inaccurate or missing."
           />
+          {feedback.comment.length > 4000 && <p role="alert" className="text-sm text-red-700">Please shorten your feedback to 4,000 characters before submitting.</p>}
           <div className="mt-2 flex justify-end">
             <Button
               type="submit"
               size="sm"
-              disabled={!feedback.comment.trim()}
+              disabled={!feedback.comment.trim() || voiceBusy || feedback.comment.length > 4000}
               className="rounded-lg bg-[#DC2626] text-white hover:bg-[#B91C1C]"
             >
               Submit

@@ -1,0 +1,29 @@
+name: Dislike voice feedback checks
+on:
+  pull_request:
+    paths:
+      - 'src/components/dashboard/voice-feedback-recorder.tsx'
+      - 'src/components/dashboard/report-feedback-widget.tsx'
+      - 'src/components/ask-sales-faq/ask-sales-faq-chat.tsx'
+      - 'src/app/api/feedback/**'
+      - 'src/app/api/ask-sales-faq/feedback/**'
+      - 'src/app/api/report-feedback/**'
+      - 'src/lib/feedback-*.ts'
+      - 'tests/feedback-voice/**'
+      - '.github/workflows/feedback-voice.yml'
+permissions:
+  contents: read
+jobs:
+  feedback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run tests/feedback-voice tests/ask-sales-faq/revamp/feedback-access.test.ts tests/admin-access.test.ts
+      - run: npx tsc --noEmit
+      - run: npx eslint src/components/dashboard/voice-feedback-recorder.tsx src/components/dashboard/report-feedback-widget.tsx src/components/ask-sales-faq/ask-sales-faq-chat.tsx src/app/api/feedback/transcribe/route.ts src/app/api/report-feedback/route.ts src/app/api/ask-sales-faq/feedback/route.ts src/lib/feedback-voice.ts src/lib/feedback-store.ts tests/feedback-voice --max-warnings=0

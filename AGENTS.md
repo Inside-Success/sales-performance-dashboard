@@ -116,3 +116,8 @@ For dashboard/web changes:
 - November 12 analyst recovery: see `docs/coaching-lab/ANALYST-RECOVERY-2026-11-12.md`. A complete source-analyst receipt with unbound offer-identity evidence may receive one deterministic, separately checkpointed evidence-only correction. Preserve all non-evidence analysis, exact contiguous source validation, uncertain-request holds and subsequent independent review. Never replay the original paid request or weaken identity to pass validation.
 
 - November 12 Key takeaway presentation: see `docs/coaching-lab/KEY-TAKEAWAY-2026-11-12.md`. Keep the fixed heading with one clear paragraph. Preserve historical reviewed payloads and their safety digests; opening-copy consolidations are exact-match presentation revisions. Retain two-line read compatibility for in-flight/historical reports. Do not regenerate or redeliver reports for this presentation change.
+
+## Dislike voice feedback (November 12)
+
+- See MAGIC-MIKE-DISLIKE-VOICE-FEEDBACK-2026-11-12.md. Optional voice input belongs only in coaching/FAQ dislike forms. Preserve explicit submission, typed fallback, exact context ownership and one-click likes.
+- Transcription uses only FEEDBACK_TRANSCRIPTION_OPENAI_API_KEY and gpt-transcribe. Never fall back to unrelated keys or replay pending/uncertain paid requests. Database feedback receipts and webhook acceptance are distinct from confirmed Sheet delivery; inspect exact receipts before resending.

@@ -150,3 +150,7 @@ Admin directory, exact leadership exceptions and additive access policy: [MAGIC-
 Admin layout, names, order and navigation follow-up: [MAGIC-MIKE-ADMIN-UI-POLISH-2026-10-14.md](MAGIC-MIKE-ADMIN-UI-POLISH-2026-10-14.md).
 
 Dashboard performance and reliable source reads: [MAGIC-MIKE-PERFORMANCE-2026-10-15.md](MAGIC-MIKE-PERFORMANCE-2026-10-15.md). Scheduled refresh uses server-only `CRON_SECRET`; `MAGIC_MIKE_READ_SNAPSHOTS_ENABLED=false` retains legacy reads for rollback.
+
+### Dislike voice feedback
+
+Coaching and FAQ dislike forms support optional recording followed by editable transcription and explicit submission. Likes remain one click. The dedicated server-only `FEEDBACK_TRANSCRIPTION_OPENAI_API_KEY` and `FEEDBACK_VOICE_ENABLED` switch are independent of all chat/coaching/adherence provider keys. See [release and reliability notes](MAGIC-MIKE-DISLIKE-VOICE-FEEDBACK-2026-11-12.md).
