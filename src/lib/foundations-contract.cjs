@@ -295,7 +295,7 @@ function providerErrors(stage,value){
  if(!providerStage(stage))return [];
  try{
   const structural=r=>{
-   const refs=[...(r?.outcome?.evidence_ids||[]),...[...(r?.objections||[]),...(r?.lessons||[]),...(r?.next_steps||[])].flatMap(x=>[...(x.evidence_ids||[]),...(x.counterevidence_ids||[])])];
+   const refs=[...(r?.outcome?.evidence_ids||[]),...[...(r?.objections||[]),...(r?.lessons||[]),...(r?.next_steps||[])].flatMap(x=>[...(x.evidence_ids||[]),...(x.counterevidence_ids||[]),...(x.teaching_basis?.attempt_ids||[])])];
    if(!refs.length||refs.some(id=>typeof id!=='string'||!/^T\d{4,}$/.test(id)))throw Error('Invalid evidence identifiers');
    validate(r,[...new Set(refs)].map(id=>({id})));
   };
