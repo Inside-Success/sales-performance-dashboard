@@ -1,3 +1,5 @@
+import {vi as budgetVi} from 'vitest';
+budgetVi.mock('./coaching-recovery-budget',()=>({reserveRecoveryRequest:budgetVi.fn(),settleRecoveryRequest:budgetVi.fn()}));
 import {beforeEach,describe,expect,it,vi} from 'vitest';
 const mocks=vi.hoisted(()=>({sql:vi.fn(),rejectOwner:false}));
 vi.mock('@neondatabase/serverless',()=>({neon:()=>mocks.sql}));

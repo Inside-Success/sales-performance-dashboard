@@ -28,8 +28,12 @@ export async function claimSource(sourceId:string, identity:string, owner:string
   return {acquired:false,status:held[0]?.status||"held",owner:held[0]?.owner,source_id:held[0]?.source_id};
 }
 export async function settleSource(sourceId:string, owner:string, status:string) {
-  const next=status==='queued'?'retryable':['delivered','excluded','existing_report'].includes(status)?'done':'held';
+  let next=status==='queued'?'retryable':['delivered','excluded','existing_report'].includes(status)?'done':'held';
   await ensureSourceClaims();
+  if(status==='existing_report'){
+    const delivered=await sql().query(`select id from performance_calls where source_payload->>'source_airtable_record_id'=$1 limit 1`,[sourceId]);
+    if(!delivered.length)next='held';
+  }
   const rows=await sql().query(`update coaching_source_claims set status=$3,updated_at=now()
     where source_id=$1 and owner=$2 and status='running' returning identity`,[sourceId,owner,next]);
   return {settled:rows.length>0};
