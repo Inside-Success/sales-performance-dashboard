@@ -91,3 +91,9 @@ it('renders the finalized concise presentation and separate lessons in official 
  for(const channel of ['official','manual'] as const){const p={...a.publish(safe,{sourceId:'fixture',channel}),source_airtable_record_id:'fixture'};const sections=a.sections(p,'fixture',channel);expect(sections.find((x:any)=>x.key==='summary').title).toBe('Key Execution Summary');expect(sections.find((x:any)=>x.key==='lessons').items).toHaveLength(2);expect(sections.find((x:any)=>x.key==='objections').items).toHaveLength(2);
  const html=renderToStaticMarkup(<CoachingReportContent report={{source_payload:p}} reportType={channel} reportId="fixture"/>);expect(html.match(/What happened:/g)).toHaveLength(2);expect(html.match(/What this meant:/g)).toHaveLength(2);expect(html.match(/Why this approach worked:/g)).toHaveLength(2);expect(html).not.toContain('PRIVATE FOUNDATION');expect(html).not.toContain('Buyer’s concern');expect(html).not.toContain('Resolution:');expect(html).toContain('Name the decision');expect(html).toContain('Set a useful agenda');}
 });
+it('transport validation recognizes attempt references while full-source validation still checks their existence',()=>{
+ const r:any=report();r.presentation='syed-review-v1';r.objections=r.objections.map((o:any)=>({...o,interpretation:'The stated decision controls the next move.',principle:'Respect the decision.',teaching:'Offer a useful continuation.',teaching_basis:{attempt_ids:['T0003'],gap:'Handling was sound.',mechanism:'It respects the stated decision.'}}));
+ expect(c.providerErrors('foundations_writer_v3',r)).toEqual([]);
+ expect(()=>c.validate(r,blocks)).toThrow('evidence');
+ expect(()=>c.validate(r,[...blocks,{id:'T0003',text:'Rep: Let us discuss this tomorrow.'}])).not.toThrow();
+});
