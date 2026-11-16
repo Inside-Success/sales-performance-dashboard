@@ -48,6 +48,7 @@ export function failureDecision(message, checkpoints=[], attempt=0, now=Date.now
     const cause=failureDecision(incomplete.last_error,[],attempt,now);
     return {...cause,stage:incomplete.stage,retryAt:Math.max(now+60000,Date.parse(incomplete.next_attempt_at)||now+300000)};
   }
+  if (/^Approved runtime knowledge unavailable(?: \[line \d+\])?$/.test(msg)) return {kind:'knowledge_unavailable',retryable:attempt<2};
   if (/invalid coaching contract|Missing strength|draft remains invalid|Invalid transcript evidence|Invalid coaching audit|Incomplete improvement audit|Conflicting improvement audit|Incomplete factual audit|Invalid audited outcome/i.test(msg)) return {kind:'content_contract',retryable:attempt<2};
   if (['429','500','502','503','504','524','529'].includes(httpCode) || /timeout|timed out|aborted|overload|rate.?limit|temporar|ECONNRESET|ETIMEDOUT|EAI_AGAIN|fetch failed|socket|connection.*closed|empty response|JSON parse|invalid structured|checkpoint (deferred|unavailable)/i.test(msg)) return {kind:'transient',retryable:true};
   return {kind:'unknown',retryable:false};

@@ -64,3 +64,9 @@ describe('source intake exclusions',()=>{
     for(const reason of ['valid_sales_call: Discussed a previous sales_no_show','sales_disconnected: Brief conversation','',null])expect(coverageIntakeExclusion(reason)).toBe(false);
   });
 });
+it('retries a missing governed knowledge fetch twice without relaxing knowledge or safety holds',()=>{
+ expect(failureDecision('Approved runtime knowledge unavailable [line 1874]',[],0)).toEqual({kind:'knowledge_unavailable',retryable:true});
+ expect(failureDecision('Approved runtime knowledge unavailable',[],2).retryable).toBe(false);
+ expect(failureDecision('Unreviewed evaluator instruction in coaching knowledge').retryable).toBe(false);
+ expect(failureDecision('Approved runtime knowledge unavailable | uncertain delivery').retryable).toBe(false);
+});
