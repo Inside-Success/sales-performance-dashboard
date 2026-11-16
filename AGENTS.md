@@ -126,6 +126,9 @@ For dashboard/web changes:
 
 ## Concise coaching release (November 16)
 
+- Recovery reliability follow-up: see `docs/coaching-lab/ROOT-RECOVERY-2026-11-16.md`. Preserve source-bound progress, operator-enrolled budget reservations, unresolved-provider receipt retention and the refusal to reacquire expired uncertain requests. An Airtable scorecard without dashboard delivery is not complete. Nested teaching-basis corrections require exact before-values, source evidence and conflict checks; receipt validation and the core must accept the same supported paths.
+- Recovery must reconcile retained exclusions before generating new coaching. Never turn an independently reviewed Call 1 exclusion into a scored report just because a newer model returns coaching. Corrected exclusions retain their records/history and display Not scored without coaching, a score or chat. The November 16 recovery ended with 17 reports, one restored exclusion and Jen's historical unknown reviewer outcome held; $11.462650515 spent, zero pending reservations, budget closed.
+
 - New reports use `magic-mike-coaching-2026-11-16` and the `syed-review-v1` presentation. Preserve all material objections and the source-bound internal teaching basis; render the finalized exchange, interpretation and teaching fields without exposing internal principles. Do not use the older concern/response/assessment layout for this presentation.
 - Keep field-level reviewer edits, bounded quotation/length repairs, exact receipt accounting, old-generation readers and in-flight core snapshots. See `docs/coaching-lab/RELEASE-2026-11-16.md` for release and backfill verification status.
 - Derive reviewer transport field permissions from the report schema; full core validation must still bind edits and teaching references to source evidence. Preserve every supported historical generation in official and manual display routes independently of the Enhanced/Legacy label.
