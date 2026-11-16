@@ -1,5 +1,7 @@
 # Coaching release health audit — November 16
 
+**Later recovery update:** the historical counts below describe the earlier audit, not the current backlog. See [root fixes and recovery](ROOT-RECOVERY-2026-11-16.md): 17 coaching reports recovered, one first-call exclusion restored, and one uncertain historical reviewer request still held. The separate $20 recovery used $11.462650515; all reservations settled and temporary helpers are off.
+
 ## Confirmed release behavior
 
 The November 16 generator is published in both official and manual workflows. The official recovery execution 1800482 delivered dashboard report 9918 and its Google Doc, with a matching delivered receipt. A separate normal incoming call delivered report 9919 in the new generation. Both retained independent review and safety validation. A late in-flight November 12 result remained correctly marked Legacy.
