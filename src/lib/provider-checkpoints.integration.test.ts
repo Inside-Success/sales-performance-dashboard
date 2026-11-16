@@ -42,10 +42,9 @@ describe.skipIf(process.env.MM_CHECKPOINT_LIVE_TEST !== "1")("isolated live chec
       await expect(providerCheckpoint({action:"complete",...id,token,result:{ok:true,parsed_json:null}})).rejects.toThrow("Invalid structured");
       await sql`update coaching_provider_checkpoints set lease_until=now()-interval '1 minute' where source_id=${source_id} and status='running'`;
       const next = await providerCheckpoint({action:"claim",...id});
-      expect(next.status).toBe("acquired");expect(next.token).not.toBe(token);
+      expect(next.status).toBe("deferred");expect(next).toMatchObject({reason:"uncertain_provider_outcome"});
       const result = {ok:true,parsed_json:{status:"verified"},parse_error:"",stop_reason:"end_turn"};
-      await expect(providerCheckpoint({action:"complete",...id,token,result})).rejects.toThrow("ownership changed");
-      await providerCheckpoint({action:"complete",...id,token:next.token!,result});
+      await providerCheckpoint({action:"complete",...id,token,result});
       await providerCheckpoint({action:"fail",...id,token,error:"stale invalid source"});
       const cached = await providerCheckpoint({action:"claim",...id});
       expect(cached.status).toBe("cached");expect(cached.result.parsed_json).toEqual({status:"verified"});

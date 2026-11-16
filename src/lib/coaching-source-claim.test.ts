@@ -22,6 +22,11 @@ describe('shared source ownership',()=>{
  expect(call[0]).toContain('owner=$2');expect(call[1]).toEqual(['recA','123','held']);
  await settleSource('recA','123','queued');expect(m.query.mock.calls.at(-1)![1]).toEqual(['recA','123','retryable']);
  });
+ it('does not settle an Airtable-only artifact as delivered',async()=>{
+ await settleSource('recA','123','existing_report');expect(m.query.mock.calls.at(-1)![1]).toEqual(['recA','123','held']);
+ m.query.mockImplementation(async(q:string)=>q.startsWith('select id')?[{id:42}]:[]);
+ await settleSource('recA','123','existing_report');expect(m.query.mock.calls.at(-1)![1]).toEqual(['recA','123','done']);
+ });
  it('requires successful source and artifact reads before reserving',async()=>{
  m.read.mockResolvedValue({ok:false});await expect(reserveMissingSource('recA')).rejects.toThrow();expect(m.query).not.toHaveBeenCalled();
  });

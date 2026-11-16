@@ -1,3 +1,4 @@
+import {readFileSync} from 'node:fs';
 import { beforeAll, afterAll, describe, expect, it, vi } from 'vitest';
 import { PGlite } from '@electric-sql/pglite';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -12,7 +13,7 @@ vi.mock('@neondatabase/serverless',()=>({neon:()=>async(parts:TemplateStringsArr
 }}));
 import { providerCheckpoint } from '../../src/lib/provider-checkpoints';
 let directory:string;
-beforeAll(async()=>{directory=await mkdtemp(join(tmpdir(),'mm-isolated-pg-'));state.db=await PGlite.create(directory);vi.stubEnv('DATABASE_URL','isolated-engine-only');},30000);
+beforeAll(async()=>{directory=await mkdtemp(join(tmpdir(),'mm-isolated-pg-'));state.db=await PGlite.create(directory);vi.stubEnv('DATABASE_URL','isolated-engine-only');await state.db.exec(readFileSync('scripts/coaching-release/recovery-budget-schema.sql','utf8'));await state.db.exec('create table coaching_source_claims(source_id text,status text)');},30000);
 afterAll(async()=>{await state.db?.close();await rm(directory,{recursive:true,force:true});vi.unstubAllEnvs();});
 const identity=(source:string)=>({source_id:source,stage:'foundations_reviewer_v3',provider:'openai' as const,request_hash:'a'.repeat(64)});
 const result={ok:true,provider_response_id:'saved-provider-receipt',request_id:'exact-request',stop_reason:'stop',parsed_json:{pass:true,findings:[],corrected_report:null}};
@@ -40,12 +41,11 @@ describe('real isolated PostgreSQL checkpoint persistence',()=>{
   const rows=await state.db!.query<{status:string;result:{provider_response_id:string}}>('select status,result from coaching_provider_checkpoints where source_id=$1',['malformed']);
   expect(rows.rows[0].status).toBe('failed');expect(rows.rows[0].result.provider_response_id).toBe(result.provider_response_id);
  });
- it('does not let the old owner close a reacquired request',async()=>{
+ it('does not reacquire an expired request whose paid outcome is unknown',async()=>{
   const id=identity('expired');const old=await providerCheckpoint({action:'claim',...id});
   await state.db!.query("update coaching_provider_checkpoints set lease_until=now()-interval '1 minute' where source_id=$1",[id.source_id]);
-  const next=await providerCheckpoint({action:'claim',...id});expect(next.status).toBe('acquired');expect(next.token).not.toBe(old.token);
-  await expect(providerCheckpoint({action:'complete',...id,token:old.token!,result})).rejects.toThrow('ownership changed');
-  await providerCheckpoint({action:'complete',...id,token:next.token!,result});
+  const next=await providerCheckpoint({action:'claim',...id});expect(next.status).toBe('deferred');expect(next).toMatchObject({reason:'uncertain_provider_outcome'});
+  await providerCheckpoint({action:'complete',...id,token:old.token!,result});
  });
 });
 
@@ -85,4 +85,11 @@ it('retains a truncated reviewer receipt and resumes it repeatedly without repur
  for(let i=0;i<3;i++){const resumed=await providerCheckpoint({action:'claim',...id});expect(resumed.status).toBe('repair_required');expect(resumed.result.costs.total_cost_usd).toBe(0);expect(resumed.result.provider_response_id).toBe(terminal.provider_response_id);}
  expect((await state.db!.query('select status,attempts,last_error from coaching_provider_checkpoints where source_id=$1',[id.source_id])).rows[0]).toEqual({status:'failed',attempts:1,last_error:'Terminal reviewer response requires bounded repair'});
  await expect(providerCheckpoint({action:'complete',...id,token:randomUUID(),result:terminal})).rejects.toThrow('ownership changed');
+});
+
+it('retains aged receipts for unresolved sources while cleaning resolved receipts',async()=>{
+ for(const name of ['keep-held','clean-done']){const id=identity(name),owner=await providerCheckpoint({action:'claim',...id});await providerCheckpoint({action:'complete',...id,token:owner.token!,result});await state.db!.query('insert into coaching_source_claims values($1,$2)',[name,name==='keep-held'?'held':'done']);await state.db!.query("update coaching_provider_checkpoints set updated_at=now()-interval '20 days' where source_id=$1",[name]);}
+ await providerCheckpoint({action:'claim',...identity('trigger-cleanup')});
+ const rows=(await state.db!.query("select source_id from coaching_provider_checkpoints where source_id in ('keep-held','clean-done')")).rows;
+ expect(rows).toEqual([{source_id:'keep-held'}]);
 });

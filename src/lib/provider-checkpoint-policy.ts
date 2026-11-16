@@ -11,7 +11,7 @@ const identity = {
 };
 export const checkpointInput = z.discriminatedUnion("action", [
   z.object({ action: z.literal("source_status"), source_id: z.string().regex(/^rec[A-Za-z0-9]+$/) }),
-  z.object({ action: z.literal("claim"), ...identity }),
+  z.object({ action: z.literal("claim"), ...identity, max_cost: z.number().positive().optional() }),
   z.object({ action: z.literal("complete"), ...identity, token: z.string().uuid(), result: z.record(z.string(), z.unknown()) }),
   z.object({ action: z.literal("fail"), ...identity, token: z.string().uuid(), error: z.string().max(1500) }),
 ]);

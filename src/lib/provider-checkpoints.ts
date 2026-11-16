@@ -1,3 +1,4 @@
+import {reserveRecoveryRequest,settleRecoveryRequest} from './coaching-recovery-budget';
 import { repairableSafetyReceipt, repairableReviewerReceipt, retainedContractReceipt, reusedReceipt } from "./foundations-terminal-receipt.cjs";
 import { databaseUrl } from '@/lib/database-connection';
 import {providerStage as foundationsProviderStage,providerErrors as foundationsProviderErrors} from "./foundations-contract.cjs";
@@ -62,7 +63,10 @@ export async function providerCheckpoint(input: CheckpointInput) {
         next_attempt_at=now(),updated_at=now() where checkpoint_key=${key} and status='completed'`;
     }
     await sql`delete from coaching_provider_checkpoints where checkpoint_key in
-      (select checkpoint_key from coaching_provider_checkpoints where status<>'running' and updated_at<now()-interval '14 days' limit 100)`;
+      (select p.checkpoint_key from coaching_provider_checkpoints p
+       where p.status<>'running' and p.updated_at<now()-interval '14 days'
+       and exists(select 1 from coaching_source_claims c where c.source_id=p.source_id and c.status='done')
+       and not exists(select 1 from coaching_source_claims c where c.source_id=p.source_id and c.status<>'done') limit 100)`;
     await sql`insert into coaching_provider_health(provider) values (${input.provider}) on conflict do nothing`;
     const health = await sql`select failures,open_until,probe_until from coaching_provider_health where provider=${input.provider}`;
     if (Number(health[0]?.failures) >= 3) {
@@ -70,20 +74,20 @@ export async function providerCheckpoint(input: CheckpointInput) {
         where provider=${input.provider} and failures>=3 and open_until<=now() and probe_until<=now() returning provider`;
       if (!probe.length) return { status: "deferred", retry_at: health[0].open_until, reason: "provider_cooldown" };
     }
+    await reserveRecoveryRequest(input.source_id,key,input.max_cost);
     const token = randomUUID();
     const claimed = await sql`insert into coaching_provider_checkpoints
       (checkpoint_key,source_id,stage,provider,request_hash,status,owner_token,lease_until)
       values (${key},${input.source_id},${input.stage},${input.provider},${input.request_hash},'running',${token},now()+interval '10 minutes')
       on conflict (checkpoint_key) do update set status='running',owner_token=excluded.owner_token,
         lease_until=excluded.lease_until,attempts=coaching_provider_checkpoints.attempts+1,updated_at=now()
-      where (coaching_provider_checkpoints.status='running' and coaching_provider_checkpoints.lease_until<now())
-        or (coaching_provider_checkpoints.status='failed' and coaching_provider_checkpoints.next_attempt_at<=now())
+      where coaching_provider_checkpoints.status='failed' and coaching_provider_checkpoints.next_attempt_at<=now()
       returning owner_token`;
     if (claimed.length) return { status: "acquired", token };
     const rows = await sql`select status,result,lease_until,next_attempt_at from coaching_provider_checkpoints where checkpoint_key=${key}`;
     const row = rows[0];
     if (row?.status === "completed" && validProviderResult({...row.result,call_purpose:input.stage})) return { status: "cached", result: {...row.result,call_purpose:input.stage} };
-    return { status: "deferred", retry_at: row?.status === "running" ? row.lease_until : row?.next_attempt_at };
+    return { status: "deferred", retry_at: row?.status === "running" ? row.lease_until : row?.next_attempt_at, ...(row?.status === "running" && new Date(row.lease_until).getTime() < Date.now() ? {reason:"uncertain_provider_outcome"} : {}) };
   }
   if (input.action === "complete") {
     const normalized:Record<string,unknown> = {...input.result,call_purpose:input.stage};
@@ -104,6 +108,7 @@ export async function providerCheckpoint(input: CheckpointInput) {
         const prior=await sql`select status,owner_token,last_error from coaching_provider_checkpoints where checkpoint_key=${key}`;
         if(prior[0]?.status!=='failed'||prior[0]?.owner_token!==input.token||prior[0]?.last_error!==reason)throw Error('Checkpoint ownership changed; rejection refused');
       }
+      await settleRecoveryRequest(key,input.result);
       return {status:'rejected_contract',repair_required:true};
     }
     if (repairableSafetyReceipt(input.stage,normalized)||repairableReviewerReceipt(input.stage,normalized)) {
@@ -116,6 +121,7 @@ export async function providerCheckpoint(input: CheckpointInput) {
         const prior=await sql`select status,owner_token,result,last_error from coaching_provider_checkpoints where checkpoint_key=${key}`;
         if(prior[0]?.status!=='failed'||prior[0]?.owner_token!==input.token||prior[0]?.last_error!==reason||prior[0]?.result?.provider_response_id!==retained.provider_response_id)throw Error('Checkpoint ownership changed; terminal receipt refused');
       }
+      await settleRecoveryRequest(key,input.result);
       return {status:'repair_required',repair_required:true};
     }
     if (!validProviderResult(normalized)) throw Error("Invalid structured provider result; checkpoint refused");
@@ -130,6 +136,7 @@ export async function providerCheckpoint(input: CheckpointInput) {
       if (prior[0]?.status !== "completed" || prior[0]?.owner_token !== input.token) throw Error("Checkpoint ownership changed; completion refused");
     }
     await sql`update coaching_provider_health set failures=0,open_until=now(),probe_until=now() where provider=${input.provider}`;
+    await settleRecoveryRequest(key,input.result);
     return { status: "completed" };
   }
   const transient = retryableProviderFailure(input.error);
