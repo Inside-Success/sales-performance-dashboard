@@ -313,7 +313,9 @@ function providerErrors(stage,value){
     const seen=new Set();
     for(const e of value.edits){
      if(!e||!text(e.target)||seen.has(e.target)||!text(e.reason)||!quote(e.source_quote)||!Object.hasOwn(e,'value'))throw Error('Invalid review edit');seen.add(e.target);
-     if(!/^(summary|exclusion_reason|offer_family|show|outcome|focus_id|next_steps|(?:objections|lessons):[^:]+(?::(?:title|category|handling|concern|response|assessment|teaching|example|interpretation|exchange|principle|evidence_ids|counterevidence_ids|teaching_basis|purpose|layer|observation))?)$/.test(e.target))throw Error('Forbidden review edit target');
+     const item=/^(objections|lessons):([^:]+)(?::([^:]+))?$/.exec(e.target);
+     const allowed=item ? (!item[3] || (item[3]!=='id' && Object.hasOwn(schema[item[1]][0],item[3]))) : Object.hasOwn(schema,e.target) && !['version','presentation','status','objections','lessons','coverage'].includes(e.target);
+     if(!allowed)throw Error('Forbidden review edit target');
      if(Object.hasOwn(e,'after_id')&&e.after_id!==null&&!text(e.after_id))throw Error('Invalid review placement');
     }
     const ids=new Set();for(const d of value.observation_dispositions){if(!d||!text(d.id)||ids.has(d.id)||!['retained','refined','dismissed'].includes(d.decision)||!text(d.reason)||!quote(d.source_quote))throw Error('Invalid observation disposition');ids.add(d.id);}
