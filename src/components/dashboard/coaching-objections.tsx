@@ -5,6 +5,7 @@ export type CoachingObjection = {
   title: string;
   category: string;
   exchange?: string;
+  interpretation?: string;
   concern: string;
   response: string;
   handling: "sound" | "needs_work" | "uncertain";
@@ -28,12 +29,29 @@ const resolutionLabels = {
 
 // Display only: callers supply the source-bound, validated and safety-reviewed record.
 // Never reconstruct categories or assessment boundaries from generated prose.
-export function CoachingObjections({ objections, focusId, compact = false, numbered = false }: {
+export function CoachingObjections({ objections, focusId, compact = false, numbered = false, concise = false }: {
   objections: CoachingObjection[];
   focusId: string;
   compact?: boolean;
   numbered?: boolean;
+  concise?: boolean;
 }) {
+  if (concise) return (
+    <section className="magic-card min-w-0 p-5 md:p-7" aria-label="Objections and how you handled them">
+      <h2 className="mb-5 text-xl font-bold tracking-tight text-slate-950 md:text-2xl">Objections and how you handled them</h2>
+      <ol className="divide-y divide-slate-200">
+        {objections.map((o,i)=><li key={o.id} className={`space-y-3 break-words py-5 ${i===0?"pt-0":""}`}>
+          <p className="text-sm font-semibold text-slate-700">{i+1}. {{sound:"Good",needs_work:"Bad",uncertain:"Not enough information"}[o.handling]} — {OBJECTION_CATEGORIES[o.category]}</p>
+          <h3 className="text-lg font-semibold text-slate-950">{o.title}</h3>
+          <dl className="space-y-3 text-base leading-7 text-slate-700">
+            <div><dt className="inline font-semibold text-slate-950">What happened: </dt><dd className="inline whitespace-pre-line">{o.exchange}</dd></div>
+            <div><dt className="inline font-semibold text-slate-950">What this meant: </dt><dd className="inline whitespace-pre-line">{o.interpretation}</dd></div>
+            <div><dt className="inline font-semibold text-slate-950">{{sound:"Why this approach worked",needs_work:"The better move",uncertain:"What to clarify"}[o.handling]}: </dt><dd className="inline whitespace-pre-line">{o.teaching}</dd></div>
+          </dl>
+        </li>)}
+      </ol>
+    </section>
+  );
   if (compact) return (
     <section className="magic-card min-w-0 p-5 md:p-7" aria-label="Objections and how you handled them">
       <h2 className="mb-5 text-xl font-bold tracking-tight text-slate-950 md:text-2xl">Objections and how you handled them</h2>
