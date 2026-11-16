@@ -12,3 +12,9 @@ it('finishes official and manual report advice without modifying source transcri
     expect(context).toContain(transcript);
   }
 });
+
+it('disables coaching chat for a first-call exclusion even when report chat is enabled',async()=>{
+ const {isReportChatEnabledForCall}=await import('@/lib/report-chat');
+ const before=process.env.REPORT_CHAT_ENABLED;process.env.REPORT_CHAT_ENABLED='true';
+ try{expect(isReportChatEnabledForCall({id:1,rep_slug:'rep',call_status:'call_1'})).toBe(false);expect(isReportChatEnabledForCall({id:2,rep_slug:'rep',call_status:'scored'})).toBe(true);}finally{if(before===undefined)delete process.env.REPORT_CHAT_ENABLED;else process.env.REPORT_CHAT_ENABLED=before;}
+});

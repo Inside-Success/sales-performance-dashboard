@@ -13,9 +13,19 @@ export async function ensureSourceClaims() {
 }
 export async function claimSource(sourceId:string, identity:string, owner:string, recovery=false, previousOwner?:string) {
   await ensureSourceClaims();
-  const existing = await sql().query(`select id from performance_calls where scorecard_key=$1
+  const existing = await sql().query(`select id,call_status from performance_calls where scorecard_key=$1
     or source_payload->>'source_airtable_record_id'=$2 limit 1`,[identity,sourceId]);
-  if(existing.length) return {acquired:false,status:"delivered"};
+  if(existing.length) return {acquired:false,status:existing[0].call_status==='call_1'?"excluded":"delivered"};
+  if(recovery){
+    const priorExclusion=await sql().query(`select checkpoint_key from coaching_provider_checkpoints
+      where source_id=$1 and status='completed' and stage in ('foundations_writer_v3','foundations_writer_contract_repair_v3')
+      and result->'parsed_json'->>'status'='excluded' limit 1`,[sourceId]);
+    if(priorExclusion.length){
+      await sql().query(`update coaching_source_claims set status='held',updated_at=now()
+        where source_id=$1 and status in ('queued','retryable')`,[sourceId]);
+      return {acquired:false,status:'held',reason:'prior_exclusion_requires_reconciliation'};
+    }
+  }
   const rows=await sql().query(`insert into coaching_source_claims(identity,source_id,owner,status)
     values($1,$2,$3,'running') on conflict(identity) do update set owner=$3,status='running',updated_at=now()
     where coaching_source_claims.source_id=$2 and (

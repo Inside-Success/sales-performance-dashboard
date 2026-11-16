@@ -56,6 +56,17 @@ export default async function CallPage({
 
   if (!call) notFound();
 
+  if(call.call_status==='call_1')return (
+    <main className="magic-page"><article className="magic-container max-w-3xl space-y-4 py-8">
+      <Link href="/coaching">Back to coaching</Link>
+      <h1 className="text-2xl font-semibold">Call not scored</h1>
+      <p>{call.client_name || call.meeting_title}</p>
+      <p>This was a first-call audition. Call 2 coaching does not apply, and the earlier coaching has been withdrawn.</p>
+      {call.transcript_link ? <a className="underline" href={call.transcript_link}>Read the transcript</a> : null}
+      {call.google_doc_link ? <p><a className="underline" href={call.google_doc_link}>View the correction</a></p> : null}
+    </article></main>
+  );
+
 
   const reportChatEnabled = isReportChatEnabledForCall(call);
   const closeSection = resolveCloseSection({

@@ -22,7 +22,8 @@ const TRANSCRIPT_KEYS = [
   "transcript",
 ];
 
-export function isReportChatEnabledForCall(call: Pick<PerformanceCall, "id" | "rep_slug">) {
+export function isReportChatEnabledForCall(call: Pick<PerformanceCall, "id" | "rep_slug"> & Partial<Pick<PerformanceCall,"call_status">>) {
+  if(call.call_status==='call_1')return false;
   if (process.env.REPORT_CHAT_ENABLED !== "true") return false;
   return Boolean(call.id);
 }

@@ -9,9 +9,10 @@ export const FOUNDATIONS_COACHING_VERSION = "magic-mike-coaching-2026-11-16";
 const activeGeneration = [FOUNDATIONS_COACHING_VERSION, RECENT_FOUNDATIONS_COACHING_VERSION, PREVIOUS_FOUNDATIONS_COACHING_VERSION, LEGACY_FOUNDATIONS_COACHING_VERSION].includes(process.env.NEXT_PUBLIC_COACHING_GENERATION || "")
   ? process.env.NEXT_PUBLIC_COACHING_GENERATION! : ENHANCED_COACHING_VERSION;
 
-export type ReportVersion = "legacy" | "enhanced";
+export type ReportVersion = "legacy" | "enhanced" | "excluded";
 
 export function getReportVersion(coachingVersion: unknown, generation: string = activeGeneration): ReportVersion {
+  if(coachingVersion==='coaching-excluded')return 'excluded';
   return coachingVersion === generation ? "enhanced" : "legacy";
 }
 
@@ -20,5 +21,6 @@ export function isEnhancedReport(coachingVersion: unknown) {
 }
 
 export function getReportVersionLabel(version: ReportVersion) {
+  if(version==='excluded')return 'Not scored';
   return version === "enhanced" ? "Enhanced" : "Legacy";
 }
