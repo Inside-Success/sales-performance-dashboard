@@ -31,7 +31,10 @@ const schema = {
       id: "O1",
       category: categories.join("|"),
       title: "Specific concern",
-      exchange: "Concise third-person account of concern, response and relevant later recovery; at most six sentences",
+      exchange: "One concise sentence naming the buyer concern and addressing the closer as you; include a relevant prior attempt or recovery when it changes the judgment",
+      interpretation: "Supported meaning of this concern",
+      teaching_basis: {attempt_ids: [], gap: "Specific supported gap or strength", mechanism: "How the chosen strategy helps this decision"},
+      principle: "Internal reasoning connecting foundations, interpretation, strategy and execution",
       concern: "Actual resistance (internal analytical detail)",
       response: "Actual response, including later recovery",
       handling: "sound|needs_work|uncertain",
@@ -59,6 +62,7 @@ const schema = {
       counterevidence_ids: [],
     },
   ],
+  coverage: [],
   focus_id: "O1 or L1 or empty when none",
   next_steps: [
     {
@@ -105,7 +109,7 @@ function validate(r, blocks) {
     refs(r.outcome.evidence_ids);
   }
   location = 'report';
-  const compact = ['tyler-review-v1','tyler-review-v2'].includes(r.presentation);
+  const compact = ['tyler-review-v1','tyler-review-v2','syed-review-v1'].includes(r.presentation);
   if (r.presentation !== undefined && !compact) fail('Unknown presentation revision');
   if (compact && (typeof r.summary !== 'string' || (r.status === 'completed' && !text(r.summary)))) fail('Missing coaching summary');
   if (!compact && r.summary !== undefined) fail('Summary requires presentation revision');
@@ -113,6 +117,20 @@ function validate(r, blocks) {
   if (!arrays) fail('arrays');
   if (r.status === 'excluded' && (!text(r.exclusion_reason) || !arrays || r.objections.length || r.lessons.length || r.next_steps.length || r.focus_id)) fail('exclusion');
   if (r.presentation === 'tyler-review-v2' && r.status === 'completed' && (typeof r.summary !== 'string' || ![1,2].includes(r.summary.split('\n').filter(x=>x.trim()).length))) fail('Takeaway requires one paragraph (legacy two-line summaries remain supported)');
+  if(r.presentation==='syed-review-v1' && r.status==='completed'){
+    const words=x=>String(x||'').trim().split(/\s+/).filter(Boolean).length;
+    if(words(r.summary)>30)fail('summary exceeds 30 words');
+    if(words(r.outcome?.text)>30)fail('outcome.text exceeds 30 words');
+    for(const [i,o]of r.objections.entries()){
+      location='objections.'+i;
+      if(!object(o.teaching_basis)||!text(o.teaching_basis.gap)||!text(o.teaching_basis.mechanism))fail('Missing teaching basis');else refs(o.teaching_basis.attempt_ids,false);
+      if(!text(o.interpretation)||!text(o.principle)||!text(o.teaching))fail('Missing teaching or internal reasoning');
+      if(words([o.exchange,o.interpretation,o.teaching].join(' '))>75)fail('visible prose exceeds 75 words');
+      if(o.example!=='')fail('example must be empty');
+    }
+    if(r.lessons.length>3)fail('At most three additional lessons');
+    for(const [i,l]of r.lessons.entries()){location='lessons.'+i;if(words(l.title)>6)fail('title exceeds six words');if(words(l.teaching)>30)fail('teaching exceeds 30 words');if(l.example!=='')fail('example must be empty');}
+  }
   const seen = new Set();
   for (const group of ['objections', 'lessons']) {
     for (const [index, entry] of (Array.isArray(r[group]) ? r[group] : []).entries()) {
@@ -126,13 +144,13 @@ function validate(r, blocks) {
       if (group === 'objections') {
         if (compact && !text(entry.exchange)) fail('Missing concise exchange');
         if (!compact && entry.exchange !== undefined) fail('Exchange requires presentation revision');
-        if (compact && entry.handling === 'sound' && (text(entry.teaching) || text(entry.example))) fail('Sound handling must not carry extra feedback');
+        if (compact && r.presentation !== 'syed-review-v1' && entry.handling === 'sound' && (text(entry.teaching) || text(entry.example))) fail('Sound handling must not carry extra feedback');
         if (entry.handling !== 'needs_work' && text(entry.example)) fail('Corrective example requires supported weak handling');
         if (entry.handling === 'needs_work' && !text(entry.teaching)) fail('Weak handling requires a usable explanation and better move: objection ' + entry.id + ' has empty teaching. Put the supported practical better move in teaching; assessment or example does not substitute for this required field.');
         if (!categories.includes(entry.category) || !['sound', 'needs_work', 'uncertain'].includes(entry.handling) || !['resolved', 'partly_resolved', 'unresolved', 'unclear'].includes(entry.resolution)) fail('objection enum');
         for (const key of ['concern', 'response', 'assessment']) if (!text(entry[key])) fail(key);
       } else {
-        if (entry.layer !== undefined && !['foundations', 'interpretation', 'strategy'].includes(entry.layer)) fail('lesson layer');
+        if (entry.layer !== undefined && !['foundations', 'interpretation', 'strategy', 'execution'].includes(entry.layer)) fail('lesson layer');
         if (!['repeat', 'refine', 'explore'].includes(entry.purpose) || !text(entry.observation) || !text(entry.teaching)) fail('lesson');
       }
     }
@@ -150,9 +168,17 @@ function validate(r, blocks) {
 
 function render(r, blocks) {
   validate(r, blocks);
+  if(r.presentation==='syed-review-v1'&&r.status==='completed'){
+    const a=['## Key Execution Summary',r.summary,'## Objections and how you handled them'];
+    for(const [i,o] of orderedObjections(r,blocks).entries())a.push(`**${i+1}. ${{sound:'Good',needs_work:'Bad',uncertain:'Not enough information'}[o.handling]} — ${categoryLabels[o.category]}**`,`**${o.title}**`,'- **What happened:** '+o.exchange,'- **What this meant:** '+o.interpretation,'- **'+({sound:'Why this approach worked',needs_work:'The better move',uncertain:'What to clarify'}[o.handling])+':** '+o.teaching);
+    a.push('## Additional coaching',...r.lessons.map(l=>'- **'+l.title+':** '+l.teaching));
+    if(!r.lessons.length)a.push('No further distinct supported lesson.');
+    if(r.next_steps.length)a.push('## Next steps',...r.next_steps.map(n=>'- '+n.text));
+    a.push('## Call outcome',r.outcome.text);return a.join('\n\n');
+  }
   if (r.status === "excluded")
     return "Not enough applicable selling evidence: " + r.exclusion_reason;
-  const compact = ['tyler-review-v1','tyler-review-v2'].includes(r.presentation);
+  const compact = ['tyler-review-v1','tyler-review-v2','syed-review-v1'].includes(r.presentation);
   const parts = compact ? ["# Call coaching", r.presentation === "tyler-review-v2" ? "## Key takeaway" : "## Coaching snapshot", r.presentation === "tyler-review-v2" ? require("./coaching-key-takeaway.cjs").keyTakeaway(r.summary) : r.summary] : ["# Call coaching", "**Outcome:** " + r.outcome.text];
   if (r.objections.length) {
     parts.push("## Objections and how you handled them");
@@ -287,7 +313,7 @@ function providerErrors(stage,value){
     const seen=new Set();
     for(const e of value.edits){
      if(!e||!text(e.target)||seen.has(e.target)||!text(e.reason)||!quote(e.source_quote)||!Object.hasOwn(e,'value'))throw Error('Invalid review edit');seen.add(e.target);
-     if(!/^(summary|exclusion_reason|offer_family|show|outcome|focus_id|next_steps|(?:objections|lessons):[^:]+)$/.test(e.target))throw Error('Forbidden review edit target');
+     if(!/^(summary|exclusion_reason|offer_family|show|outcome|focus_id|next_steps|(?:objections|lessons):[^:]+(?::(?:title|category|handling|concern|response|assessment|teaching|example|interpretation|exchange|principle|evidence_ids|counterevidence_ids|teaching_basis|purpose|layer|observation))?)$/.test(e.target))throw Error('Forbidden review edit target');
      if(Object.hasOwn(e,'after_id')&&e.after_id!==null&&!text(e.after_id))throw Error('Invalid review placement');
     }
     const ids=new Set();for(const d of value.observation_dispositions){if(!d||!text(d.id)||ids.has(d.id)||!['retained','refined','dismissed'].includes(d.decision)||!text(d.reason)||!quote(d.source_quote))throw Error('Invalid observation disposition');ids.add(d.id);}
@@ -306,7 +332,8 @@ module.exports.providerStage=providerStage;
 
 // Earliest supporting source position, never the array order generated by the model.
 function orderedObjections(report, blocks) {
- if (!['tyler-review-v1','tyler-review-v2'].includes(report.presentation)) return report.objections;
+ if(report.presentation==='syed-review-v1')return report.objections;
+ if (!['tyler-review-v1','tyler-review-v2','syed-review-v1'].includes(report.presentation)) return report.objections;
  const index = new Map(blocks.map((b,i)=>[b.id,i]));
  const first = o => Math.min(...o.evidence_ids.map(id=>index.get(id) ?? Infinity));
  return [...report.objections].sort((a,b)=>first(a)-first(b));

@@ -2,11 +2,12 @@
 const {digest}=require('../../src/lib/coaching-canonical.cjs');
 const rules=require('./coaching-knowledge-rules.json');
 const VERSION='coaching-facts-2026-11-11-v1';
+const lineKey=line=>line.trim().replace(/^[*•-]\s+/, '');
 function project(text){
  if(typeof text!=='string')throw Error('Missing knowledge text');
  const edits=[];
  const visible=text.split(/\r?\n/).map(line=>{
-  const rule=rules.find(r=>r.before===line);
+  const rule=rules.find(r=>lineKey(r.before)===lineKey(line));
   if(rule){edits.push({before:digest(line),after:digest(rule.after)});return rule.after;}
   // Do not guess how to rewrite a newly introduced evaluator command.
   if(/(?:→\s*(?:not a |do not )?flag|\bflag it\b|\bflag only\b|\bdo not flag\b|\bcompliance evaluation\b)/i.test(line))throw Error('Unreviewed evaluator instruction in coaching knowledge');

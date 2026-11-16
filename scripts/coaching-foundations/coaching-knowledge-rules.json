@@ -94,5 +94,9 @@
   {
     "before": "* Sensitive info (PII): complete or materially usable sensitive values spoken or accepted on the recording (card numbers, SSNs, tax IDs, bank details) are a flag. A prompt rep intervention that stops the disclosure before a usable value is captured is not a flag.",
     "after": "* Sensitive information includes materially usable card numbers, SSNs, tax IDs and bank details. Stop disclosure before a usable value is recorded."
+  },
+  {
+    "before": "Recording consent: the rep should disclose that the call is recorded for training/compliance. Treat consent as satisfied whenever the rep discloses the recording and the client does not object — this includes implicit acknowledgment such as a brief \"okay,\" \"sure,\" \"that's fine,\" or simply continuing the conversation after the disclosure. Do NOT flag when the rep disclosed the recording and the client went along with it, even if the acknowledgment was indirect and the rep did not ask for an explicit yes. Flag only when (a) there is no recording disclosure at all on a scored Call 2, or (b) the client objects to being recorded and the rep keeps recording anyway.",
+    "after": "Recording consent: disclose that the call is recorded for training/compliance. Consent is satisfied when the rep discloses recording and the client does not object, including indirect acknowledgment or continuing the conversation. A client objection must be respected."
   }
 ]

@@ -3,9 +3,10 @@ export const ENHANCED_COACHING_VERSION = "magic-mike-objection-coaching-2026-10-
 
 export const LEGACY_FOUNDATIONS_COACHING_VERSION = "magic-mike-foundations-candidate-2026-11-06";
 export const PREVIOUS_FOUNDATIONS_COACHING_VERSION = "magic-mike-tyler-coaching-2026-11-10";
-export const FOUNDATIONS_COACHING_VERSION = "magic-mike-tyler-coaching-2026-11-12";
+export const RECENT_FOUNDATIONS_COACHING_VERSION = "magic-mike-tyler-coaching-2026-11-12";
+export const FOUNDATIONS_COACHING_VERSION = "magic-mike-coaching-2026-11-16";
 // Forward-only switch. Deploying readers alone must not relabel existing reports.
-const activeGeneration = [FOUNDATIONS_COACHING_VERSION, PREVIOUS_FOUNDATIONS_COACHING_VERSION, LEGACY_FOUNDATIONS_COACHING_VERSION].includes(process.env.NEXT_PUBLIC_COACHING_GENERATION || "")
+const activeGeneration = [FOUNDATIONS_COACHING_VERSION, RECENT_FOUNDATIONS_COACHING_VERSION, PREVIOUS_FOUNDATIONS_COACHING_VERSION, LEGACY_FOUNDATIONS_COACHING_VERSION].includes(process.env.NEXT_PUBLIC_COACHING_GENERATION || "")
   ? process.env.NEXT_PUBLIC_COACHING_GENERATION! : ENHANCED_COACHING_VERSION;
 
 export type ReportVersion = "legacy" | "enhanced";
