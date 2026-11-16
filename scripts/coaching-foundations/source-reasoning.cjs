@@ -76,6 +76,21 @@ module.exports={VERSION,PRINCIPLES,ANALYST_SYSTEM,config,validateAnalysis,review
 function materializeReview(draft,audit,analysis,blocks){
  if(draft.presentation!=='syed-review-v1')return materializeLegacy(draft,audit,analysis,blocks);
  const raw=structuredClone(audit),groups=new Map(),direct=[];
+ // Models may address a teaching-basis leaf instead of its complete object.
+ // Fold only exact, supported leaves into the existing field-edit protocol.
+ const nested=new Map();
+ for(const e of raw.edits||[]){
+  const m=/^(objections):([^:]+):teaching_basis:(attempt_ids|gap|mechanism)$/.exec(e.target);
+  if(!m)continue;
+  const [,g,id,key]=m,base=g+':'+id+':teaching_basis',old=draft[g]?.find(x=>x.id===id)?.teaching_basis;
+  if(!old||!Object.hasOwn(old,key)||stable(e.before)!==stable(old[key]))throw Error('Stale teaching basis leaf');
+  if(raw.edits.some(x=>x.target===base))throw Error('Conflicting teaching basis edits');
+  quote(e.source_quote,blocks);
+  if(!nonempty(e.reason)||stable(e.value)===stable(old[key]))throw Error('Invalid teaching basis correction');
+  let group=nested.get(base);if(!group){group={target:base,before:structuredClone(old),value:structuredClone(old),reason:'',source_quote:e.source_quote,keys:new Set()};nested.set(base,group);}
+  if(group.keys.has(key))throw Error('Duplicate teaching basis leaf');group.keys.add(key);group.value[key]=e.value;group.reason+=key+': '+e.reason+'; ';
+ }
+ raw.edits=(raw.edits||[]).filter(e=>!/^objections:[^:]+:teaching_basis:(attempt_ids|gap|mechanism)$/.test(e.target)).concat([...nested.values()].map(({keys,...e})=>e));
  for(const e of raw.edits||[]){
   const m=/^(objections|lessons):([^:]+):([^:]+)$/.exec(e.target);
   if(m){const [,g,id,k]=m,o=draft[g]?.find(x=>x.id===id);if(!o||!Object.hasOwn(o,k)||['id','__proto__','constructor','prototype'].includes(k))throw Error('Invalid field patch');if(stable(e.before)!==stable(o[k]))throw Error('Stale field patch');quote(e.source_quote,blocks);if(stable(e.value)===stable(o[k]))throw Error('No-op field patch');
