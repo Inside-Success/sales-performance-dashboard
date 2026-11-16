@@ -314,7 +314,8 @@ function providerErrors(stage,value){
     for(const e of value.edits){
      if(!e||!text(e.target)||seen.has(e.target)||!text(e.reason)||!quote(e.source_quote)||!Object.hasOwn(e,'value'))throw Error('Invalid review edit');seen.add(e.target);
      const item=/^(objections|lessons):([^:]+)(?::([^:]+))?$/.exec(e.target);
-     const allowed=item ? (!item[3] || (item[3]!=='id' && Object.hasOwn(schema[item[1]][0],item[3]))) : Object.hasOwn(schema,e.target) && !['version','presentation','status','objections','lessons','coverage'].includes(e.target);
+     const leaf=/^objections:[^:]+:teaching_basis:(attempt_ids|gap|mechanism)$/.test(e.target);
+     const allowed=leaf || (item ? (!item[3] || (item[3]!=='id' && Object.hasOwn(schema[item[1]][0],item[3]))) : Object.hasOwn(schema,e.target) && !['version','presentation','status','objections','lessons','coverage'].includes(e.target));
      if(!allowed)throw Error('Forbidden review edit target');
      if(Object.hasOwn(e,'after_id')&&e.after_id!==null&&!text(e.after_id))throw Error('Invalid review placement');
     }
