@@ -35,3 +35,10 @@ describe('shared source ownership',()=>{
  expect(await reserveMissingSource('recA')).toMatchObject({reserved:false,reason:'existing_artifact'});expect(m.query.mock.calls.some(([q])=>q.startsWith('insert'))).toBe(false);
  });
 });
+
+it('holds recovery when a retained exclusion needs reconciliation, before buying a new report',async()=>{
+ m.query.mockReset();m.query.mockImplementation(async(q:string)=>q.includes("result->'parsed_json'->>'status'='excluded'")?[{checkpoint_key:'old-exclusion'}]:[]);
+ expect(await claimSource('recExcluded','zoom:excluded','new-owner',true)).toEqual({acquired:false,status:'held',reason:'prior_exclusion_requires_reconciliation'});
+ expect(m.query.mock.calls.some(([q])=>q.startsWith('insert'))).toBe(false);
+ expect(m.query.mock.calls.at(-1)![0]).toContain("status in ('queued','retryable')");
+});

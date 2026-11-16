@@ -23,3 +23,7 @@ it('labels the Tyler release separately without moving historical reports into t
  expect(getReportVersion('magic-mike-tyler-coaching-2026-11-10','magic-mike-tyler-coaching-2026-11-10')).toBe('enhanced');
  expect(getReportVersion('magic-mike-foundations-candidate-2026-11-06','magic-mike-tyler-coaching-2026-11-10')).toBe('legacy');
 });
+it('does not present a withdrawn first-call report as Enhanced or Legacy coaching',()=>{
+ expect(getReportVersion('coaching-excluded')).toBe('excluded');
+ expect(isEnhancedReport('coaching-excluded')).toBe(false);
+});
