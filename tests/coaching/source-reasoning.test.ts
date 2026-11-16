@@ -18,3 +18,12 @@ it('accepts complete short answers while rejecting fragments, invented quotes an
  for(const text of ['thanks','Yes thanks.',''])expect(()=>r.materializeReview(draft,{...audit,edits:[{...audit.edits[0],source_quote:{id:'S1',text}}]},null,source)).toThrow();
  expect(()=>r.materializeReview(draft,{...audit,edits:[{...audit.edits[0],source_quote:{id:'missing',text:'No thanks.'}}]},null,source)).toThrow();
 });
+
+it('accepts exact teaching-basis leaf corrections without changing sibling reasoning or concerns',()=>{
+ const draft={presentation:'syed-review-v1',objections:[{id:'O1',concern:'Prior payment',teaching_basis:{attempt_ids:['A1'],gap:'Unverified status',mechanism:'Assume paid'}}],lessons:[]};
+ const edit={target:'objections:O1:teaching_basis:mechanism',before:'Assume paid',value:'Verify the receipt before asking again',reason:'Payment is reported but unverified.',source_quote:q};
+ const audit={pass:false,edits:[edit],observation_dispositions:[]};
+ const out=r.materializeReview(draft,audit,null,blocks).corrected_report;
+ expect(out.objections).toHaveLength(1);expect(out.objections[0].concern).toBe('Prior payment');expect(out.objections[0].teaching_basis).toEqual({...draft.objections[0].teaching_basis,mechanism:edit.value});
+ for(const edits of [[{...edit,before:'wrong'}],[edit,edit],[edit,{...edit,target:'objections:O1:teaching_basis',before:draft.objections[0].teaching_basis,value:{}}],[{...edit,source_quote:{id:'T1',text:'Invented statement'}}]])expect(()=>r.materializeReview(draft,{...audit,edits},null,blocks)).toThrow();
+});
