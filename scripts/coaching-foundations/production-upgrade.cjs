@@ -13,14 +13,14 @@ function replaceDocumentRuntime(code){
  return require('./workflow-adapters.cjs').bundle()+code.slice(end+last.length);
 }
 function assignment(code,name,value){const expression=new RegExp('^const '+name+'=.*;$','gm'),matches=code.match(expression);if(matches?.length!==1)throw Error('Configuration anchor drift: '+name);return code.replace(expression,()=>`const ${name}=${JSON.stringify(value)};`);}
-function patchParents(baselines,{coreWorkflowId,knowledgeTemplate,models,modelConfigs,reasoning}){
- if(!coreWorkflowId||coreWorkflowId==='cslaPe5OU7T3VpFs'||!knowledgeTemplate||reasoning?.auditProtocol!=='request-bound-audit-v1')throw Error('Explicit new core/config required');
+function patchParents(baselines,{coreWorkflowId,knowledgeTemplate,models,modelConfigs,reasoning,previousGeneration=PREVIOUS,previousCore='cslaPe5OU7T3VpFs'}){
+ if(!coreWorkflowId||coreWorkflowId===previousCore||!knowledgeTemplate||reasoning?.auditProtocol!=='request-bound-audit-v1')throw Error('Explicit new core/config required');
  const out={};
  for(const [id,channel,start,provider] of [['L8Nn7xncA9ZPDdWA','official','MM Build Coaching Request','MM Coaching Provider'],['BMRrGxHyXMcgO6j3','manual','MM Manual Build Structured Coaching','MM Manual Structured Coaching Provider']]){
  const w=structuredClone(baselines[id]);if(!w)throw Error('Missing live baseline');
  for(const n of w.nodes){let code=n.parameters.jsCode;if(!code)continue;
  // Only explicit generation dispatch literals change; old data and in-flight snapshots remain intact.
- code=code.replaceAll(JSON.stringify(PREVIOUS),JSON.stringify(GENERATION));
+ code=code.replaceAll(JSON.stringify(previousGeneration),JSON.stringify(GENERATION));
  if(code.includes('const structuredClone=value=>JSON.parse(JSON.stringify(value));'))code=replaceRuntime(code);
  if(code.startsWith('var FOUNDATIONS = (() => {'))code=replaceDocumentRuntime(code);
  n.parameters.jsCode=code;}
@@ -30,7 +30,7 @@ function patchParents(baselines,{coreWorkflowId,knowledgeTemplate,models,modelCo
  const cfg=code.match(/^const t=MM_FOUNDATIONS\.transition\.start\(p\.foundations_input\),cfg=.*;$/gm);if(cfg?.length!==1)throw Error('Provider config anchor drift');
  code=replaceOnce(code,cfg[0],`const t=MM_FOUNDATIONS.transition.start(p.foundations_input),cfg=${JSON.stringify(modelConfigs)}[t.request.model];`);
  initial.parameters.jsCode=code;
- const node=w.nodes.find(n=>n.name===provider);if(node?.parameters.workflowId.value!=='cslaPe5OU7T3VpFs')throw Error('Prior core drift');node.parameters.workflowId.value=coreWorkflowId;
+ const node=w.nodes.find(n=>n.name===provider);if(node?.parameters.workflowId.value!==previousCore)throw Error('Prior core drift');node.parameters.workflowId.value=coreWorkflowId;
  out[id]=w;
  }return out;
 }

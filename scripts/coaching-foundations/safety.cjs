@@ -11,9 +11,10 @@ function fieldRole(path){
 const FIELD_ROLES='Respect each supplied field role. A source_account describes what participants actually said or did; verify its attribution, accuracy and surrounding context. Faithfully reporting a problematic statement is not endorsing it, even when the response to the main buyer concern was judged sound. That handling judgment is not a certification of every incidental statement or policy detail. Do not require an unrelated compliance correction merely to permit a faithful account. Still flag invented or misattributed facts, or words that actually endorse unsafe advice, even inside a source_account. Coaching judgments and recommendations must themselves be safe and governed. Never infer endorsement solely from the presence of a quoted or attributed claim.';
 function fields(report){
  const out=[{path:'outcome.text',text:report.outcome.text}];
- for(const [group,keys] of Object.entries({objections:['title','concern','response','assessment','teaching','example'],lessons:['title','observation','teaching','example'],next_steps:['text']})) report[group].forEach((item,i)=>keys.forEach(key=>out.push({path:`${group}.${i}.${key}`,text:item[key]})));
- if(['tyler-review-v1','tyler-review-v2'].includes(report.presentation)){out.push({path:'summary',text:report.summary});report.objections.forEach((o,i)=>out.push({path:`objections.${i}.exchange`,text:o.exchange}));}
- return out.map(f=>({...f,role:fieldRole(f.path)}));
+ for(const [group,keys] of Object.entries({objections:['title','concern','response','assessment','teaching','example','interpretation','principle'],lessons:['title','observation','teaching','example'],next_steps:['text']})) report[group].forEach((item,i)=>keys.forEach(key=>out.push({path:`${group}.${i}.${key}`,text:item[key]})));
+ if(['tyler-review-v1','tyler-review-v2','syed-review-v1'].includes(report.presentation)){out.push({path:'summary',text:report.summary});report.objections.forEach((o,i)=>out.push({path:`objections.${i}.exchange`,text:o.exchange}));}
+ report.objections.forEach((o,i)=>{if(o.teaching_basis)for(const k of ['gap','mechanism'])out.push({path:`objections.${i}.teaching_basis.${k}`,text:o.teaching_basis[k]});});
+ return out.filter(f=>typeof f.text==='string').map(f=>({...f,role:fieldRole(f.path)}));
 }
 function signals(candidate){
  const detectors=require('./safety-signals.cjs');const hits=[];

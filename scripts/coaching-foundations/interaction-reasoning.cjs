@@ -16,7 +16,7 @@ function validateAnalysis(a,blocks){
 }
 function editGuidance(analysis){return base.editGuidance(analysis)+`\nINTERACTION COVERAGE RESPONSIBILITY:
 Before evaluating the draft, reconstruct from the full source the material buyer requests, conditions, rep responses, recovery and ending. The supplied map and draft can BOTH omit something. Correct a missing material need when it changes the handling assessment, recommendation or pending commitment. Do not maximize section count: preserve it in the existing exchange when that is its proper home. Do not diagnose incapacity to justify practical help, or treat a constructive alternative as proof of misconduct.
-Use the existing justified-edits protocol. Extend EACH observation_dispositions entry with report_targets: an array of exact final report targets ("objections:<id>", "lessons:<id>", "next_steps", "summary", "outcome"). retained/refined must identify at least one actual final target conveying the material meaning, not merely related keywords. dismissed requires [] and a source-grounded reason why omitting it does not change the assessment/advice. An observation can correctly be dismissed as routine, resolved without distinct teaching, or redundant; do not invent content to satisfy coverage.
+Use the existing justified-edits protocol. Extend EACH observation_dispositions entry with report_targets: an array of exact final report targets ("objections:<id>", "lessons:<id>", "next_steps", "summary", "outcome"). retained/refined must identify at least one actual final target conveying the material meaning, not merely related keywords. dismissed requires [] and a source-grounded reason why omitting it does not change the assessment/advice. Dismiss an observation only when it is routine without an expressed material concern, unsupported by the source, or fully redundant with meaning retained elsewhere. Resolution or buyer acknowledgment NEVER makes a material concern disposable. Retain the concern and evaluate the actual response, even when the buyer accepted it; acceptance does not establish the response was accurate. Apply the report's materiality test to each proposed objection, not just to missing observations. A source-map item is not a required objection entry. Keep consequential purchase clarifications even if calmly asked or resolved; move routine detail to context or a genuine outstanding next step, or dismiss it with a source-grounded reason. Do not invent a decision constraint to justify keeping an entry.
 Also return coverage_additions: [{id,observation,evidence_ids,decision,reason,source_quote:{id,text},report_targets}]. Include material source information missing from the map, if any, with unique C1... IDs and the same disposition rules; [] is valid after checking. An added item is not automatically a new objection. Both coverage fields refer to the FINAL report after edits. Private acknowledgments cannot replace necessary visible context. These checks do not prove completeness; exercise full-call judgment.
 Different defensible emphasis, missing optional advice and harmless style are not defects. Retain the strongest practical teaching, credit useful selling initiative, and preserve the original move's value when changing it. No required criticism or revision.`;}
 function materializeReview(draft,audit,analysis,blocks){
@@ -30,6 +30,15 @@ function materializeReview(draft,audit,analysis,blocks){
  for(const row of [...audit.observation_dispositions,...additions]){
   if(!Array.isArray(row.report_targets)||new Set(row.report_targets).size!==row.report_targets.length|| (row.decision==='dismissed'?row.report_targets.length!==0:row.report_targets.length===0))throw Error('Unaccounted visible coverage');
   for(const t of row.report_targets){const m=/^(objections|lessons):(.+)$/.exec(t);if(m?!final[m[1]]?.some(x=>x.id===m[2]):!['summary','outcome','next_steps'].includes(t)||!(t==='outcome'?final.outcome?.text:final[t]?.length))throw Error('Coverage refers to absent report content');}
+ }
+ const finalCoverage=[...normalized.observation_dispositions,...normalized.coverage_additions].map(({id,decision,report_targets,reason})=>({id,decision,report_targets,reason}));
+ // Reviewer dispositions are the final source of truth, not stale writer metadata.
+ // Preserve the original draft outside the materialized candidate.
+ if(JSON.stringify(final.coverage)!==JSON.stringify(finalCoverage)){
+  normalized.corrected_report=structuredClone(final);normalized.corrected_report.coverage=finalCoverage;
+  normalized.pass=false;
+  normalized.findings=[...(normalized.findings||[]),{issue:'Synchronize internal coverage to final validated dispositions',evidence_ids:blocks.length?[blocks[0].id]:[]}];
+  normalized.change_ledger.push({target:'coverage',reason:'Application-derived final accounting from validated reviewer dispositions',source_quote:{id:blocks[0].id,text:blocks[0].text}});
  }
  return normalized;
 }
