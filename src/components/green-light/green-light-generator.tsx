@@ -412,7 +412,7 @@ function Generator() {
 
       {step === "details" ? (
         <form onSubmit={handleGenerate} className="magic-card p-5 md:p-7" noValidate>
-          <StepHeading number={1} title="Call details" />
+          <StepHeading title="Call details" />
 
           <FieldLabel>Show</FieldLabel>
           <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Show">
@@ -535,7 +535,7 @@ function Generator() {
         <>
           <section className="magic-card p-5 md:p-7" aria-labelledby="green-light-review-heading">
             <div className="flex flex-wrap items-start justify-between gap-3">
-              <StepHeading number={2} title="Review and edit" id="green-light-review-heading" className="mb-0" />
+              <StepHeading title="Review and edit" id="green-light-review-heading" className="mb-0" />
               <div className="flex flex-wrap gap-2">
                 {!activeDraft.saved ? (
                   <Button type="button" onClick={() => void handleSave()} disabled={Boolean(busy)} className="h-10 rounded-full bg-[#DC2626] px-5 font-bold text-white hover:bg-[#B91C1C]">
@@ -614,7 +614,7 @@ function Generator() {
 
           {activeDraft.saved ? (
             <section ref={doneRef} className="magic-card scroll-mt-24 p-5 md:p-7" aria-labelledby="green-light-done-heading">
-              <StepHeading number={3} title="Download and send" id="green-light-done-heading" />
+              <StepHeading title="Download and send" id="green-light-done-heading" />
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-emerald-600" aria-hidden="true" />
                 <div>
@@ -654,10 +654,9 @@ function Generator() {
   );
 }
 
-function StepHeading({ number, title, id, className }: { number: number; title: string; id?: string; className?: string }) {
+function StepHeading({ title, id, className }: { title: string; id?: string; className?: string }) {
   return (
     <div className={cn("mb-5 flex items-center gap-3", className)}>
-      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#DC2626] text-sm font-extrabold text-white" aria-hidden="true">{number}</span>
       <h2 id={id} className="text-xl font-extrabold text-slate-950">{title}</h2>
     </div>
   );
