@@ -23,12 +23,14 @@ The page does **not** generate letters itself. It reuses the editors' Green Ligh
 | Show list, focus points, Zoom link check | `src/lib/green-light/shows.ts` |
 | Letter split into fixed wording and editable sections | `src/lib/green-light/letter-sections.ts` |
 | Access, request schemas, workflow calls, activity log | `src/lib/green-light/server.ts` |
+| Zoom recording link to transcript | `src/lib/green-light/zoom-call-transcript.ts` |
 | Routes | `src/app/api/green-light/{transcript,generate,status,refine,save}/route.ts` |
 | Tests | `tests/green-light/` |
 
 - Every route requires a signed-in session (`requireGreenLightUser`). `/api/*` is not covered by `src/proxy.ts`, so this check is the gate.
 - The browser never calls n8n. The routes call the workflow's `-start`, `-status`, `-refine` and `-save` webhooks server-side.
-- Zoom links use the existing `resolveZoomTranscript` helper (zoom.us only), with the signed-in rep's archived transcript as fallback. If no transcript is available the rep is told to paste it.
+- Zoom links: `src/lib/green-light/zoom-call-transcript.ts` reads the transcript the way Zoom's current recording page does (the page's `featureConfigApi` names the transcript endpoint; https zoom.us hosts and same-origin `/nws/recording/` paths only). On 2026-11-18 Zoom's share pages no longer carried a transcript link in the player data the shared `resolveZoomTranscript` helper reads, so that helper (older pages, then the signed-in rep's archived transcript) is kept as the fallback rather than the first step. If neither finds a finished transcript, the rep is told to use Paste transcript. This depends on Zoom's own page, which can change again; pasting always works.
+- The home page card (`src/app/page.tsx`, "Green Light Letters") is shown only to people who can use the page (`canUseGreenLight`), so the pilot list and the off switch also hide the card.
 - Rep-only fields sent to the workflow: `request_source: "rep"` (tells the AI which show was selected so it does not name a different show the prospect first applied for), `focus_points` (trusted emphasis from the rep; never turned into promises), and on save `folder_group: "reps"` plus `editor_name` = the rep's Google account name. Letters land in Drive `Client's PDFs Green Light Letter / Reps / <rep name>`; the rep's folder is created on first save.
 - The page adds its own check: if the written sections name a different show than the one selected, a "Check before sending" note says so.
 - `letter-sections.ts` knows the template's fixed marker lines. If a draft does not match (for example after a template change in the workflow), it falls back to one plain text box, so reps are never blocked. When the workflow's letter templates change, re-check `tests/green-light/letter-fixtures.json`.

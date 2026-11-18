@@ -137,5 +137,6 @@ For dashboard/web changes:
 ## Green Light Letters (November 18)
 
 - `/green-light` is the rep self-serve green light letter page. It is a thin front end over the editors' Green Light V2 n8n workflow `TfpAYWYtDpOLWo2M` (separate repo); prompts, letter templates and the Google Doc design live there, not here. See docs-green-light-letters.md for scope, settings, the activity log and rollback.
+- The homepage shows its "Green Light Letters" card only when `canUseGreenLight` allows the signed-in user.
 - Keep it isolated: its code lives only in `src/app/green-light`, `src/app/api/green-light`, `src/components/green-light`, `src/lib/green-light` and `tests/green-light`. It writes no dashboard tables and no usage events, so coaching usage and Sales Impact are unaffected. Every route must keep its own signed-in check because `/api/*` is outside the proxy.
 - Reps edit only the sections written from the call; the Google Doc design is built from the exact fixed lines, so never send a letter with altered fixed wording from this page.

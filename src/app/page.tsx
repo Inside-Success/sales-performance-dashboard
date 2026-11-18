@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { auth } from "@/auth";
 import { canAccessAdminDirectory } from "@/lib/admin-access-policy";
+import { canUseGreenLight } from "@/lib/green-light/server";
 import { TrackUsageEvent } from "@/components/dashboard/usage-tracker";
 import styles from "./welcome.module.css";
 
@@ -16,11 +17,13 @@ const tools = [
     subtitle: "Mock Call Agent",
   },
 ];
+const greenLightTool = { href: "/green-light", title: "Casting Manager", subtitle: "Green Light Letters" };
 const steps = ["Review", "Reflect", "Adjust", "Sell More"];
 
 export default async function HomeHub() {
   const session = await auth();
   const showAdmin = canAccessAdminDirectory(session?.user?.email);
+  const visibleTools = canUseGreenLight(session?.user?.email) ? [...tools, greenLightTool] : tools;
   return (
     <main className={`magic-page ${styles.page}`}>
       <TrackUsageEvent eventName="dashboard_home_viewed" eventData={{ source: "product_hub" }} />
@@ -41,7 +44,7 @@ export default async function HomeHub() {
           </div>
         </section>
         <nav className={styles.tools} aria-label="Magic Mike tools">
-          {tools.map((tool) => (
+          {visibleTools.map((tool) => (
             <Link key={tool.href} href={tool.href} className={styles.tool}>
               <span className={styles.toolCopy}>
                 <span className={styles.toolTitle}>{tool.title}</span>
