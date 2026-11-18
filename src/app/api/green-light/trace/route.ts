@@ -6,6 +6,7 @@ import {
   type GreenLightTraceSummary,
   listGreenLightTrace,
   readGreenLightTrace,
+  readGreenLightTraceRow,
 } from "@/lib/green-light/trace-store";
 
 export const runtime = "nodejs";
@@ -16,6 +17,7 @@ export const maxDuration = 30;
 //   /api/green-light/trace                      the latest activity
 //   /api/green-light/trace?prospect=jane        filter by prospect, ?rep= by rep, ?doc= by Google Doc link or title
 //   /api/green-light/trace?job_id=v2_...        everything about one letter, with the full text
+//   /api/green-light/trace?id=123               one entry that belongs to no letter (a Zoom request, a failed start)
 // Add &format=json for the raw rows.
 
 const RULE = "=".repeat(78);
@@ -36,8 +38,8 @@ const EVENT_TITLES: Record<string, string> = {
   save_failed: "FINAL LETTER COULD NOT BE CREATED",
 };
 
-function letterReport(jobId: string, rows: GreenLightTraceRow[]) {
-  const lines = [`GREEN LIGHT LETTER TRACE  ${jobId}`, ""];
+function letterReport(title: string, rows: GreenLightTraceRow[]) {
+  const lines = [`GREEN LIGHT LETTER TRACE  ${title}`, ""];
   if (!rows.length) lines.push("Nothing is recorded for this letter.");
   for (const row of rows) {
     lines.push(RULE, `${EVENT_TITLES[row.event] || row.event.toUpperCase()}   ${row.created_at}`, RULE);
@@ -85,7 +87,7 @@ function listReport(rows: GreenLightTraceSummary[], origin: string) {
     );
     if (row.zoom_link) lines.push(`    zoom: ${row.zoom_link}`);
     if (row.document_url) lines.push(`    doc:  ${row.document_url}`);
-    if (row.job_id) lines.push(`    full: ${origin}/api/green-light/trace?job_id=${row.job_id}`);
+    lines.push(`    full: ${origin}/api/green-light/trace?${row.job_id ? `job_id=${row.job_id}` : `id=${row.id}`}`);
   }
   return lines.join("\n");
 }
@@ -105,6 +107,12 @@ export async function GET(request: NextRequest) {
       if (!/^v2_\d{10,16}_[a-z0-9]{1,12}$/.test(jobId)) return plain("Unknown letter id.", 400);
       const rows = await readGreenLightTrace(jobId);
       return asJson ? NextResponse.json({ ok: true, rows }, { headers: { "cache-control": "no-store" } }) : plain(letterReport(jobId, rows));
+    }
+    const rowId = (params.get("id") || "").trim();
+    if (rowId) {
+      if (!/^\d{1,15}$/.test(rowId)) return plain("Unknown entry.", 400);
+      const rows = await readGreenLightTraceRow(rowId);
+      return asJson ? NextResponse.json({ ok: true, rows }, { headers: { "cache-control": "no-store" } }) : plain(letterReport(`entry ${rowId}`, rows));
     }
     const pick = (key: string) => (params.get(key) || "").trim().slice(0, 200) || undefined;
     const rows = await listGreenLightTrace({ prospect: pick("prospect"), rep: pick("rep"), doc: pick("doc"), limit: Number(params.get("limit")) || undefined });

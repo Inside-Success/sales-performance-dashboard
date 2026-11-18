@@ -80,11 +80,11 @@ So that any letter can be traced later (what the rep gave, what the AI wrote, wh
 | `refine` / `refine_failed` | refine route | what the rep asked, the letter before (the rep's own edits included) and after, or the error |
 | `save` / `save_failed` | save route | the final text exactly as sent to the Google Doc, the Doc link and title, or the error |
 
-- Writing is best effort and happens after the response has been sent (`after()`), with a 12 second limit. A database problem is logged to the server log (`Green light trace not saved`) and never slows down, changes or blocks a letter. If `DATABASE_URL` is missing the trace is simply skipped.
+- Writing is best effort and happens after the response has been sent (`traceGreenLight`, which wraps `after()`), with its own time limit (8 seconds per write, 10 for the one-time table setup). A database problem is logged to the server log (`Green light trace not saved`) and never slows down, changes or blocks a letter; a test sends the same requests with the log healthy, down, missing and unschedulable and compares every answer. If `DATABASE_URL` is missing the trace is simply skipped. Characters Postgres refuses (a NUL, half an emoji) are removed from the stored copy so they cannot cost a row.
 - What a rep typed and then edited by hand is the difference between the `draft` (or last `refine`) row and the `save` row.
-- Looking a letter up: `/api/green-light/trace` (signed in as a Magic Mike admin, `isMagicMikeAdmin`; everyone else gets "Not found"). It is read-only and not linked from anywhere. With no parameters it lists the latest activity without the long text; `?prospect=`, `?rep=`, `?doc=` (Google Doc link or title) and `?limit=` filter the list; `?job_id=v2_...` shows everything about one letter as plain text; add `&format=json` for the raw rows. There is no delete: the log is meant to be complete.
+- Looking a letter up: `/api/green-light/trace` (signed in as a Magic Mike admin, `isMagicMikeAdmin`; everyone else gets "Not found"). It is read-only and not linked from anywhere. With no parameters it lists the latest activity without the long text; `?prospect=`, `?rep=`, `?doc=` (Google Doc link or title) and `?limit=` filter the list; `?job_id=v2_...` shows everything about one letter as plain text; `?id=<number>` shows one entry that belongs to no letter (a Zoom request, a start that failed); add `&format=json` for the raw rows. There is no delete: the log is meant to be complete.
 - The rows contain prospect details, call transcripts and pasted survey answers (which can include what a prospect said they can invest). Treat the table and the lookup as internal.
-- Tests: `tests/green-light/trace-log.test.ts` runs the real routes and the real SQL against an in-process Postgres.
+- Tests: `tests/green-light/trace-log.test.ts` and `trace-setup.test.ts` run the real routes and the real SQL against an in-process Postgres.
 
 ## Settings (Vercel, production)
 

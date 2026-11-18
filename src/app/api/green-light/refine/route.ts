@@ -1,4 +1,4 @@
-import { after, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   badRequest,
   callWorkflow,
@@ -7,10 +7,11 @@ import {
   refineFactSource,
   refineRequestSchema,
   requireGreenLightUser,
+  runAfterResponse,
   unreachable,
   workflowError,
 } from "@/lib/green-light/server";
-import { recordGreenLightTrace } from "@/lib/green-light/trace-store";
+import { traceGreenLight } from "@/lib/green-light/trace-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
@@ -60,12 +61,12 @@ export async function POST(request: NextRequest) {
     const draft = [payload.draft_text, payload.preview].find((value) => typeof value === "string" && value.trim());
     if (!ok || payload.ok === false || typeof draft !== "string") {
       const error = workflowError(payload, `The change could not be applied (status ${status}). Your letter was not changed.`);
-      after(() => recordGreenLightTrace({ ...asked, event: "refine_failed", error }));
+      traceGreenLight({ ...asked, event: "refine_failed", error });
       return NextResponse.json({ ok: false, error }, { status: ok ? 422 : 502 });
     }
     const warnings = Array.isArray(payload.warnings) ? payload.warnings.filter((item) => typeof item === "string" && item.trim()) : input.warnings || [];
-    after(() => recordGreenLightTrace({ ...asked, event: "refine", letter_text: draft, detail: { warnings } }));
-    after(() =>
+    traceGreenLight({ ...asked, event: "refine", letter_text: draft, detail: { warnings } });
+    runAfterResponse(() =>
       logGreenLightEvent({
         event: "refine",
         rep_name: user.name,
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
       warnings,
     });
   } catch {
-    after(() => recordGreenLightTrace({ ...asked, event: "refine_failed", error: "The letter workflow did not answer." }));
+    traceGreenLight({ ...asked, event: "refine_failed", error: "The letter workflow did not answer." });
     return unreachable("apply the change");
   }
 }

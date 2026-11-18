@@ -1,16 +1,17 @@
-import { after, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   badRequest,
   callWorkflow,
   logGreenLightEvent,
   multiClientFields,
   requireGreenLightUser,
+  runAfterResponse,
   saveRequestSchema,
   unreachable,
   workflowError,
 } from "@/lib/green-light/server";
 import { googleDocPdfUrl } from "@/lib/green-light/shows";
-import { recordGreenLightTrace } from "@/lib/green-light/trace-store";
+import { traceGreenLight } from "@/lib/green-light/trace-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
@@ -61,12 +62,12 @@ export async function POST(request: NextRequest) {
     const documentUrl = typeof payload.document_url === "string" ? payload.document_url : "";
     if (!ok || payload.ok === false || !documentUrl) {
       const error = workflowError(payload, `The letter could not be created (status ${status}). Try again.`);
-      after(() => recordGreenLightTrace({ ...sent, event: "save_failed", error }));
+      traceGreenLight({ ...sent, event: "save_failed", error });
       return NextResponse.json({ ok: false, error }, { status: ok ? 422 : 502 });
     }
     const docTitle = typeof payload.doc_title === "string" ? payload.doc_title : input.doc_title || "Green light letter";
-    after(() => recordGreenLightTrace({ ...sent, event: "save", document_url: documentUrl, doc_title: docTitle }));
-    after(() =>
+    traceGreenLight({ ...sent, event: "save", document_url: documentUrl, doc_title: docTitle });
+    runAfterResponse(() =>
       logGreenLightEvent({
         event: "save",
         rep_name: user.name,
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
     );
     return NextResponse.json({ ok: true, document_url: documentUrl, pdf_url: googleDocPdfUrl(documentUrl), doc_title: docTitle, folder: user.name });
   } catch {
-    after(() => recordGreenLightTrace({ ...sent, event: "save_failed", error: "The letter workflow did not answer." }));
+    traceGreenLight({ ...sent, event: "save_failed", error: "The letter workflow did not answer." });
     return unreachable("create the letter");
   }
 }

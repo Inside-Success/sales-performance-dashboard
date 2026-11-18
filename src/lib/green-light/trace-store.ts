@@ -1,4 +1,5 @@
 import "server-only";
+import { after } from "next/server";
 import { neon } from "@neondatabase/serverless";
 import { databaseUrl } from "@/lib/database-connection";
 import { splitLetter } from "@/lib/green-light/letter-sections";
@@ -31,18 +32,22 @@ export type GreenLightTraceEvent = {
   detail?: Record<string, unknown>;
 };
 
-const WRITE_TIMEOUT_MS = 12000;
+// Each call gets its own time limit, so a slow database can only ever cost a trace row.
+const SETUP_TIMEOUT_MS = 10000;
+const QUERY_TIMEOUT_MS = 8000;
 
-function database() {
+function database(timeoutMs = QUERY_TIMEOUT_MS) {
   const url = databaseUrl();
   if (!url) return null;
-  return neon(url, { fetchOptions: { signal: AbortSignal.timeout(WRITE_TIMEOUT_MS) } });
+  return neon(url, { fetchOptions: { signal: AbortSignal.timeout(timeoutMs) } });
 }
 
 let ready: Promise<void> | undefined;
-function ensureTraceStorage(sql: NonNullable<ReturnType<typeof database>>) {
+function ensureTraceStorage() {
   if (!ready) {
     ready = (async () => {
+      const sql = database(SETUP_TIMEOUT_MS);
+      if (!sql) throw new Error("Trace storage unavailable");
       await sql`create table if not exists green_light_letter_trace (
         id bigint generated always as identity primary key,
         created_at timestamptz not null default now(),
@@ -88,26 +93,42 @@ export function writtenSections(letter: string | undefined) {
   return sections;
 }
 
-const text = (value: string | undefined) => (typeof value === "string" && value ? value : null);
+// Postgres refuses a NUL character and a broken half of an emoji; neither may cost a whole row.
+const UNSTORABLE = /\u0000|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g;
+const storable = (value: string) => value.replace(UNSTORABLE, "");
+const text = (value: string | undefined) => (typeof value === "string" && value ? storable(value) || null : null);
+const json = (value: unknown) => (value ? JSON.stringify(value, (_key, item) => (typeof item === "string" ? storable(item) : item)) : null);
 
 /** Adds one row. Never throws: a failure is noted in the server log and the letter carries on. */
 export async function recordGreenLightTrace(entry: GreenLightTraceEvent) {
   try {
     const sql = database();
     if (!sql) return;
-    await ensureTraceStorage(sql);
+    await ensureTraceStorage();
     const sections = writtenSections(entry.letter_text);
     await sql`insert into green_light_letter_trace
       (event, job_id, rep_email, rep_name, prospect_name, show_type, input_type, zoom_link, focus_points, transcript,
        instructions, letter_before, letter_text, sections, document_url, doc_title, error, detail)
-      values (${entry.event}, ${entry.job_id || ""}, ${entry.rep_email}, ${entry.rep_name || ""}, ${entry.prospect_name || ""},
-        ${entry.show_type || ""}, ${entry.input_type || ""}, ${text(entry.zoom_link)}, ${text(entry.focus_points)}, ${text(entry.transcript)},
+      values (${entry.event}, ${storable(entry.job_id || "")}, ${storable(entry.rep_email)}, ${storable(entry.rep_name || "")}, ${storable(entry.prospect_name || "")},
+        ${storable(entry.show_type || "")}, ${storable(entry.input_type || "")}, ${text(entry.zoom_link)}, ${text(entry.focus_points)}, ${text(entry.transcript)},
         ${text(entry.instructions)}, ${text(entry.letter_before)}, ${text(entry.letter_text)},
-        ${sections ? JSON.stringify(sections) : null}::jsonb, ${text(entry.document_url)}, ${text(entry.doc_title)},
-        ${text(entry.error)}, ${entry.detail ? JSON.stringify(entry.detail) : null}::jsonb)
+        ${json(sections)}::jsonb, ${text(entry.document_url)}, ${text(entry.doc_title)},
+        ${text(entry.error)}, ${json(entry.detail)}::jsonb)
       on conflict do nothing`;
   } catch (error) {
     console.error("Green light trace not saved", entry.event, error instanceof Error ? error.name : "UnknownError");
+  }
+}
+
+/**
+ * What the routes call: adds the row after the response has gone out. Nothing here can reach the
+ * rep's answer, not even a failure to schedule the write.
+ */
+export function traceGreenLight(entry: GreenLightTraceEvent) {
+  try {
+    after(() => recordGreenLightTrace(entry));
+  } catch (error) {
+    console.error("Green light trace not scheduled", entry.event, error instanceof Error ? error.name : "UnknownError");
   }
 }
 
@@ -148,16 +169,25 @@ function readDatabase() {
 /** Every row of one letter, oldest first, with the full text. */
 export async function readGreenLightTrace(jobId: string) {
   const sql = readDatabase();
-  await ensureTraceStorage(sql);
+  await ensureTraceStorage();
   return (await sql`select id::text, created_at::text, event, job_id, rep_email, rep_name, prospect_name, show_type, input_type,
       zoom_link, focus_points, transcript, instructions, letter_before, letter_text, sections, document_url, doc_title, error, detail
     from green_light_letter_trace where job_id = ${jobId} order by id`) as GreenLightTraceRow[];
 }
 
+/** One row by its number, with the full text (for rows that belong to no letter, such as a Zoom request). */
+export async function readGreenLightTraceRow(id: string) {
+  const sql = readDatabase();
+  await ensureTraceStorage();
+  return (await sql`select id::text, created_at::text, event, job_id, rep_email, rep_name, prospect_name, show_type, input_type,
+      zoom_link, focus_points, transcript, instructions, letter_before, letter_text, sections, document_url, doc_title, error, detail
+    from green_light_letter_trace where id = ${id}::bigint`) as GreenLightTraceRow[];
+}
+
 /** Newest rows first, without the long text. Optional filters match part of a name, email or link. */
 export async function listGreenLightTrace(filter: { prospect?: string; rep?: string; doc?: string; limit?: number }) {
   const sql = readDatabase();
-  await ensureTraceStorage(sql);
+  await ensureTraceStorage();
   const like = (value: string | undefined) => (value ? `%${value.replace(/[\\%_]/g, (match) => `\\${match}`)}%` : null);
   const prospect = like(filter.prospect);
   const rep = like(filter.rep);

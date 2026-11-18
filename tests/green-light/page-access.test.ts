@@ -9,7 +9,7 @@ vi.mock("next/navigation", () => ({
     throw new Error("not-found");
   },
 }));
-vi.mock("@/lib/green-light/trace-store", () => ({ recordGreenLightTrace: vi.fn() }));
+vi.mock("@/lib/green-light/trace-store", () => ({ traceGreenLight: vi.fn() }));
 
 import { NextRequest } from "next/server";
 import { POST as generate } from "@/app/api/green-light/generate/route";

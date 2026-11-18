@@ -8,6 +8,8 @@ const state = vi.hoisted(() => ({
   db: null as PGlite | null,
   url: "isolated-test-only" as string | undefined,
   breakDatabase: false,
+  afterThrows: false,
+  zoomTranscript: "" as string,
   auth: vi.fn(),
   pending: [] as Promise<unknown>[],
 }));
@@ -24,9 +26,13 @@ vi.mock("@neondatabase/serverless", () => ({
 vi.mock("next/server", async (original) => ({
   ...(await original<typeof import("next/server")>()),
   after: (task: () => unknown) => {
+    if (state.afterThrows) throw new Error("after() is not available here");
     state.pending.push(Promise.resolve().then(task));
   },
 }));
+vi.mock("@/lib/green-light/zoom-call-transcript", () => ({ resolveZoomCallTranscript: async () => state.zoomTranscript }));
+vi.mock("@/lib/zoom-transcript", () => ({ resolveZoomTranscript: async () => null }));
+vi.mock("@/lib/manual-transcript-archive", () => ({ resolveManualArchivedTranscript: async () => null }));
 
 import { NextRequest } from "next/server";
 import { POST as generate } from "@/app/api/green-light/generate/route";
@@ -34,6 +40,7 @@ import { POST as refine } from "@/app/api/green-light/refine/route";
 import { POST as save } from "@/app/api/green-light/save/route";
 import { GET as status } from "@/app/api/green-light/status/route";
 import { GET as trace } from "@/app/api/green-light/trace/route";
+import { POST as zoom } from "@/app/api/green-light/transcript/route";
 import { isMagicMikeAdmin } from "@/lib/admin-access-policy";
 import { listGreenLightTrace, readGreenLightTrace, recordGreenLightTrace, writtenSections } from "@/lib/green-light/trace-store";
 
@@ -72,6 +79,8 @@ afterAll(async () => {
 beforeEach(async () => {
   state.url = "isolated-test-only";
   state.breakDatabase = false;
+  state.afterThrows = false;
+  state.zoomTranscript = "";
   state.auth.mockResolvedValue(REP);
   // Empty the table between tests (it is created by the first write, as in production).
   await state.db!.exec("do $$ begin if to_regclass('green_light_letter_trace') is not null then truncate green_light_letter_trace restart identity; end if; end $$");
@@ -200,9 +209,16 @@ describe("green light trace log", () => {
 
   it("never lets a database problem change what the rep gets", async () => {
     const errors = vi.spyOn(console, "error").mockImplementation(() => {});
-    for (const broken of ["down", "missing"] as const) {
+    const answers: Record<string, string[]> = {};
+    for (const broken of ["healthy", "down", "missing", "cannot schedule"] as const) {
       state.breakDatabase = broken === "down";
       state.url = broken === "missing" ? undefined : "isolated-test-only";
+      state.afterThrows = broken === "cannot schedule";
+      const bodies: string[] = (answers[broken] = []);
+      const keep = async (response: Response) => {
+        bodies.push(`${response.status} ${await response.clone().text()}`);
+        return response;
+      };
       workflow({
         "-start": { body: { ok: true, job_id: "v2_1763500000003_dbdown" } },
         "-status": { body: { status: "complete", draft_text: LETTER, show_type: "mansion" } },
@@ -210,20 +226,79 @@ describe("green light trace log", () => {
         "-save": { body: { ok: true, document_url: "https://docs.google.com/document/d/abc123/edit" } },
       });
       const base = { show: "mansion", prospect_name: "Jordan Example", job_id: "v2_1763500000003_dbdown", draft_text: LETTER };
-      expect((await generate(post("generate", { show: "mansion", prospect_name: "Jordan Example", transcript: TRANSCRIPT, input_type: "transcript", focus_points: [] }))).status).toBe(200);
-      expect((await status(get("status?job_id=v2_1763500000003_dbdown"))).status).toBe(200);
-      expect((await refine(post("refine", { ...base, instructions: "Make it shorter", transcript: TRANSCRIPT }))).status).toBe(200);
-      expect((await save(post("save", base))).status).toBe(200);
+      expect((await keep(await generate(post("generate", { show: "mansion", prospect_name: "Jordan Example", transcript: TRANSCRIPT, input_type: "transcript", focus_points: [] })))).status).toBe(200);
+      expect((await keep(await status(get("status?job_id=v2_1763500000003_dbdown")))).status).toBe(200);
+      expect((await keep(await refine(post("refine", { ...base, instructions: "Make it shorter", transcript: TRANSCRIPT })))).status).toBe(200);
+      expect((await keep(await save(post("save", base)))).status).toBe(200);
+      state.zoomTranscript = TRANSCRIPT;
+      expect((await keep(await zoom(post("transcript", { zoom_link: "https://us06web.zoom.us/rec/share/abc.DEF_123" })))).status).toBe(200);
+      state.zoomTranscript = "";
+      expect((await keep(await zoom(post("transcript", { zoom_link: "https://us06web.zoom.us/rec/share/abc.DEF_123" })))).status).toBe(422);
+      // The failure paths too: the workflow not answering must stay a plain 502 with the same message.
+      vi.mocked(globalThis.fetch).mockRestore();
+      workflow({});
+      expect((await keep(await generate(post("generate", { show: "mansion", prospect_name: "Jordan Example", transcript: TRANSCRIPT, input_type: "transcript", focus_points: [] })))).status).toBe(502);
+      expect((await keep(await status(get("status?job_id=v2_1763500000003_dbdown")))).status).toBe(502);
+      expect((await keep(await refine(post("refine", { ...base, instructions: "Make it shorter", transcript: TRANSCRIPT })))).status).toBe(502);
+      expect((await keep(await save(post("save", base)))).status).toBe(502);
       await expect(flush()).resolves.toBeUndefined();
       await expect(recordGreenLightTrace({ event: "save", rep_email: "rep@insidesuccess.com" })).resolves.toBeUndefined();
       vi.mocked(globalThis.fetch).mockRestore();
     }
+    // Every answer, body and status, is the same whether the trace log works or not.
+    expect(answers.healthy).toHaveLength(10);
+    for (const broken of ["down", "missing", "cannot schedule"]) expect(answers[broken]).toEqual(answers.healthy);
     expect(errors).toHaveBeenCalledWith("Green light trace not saved", "generate", "Error");
+    expect(errors).toHaveBeenCalledWith("Green light trace not scheduled", "generate", "Error");
+    state.afterThrows = false;
+    await state.db!.exec("truncate green_light_letter_trace restart identity");
     // Once the database is back, the next letter is recorded again.
     state.breakDatabase = false;
     state.url = "isolated-test-only";
     await recordGreenLightTrace({ event: "save", rep_email: "rep@insidesuccess.com", job_id: "v2_1763500000004_back01" });
     expect(await rows()).toHaveLength(1);
+  });
+
+  it("records which Zoom recording was asked for and whether it had a transcript", async () => {
+    state.zoomTranscript = TRANSCRIPT;
+    const link = "https://us06web.zoom.us/rec/share/abc.DEF_123";
+    expect(await (await zoom(post("transcript", { zoom_link: link }))).json()).toEqual({ ok: true, transcript: TRANSCRIPT.trim() });
+    state.zoomTranscript = "too short";
+    expect((await zoom(post("transcript", { zoom_link: link }))).status).toBe(422);
+    expect((await zoom(post("transcript", { zoom_link: "https://us06web.zoom.us/j/83614505751" }))).status).toBe(400);
+    await flush();
+    const asked = await rows("event = 'zoom'");
+    expect(asked).toHaveLength(2);
+    expect(asked[0]).toMatchObject({ zoom_link: link, error: null, transcript: null, detail: { outcome: "transcript_found", transcript_chars: TRANSCRIPT.trim().length } });
+    expect(asked[1]).toMatchObject({ zoom_link: link, detail: { outcome: "not_ready", transcript_chars: 0 } });
+    expect(String(asked[1].error)).toContain("Zoom has no transcript");
+
+    // These rows belong to no letter, so the lookup reaches them by their own number.
+    state.auth.mockResolvedValue(ADMIN);
+    const list = await (await trace(get("trace"))).text();
+    expect(list).toContain("https://example.com/api/green-light/trace?id=2");
+    expect(await (await trace(get("trace?id=2"))).text()).toContain("ZOOM TRANSCRIPT REQUEST");
+    expect((await trace(get("trace?id=abc"))).status).toBe(400);
+    state.auth.mockResolvedValue(REP);
+    expect((await trace(get("trace?id=2"))).status).toBe(404);
+  });
+
+  it("keeps a row even when the text has characters the database refuses", async () => {
+    const odd = `Owns a roofing company\u0000 in Dallas \uD83D and \uDE00 alone, real emoji \uD83D\uDE00 kept`;
+    await recordGreenLightTrace({ event: "generate", rep_email: "rep@insidesuccess.com", job_id: "v2_1763500000007_odd001", prospect_name: `Jordan\u0000 Example`, focus_points: odd, transcript: odd, detail: { warnings: [odd], multi: null } });
+    const [row] = await rows();
+    expect(row).toMatchObject({ prospect_name: "Jordan Example", focus_points: "Owns a roofing company in Dallas  and  alone, real emoji \uD83D\uDE00 kept" });
+    expect((row.detail as { warnings: string[] }).warnings[0]).toBe(row.focus_points);
+  });
+
+  it("accepts a request whatever the Zoom link field holds", async () => {
+    workflow({ "-start": { body: { ok: true, job_id: "v2_1763500000008_zoom01" } } });
+    for (const zoomLink of [undefined, null, 42, "", "https://us06web.zoom.us/rec/share/abc"]) {
+      const response = await generate(post("generate", { show: "mansion", prospect_name: "Jordan Example", transcript: TRANSCRIPT, input_type: "zoom_link", focus_points: [], zoom_link: zoomLink }));
+      expect(response.status).toBe(200);
+    }
+    await flush();
+    expect((await rows("event = 'generate'")).map((row) => row.zoom_link)).toEqual([null, null, null, null, "https://us06web.zoom.us/rec/share/abc"]);
   });
 
   it("can be searched, and treats search text literally", async () => {

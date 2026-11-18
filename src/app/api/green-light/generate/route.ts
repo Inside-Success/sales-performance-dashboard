@@ -1,4 +1,4 @@
-import { after, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   badRequest,
   callWorkflow,
@@ -6,11 +6,12 @@ import {
   logGreenLightEvent,
   multiClientFields,
   requireGreenLightUser,
+  runAfterResponse,
   unreachable,
   workflowError,
 } from "@/lib/green-light/server";
 import { greenLightDeadlineText } from "@/lib/green-light/shows";
-import { recordGreenLightTrace } from "@/lib/green-light/trace-store";
+import { traceGreenLight } from "@/lib/green-light/trace-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -61,11 +62,11 @@ export async function POST(request: NextRequest) {
     const jobId = typeof payload.job_id === "string" ? payload.job_id : "";
     if (!ok || !jobId) {
       const error = workflowError(payload, `Letter generation could not start (status ${status}).`);
-      after(() => recordGreenLightTrace({ ...given, event: "start_failed", error }));
+      traceGreenLight({ ...given, event: "start_failed", error });
       return NextResponse.json({ ok: false, error }, { status: 502 });
     }
-    after(() => recordGreenLightTrace({ ...given, event: "generate", job_id: jobId }));
-    after(() =>
+    traceGreenLight({ ...given, event: "generate", job_id: jobId });
+    runAfterResponse(() =>
       logGreenLightEvent({
         event: "generate",
         rep_name: user.name,
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
     );
     return NextResponse.json({ ok: true, job_id: jobId });
   } catch {
-    after(() => recordGreenLightTrace({ ...given, event: "start_failed", error: "The letter workflow did not answer." }));
+    traceGreenLight({ ...given, event: "start_failed", error: "The letter workflow did not answer." });
     return unreachable("start the letter");
   }
 }
