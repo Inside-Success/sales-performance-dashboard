@@ -398,7 +398,7 @@ function Generator() {
   const nextUnsaved = drafts.findIndex((draft, index) => index !== activeIndex && !draft.saved);
 
   return (
-    <div ref={topRef} className="flex scroll-mt-24 flex-col gap-5">
+    <div ref={topRef} className="flex scroll-mt-44 flex-col gap-5">
       {busy ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm" role="status" aria-live="assertive">
           <div className="magic-card w-full max-w-md bg-white p-8 text-center">
