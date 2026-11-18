@@ -26,7 +26,7 @@ describe('November 5 source refresh', () => {
   expect(text).toContain('do not pressure applicants');
  });
  it('retrieves the changed training time and narrow skipped-video exception', () => {
-  expect(evidence('When is Thursday closing and contracts training?')).toContain('Thursday 11 AM–noon EST Closing');
+  expect(evidence('When is Thursday closing and contracts training?')).toContain('Thursday 2–3 PM EST Closing');
   expect(evidence('The Part 2 double audition example video does not work; can I skip it?')).toContain('does not cancel all double-audition procedures');
  });
 });

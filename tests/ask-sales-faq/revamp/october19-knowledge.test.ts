@@ -17,7 +17,7 @@ describe('October 19 source refresh', () => {
   });
   it('retrieves booked-audition preparation with stop and approval conditions', () => {
     const text = evidence('Tomorrow I have casting appointments. What calls and texts do I need to make today?');
-    expect(text).toContain('four calls with three texts');
+    expect(text).toContain('Do not manually duplicate automated messages');
     expect(text).toContain('STOP');
     expect(text).toContain('sales-leadership authorization');
   });
@@ -28,7 +28,7 @@ describe('October 19 source refresh', () => {
   });
   it('keeps Sunday booked appointments separate from cold dial-outs', () => {
     const text = evidence('Is Sunday forbidden even when a reality applicant wants their first appointment then?', 'reality');
-    expect(text).toContain('a reality Call 1 can be scheduled on Sunday');
+    expect(text).toContain('A reality Call 1 can be scheduled on Sunday');
     expect(text).toContain('does not authorize Sunday cold/outbound list dialing');
   });
   it('finds current VIP support without promising an agency service', () => {

@@ -598,14 +598,21 @@
     "questions": [
       "What views are guaranteed?"
     ],
-    "text": "The specific guarantee you gave is:\r\n100,000 promotional views on each cast member's individual trailer.\r\nDo not turn that into:\r\n* guaranteed episode viewers\r\n* guaranteed unique viewers\r\n* guaranteed streamer viewers\r\n* guaranteed buyers/leads\r\n* guaranteed business revenue\r\nThe broader show may receive millions of paid promotional impressions/views collectively, but only the contractual guarantee should be represented as guaranteed.",
+    "text": "The specific guarantee you gave is:\r\n100,000 promotional views on each cast member's individual trailer.\r\nDo not turn that into:\r\n* guaranteed episode viewers\r\n* guaranteed unique viewers\r\n* guaranteed streamer viewers\r\n* guaranteed buyers/leads\r\n* guaranteed business revenue\r\nThe broader show may receive millions of paid promotional impressions/views collectively, but only the contractual guarantee should be represented as guaranteed. November 17 revised documentary presentations are for $8k Lite and $12k Standard only for now. Use the matching video and its updated two-box screen; do not show all three prices. Rudy said one agreement, with the updated contract reached after payment. The $12k Standard presentation describes 3–4 months of scripted social content and one million total combined promotional views across the show, trailer and associated content, including paid promotion. This is not a per-asset or organic-only guarantee or a promise of leads, revenue or followers. The final $8k Lite presentation also describes one million combined promotional views across socials, email and ads, with tracking. Its Lite package slide lists 100+ pieces of edited custom content, PR drafts and release to 100+ outlets (submission is not guaranteed coverage), studio photos and BTS, a cast page, trailer, poster and Miami promotional event access. Confirm exact contract terms for the buyer. Older trailer-only figures do not describe the new combined metric. Rudy explicitly excludes reality, its bundled documentary, and DJ/NLCEO from the new documentary views offer. No new $30k VIP presentation was released.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://www.loom.com/share/a30d6db52dbd451aa2efe6b94d307f7c",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794932281564879",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937627168569",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937869833349",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794959345369959",
+      "https://drive.google.com/file/d/11zplk1i0YrdHrJjjI56d6g2BrnMXftkX/view",
+      "https://drive.google.com/file/d/1SYQP967oFbNGkUgsqE3OmJchYBprk2km/view"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-11-18T12:29:00.458535+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -821,15 +828,17 @@
     "decisionKey": "reality-onboarding-process",
     "title": "Reality shows do not use the regular onboarding call",
     "questions": [],
-    "text": "Rudy clarified on September 11 that reality shows do not use the regular onboarding call. Follow the reality-specific team process; do not apply main-show onboarding-call instructions automatically. The accompanying statement that the team would reach out next week was a dated launch update, not an evergreen service deadline.",
+    "text": "Rudy clarified on September 11 that reality shows do not use the regular onboarding call. Follow the reality-specific team process; do not apply main-show onboarding-call instructions automatically. The accompanying statement that the team would reach out next week was a dated launch update, not an evergreen service deadline. Rudy confirmed reality cast members do not receive the regular Cast Member HQ portal. Reality uses a recorded onboarding Loom. If a buyer gets a documentary onboarding appointment or documentary emails, check which product payment link was used and have Tech investigate.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "slack:1789135906.689629",
-      "slack:1789135914.406809"
+      "slack:1789135914.406809",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794503771230289",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794501267985049"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-11-18T12:30:37.957306+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -1564,15 +1573,17 @@
     "decisionKey": "reality-current-open-questions",
     "title": "Unconfirmed reality welcome-email and payment-deadline details",
     "questions": [],
-    "text": "Reality participants must not be put on regular onboarding calls. September 15 questions asking whether to skip the welcome email and whether the ordinary same-week/cohort payment deadline applies were directed to Rudy’s master reality FAQ thread and remain unanswered there. Do not turn “no regular onboarding” into “no welcome email” or invent a reality cohort deadline. Give confirmed reality guidance and use the master FAQ thread for these unresolved decisions.",
+    "text": "Reality participants must not be put on regular onboarding calls. September 15 questions asking whether to skip the welcome email and whether the ordinary same-week/cohort payment deadline applies were directed to Rudy’s master reality FAQ thread and remain unanswered there. Do not turn “no regular onboarding” into “no welcome email” or invent a reality cohort deadline. Give confirmed reality guidance and use the master FAQ thread for these unresolved decisions. The revised Entrepreneurs Island and Mansion of Money Green Light letters state that conditional approval expires Sunday at 11:59 PM. After that casting may need to review the application again for a future season. This is an approval deadline for those letters, not a universal payment deadline or permanent rejection.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1788746537690009",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789491409981669"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1789491409981669",
+      "https://docs.google.com/document/d/12TgstBKhHdjPEPZ3i2dhwaoTMfI_AERYTZhiXGVpTGA/edit",
+      "https://docs.google.com/document/d/1w7HSMsVKYPPI2sTtHFsF0ikeONnAWrx6dIbHvZ8JNeg/edit"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-11-18T12:25:16.958651+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -1773,7 +1784,7 @@
     "decisionKey": "rebooking-calendar-current-directory",
     "title": "Current team rebooking calendar directory",
     "questions": [],
-    "text": "The Team Rebooking Calendar Links sheet is the current directory for the individual rep’s public and personal rebooking links. Its Closers Calendars header labels Public Calendar for the next 2 days and the backup Personal Calendar for the next 30 days. Use the actual current row for the intended rep; do not invent a booking URL or promise a live slot. The chatbot can explain the procedure but cannot inspect availability or book the meeting. Current Tech clarification: use OnceHub Public Calendar for new Call 1 bookings, including dial-out/HubSpot Outreach leads; use the Personal/2nd Call Calendar for Call 2. Do not book directly in HubSpot or Google Calendar. The NEW REP – PASSED RAMP UP document still says Public Calendar for Call 2; this was flagged as stale on October 22–23 and conflicts with the explicit Tech instruction. Use the correct second-call calendar rather than copying that old paragraph. The directory’s displayed date windows do not change these call-stage purposes or guarantee a slot. For an existing appointment use its original reschedule link instead of creating another booking. November 2 Tech confirms the public calendar may allow bookings further out than the incoming calendar; Kent tentatively described a week. This does not establish a guaranteed universal window. Check the actual correct calendar and current Tech configuration rather than treating the directory’s header as a live availability limit. November 3 Kent clarified that the public calendar is configured so reps can book a week ahead when needed, whereas inbound bookings are restricted to two days ahead; the booking window cannot be customized per person. This supersedes treating the earlier one-week estimate as merely speculative. These are configured windows, not guaranteed available slots; the current public Call 1 versus second-call Calendar purposes still apply. The November 4 ramp-up source now correctly specifies the OnceHub Call 2 Calendar Link for second calls, resolving that particular outdated Public-for-Call-2 wording.",
+    "text": "The Team Rebooking Calendar Links sheet is the current directory for the individual rep’s public and personal rebooking links. Its Closers Calendars header labels Public Calendar for the next 2 days and the backup Personal Calendar for the next 30 days. Use the actual current row for the intended rep; do not invent a booking URL or promise a live slot. The chatbot can explain the procedure but cannot inspect availability or book the meeting. Current Tech clarification: use OnceHub Public Calendar for new Call 1 bookings, including dial-out/HubSpot Outreach leads; use the Personal/2nd Call Calendar for Call 2. Do not book directly in HubSpot or Google Calendar. The NEW REP – PASSED RAMP UP document still says Public Calendar for Call 2; this was flagged as stale on October 22–23 and conflicts with the explicit Tech instruction. Use the correct second-call calendar rather than copying that old paragraph. The directory’s displayed date windows do not change these call-stage purposes or guarantee a slot. For an existing appointment use its original reschedule link instead of creating another booking. November 2 Tech confirms the public calendar may allow bookings further out than the incoming calendar; Kent tentatively described a week. This does not establish a guaranteed universal window. Check the actual correct calendar and current Tech configuration rather than treating the directory’s header as a live availability limit. November 3 Kent clarified that the public calendar is configured so reps can book a week ahead when needed, whereas inbound bookings are restricted to two days ahead; the booking window cannot be customized per person. This supersedes treating the earlier one-week estimate as merely speculative. These are configured windows, not guaranteed available slots; the current public Call 1 versus second-call Calendar purposes still apply. The November 4 ramp-up source now correctly specifies the OnceHub Call 2 Calendar Link for second calls, resolving that particular outdated Public-for-Call-2 wording. For availability edits use Tech for a one-off and Mike Wisner for recurring hour changes. Reps should not edit their OnceHub booking links. Verify the named owner if a personal link points to another rep.",
     "scopes": [
       "shared"
     ],
@@ -1784,9 +1795,10 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793633497181699",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793633527125309",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793721871032569",
-      "https://docs.google.com/document/d/1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E/edit"
+      "https://docs.google.com/document/d/1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E/edit",
+      "https://docs.google.com/document/d/1o_gigS0DpCVgWyZcmpinidGYUz3S0KjicWTmRR6gu_4/edit"
     ],
-    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "reviewedAt": "2026-11-18T12:25:16.958645+00:00",
     "authority": 12,
     "kind": "resource",
     "risk": "medium",
@@ -1896,7 +1908,7 @@
     "decisionKey": "main-lite-complete-deliverables",
     "title": "Main ISTV Lite license: listed features and benefits",
     "questions": [],
-    "text": "The current regular ISTV anniversary Lite offer is $8,000, subject to its eligibility conditions. The maintained license-options document lists lifetime license rights, a 12–15 minute episode aired on the Inside Success network, professional in-studio photoshoot, access to a two-day Miami marketing event, custom trailer, studio experience, BTS content/raw files, IMDb profile, and custom movie/episode poster. Lite does not include Tier-1 submission or the 100,000 pre-promotional views. Event access does not itself establish included travel or waive separately applicable event food/beverage charges; use the current event policy for those charges and future dates. Explain the benefits as professional storytelling and reusable promotional assets, not guaranteed revenue or copyright ownership. These are main ISTV terms, not DJ/NLCEO or reality terms.",
+    "text": "The current regular ISTV anniversary Lite offer is $8,000, subject to its eligibility conditions. The maintained license-options document lists lifetime license rights, a 12–15 minute episode aired on the Inside Success network, professional in-studio photoshoot, access to a two-day Miami marketing event, custom trailer, studio experience, BTS content/raw files, IMDb profile, and custom movie/episode poster. Lite does not include Tier-1 submission or the 100,000 pre-promotional views. Event access does not itself establish included travel or waive separately applicable event food/beverage charges; use the current event policy for those charges and future dates. Explain the benefits as professional storytelling and reusable promotional assets, not guaranteed revenue or copyright ownership. These are main ISTV terms, not DJ/NLCEO or reality terms. November 17 revised documentary presentations are for $8k Lite and $12k Standard only for now. Use the matching video and its updated two-box screen; do not show all three prices. Rudy said one agreement, with the updated contract reached after payment. The $12k Standard presentation describes 3–4 months of scripted social content and one million total combined promotional views across the show, trailer and associated content, including paid promotion. This is not a per-asset or organic-only guarantee or a promise of leads, revenue or followers. The final $8k Lite presentation also describes one million combined promotional views across socials, email and ads, with tracking. Its Lite package slide lists 100+ pieces of edited custom content, PR drafts and release to 100+ outlets (submission is not guaranteed coverage), studio photos and BTS, a cast page, trailer, poster and Miami promotional event access. Confirm exact contract terms for the buyer. Older trailer-only figures do not describe the new combined metric. Rudy explicitly excludes reality, its bundled documentary, and DJ/NLCEO from the new documentary views offer. No new $30k VIP presentation was released.",
     "scopes": [
       "main_istv"
     ],
@@ -1906,9 +1918,16 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790777810567499",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790781112627129",
       "https://docs.google.com/document/d/1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM/edit",
-      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=1485466878"
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=1485466878",
+      "https://www.loom.com/share/a30d6db52dbd451aa2efe6b94d307f7c",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794932281564879",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937627168569",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937869833349",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794959345369959",
+      "https://drive.google.com/file/d/11zplk1i0YrdHrJjjI56d6g2BrnMXftkX/view",
+      "https://drive.google.com/file/d/1SYQP967oFbNGkUgsqE3OmJchYBprk2km/view"
     ],
-    "reviewedAt": "2026-10-01",
+    "reviewedAt": "2026-11-18T12:29:00.458527+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -1927,7 +1946,7 @@
     "decisionKey": "main-standard-complete-deliverables",
     "title": "Main ISTV Standard license: listed features and benefits",
     "questions": [],
-    "text": "The current regular ISTV anniversary Standard offer is $12,000, subject to its eligibility conditions. The license-options document lists lifetime license rights, a 16–20 minute episode on Inside Success network, a Living Your Legacy podcast plus reels/social content discussing the episode/story, professional in-studio photoshoot, one Mastermind event access, one announcement email to the company's business database, 100,000 trailer/pre-promotion views, an Instagram trailer, and three extra reels/social pieces. Standard does not include Tier-1 submission. Do not present the old database-size or '$5k value' marketing figures as verified current audience or financial outcomes. Event fees and upcoming dates follow current event guidance. The document lists Standard's deliverables; do not assert that every Lite item automatically stacks unless the applicable current agreement confirms it.",
+    "text": "The current regular ISTV anniversary Standard offer is $12,000, subject to its eligibility conditions. The license-options document lists lifetime license rights, a 16–20 minute episode on Inside Success network, a Living Your Legacy podcast plus reels/social content discussing the episode/story, professional in-studio photoshoot, one Mastermind event access, one announcement email to the company's business database, 100,000 trailer/pre-promotion views, an Instagram trailer, and three extra reels/social pieces. Standard does not include Tier-1 submission. Do not present the old database-size or '$5k value' marketing figures as verified current audience or financial outcomes. Event fees and upcoming dates follow current event guidance. The document lists Standard's deliverables; do not assert that every Lite item automatically stacks unless the applicable current agreement confirms it. November 17 revised documentary presentations are for $8k Lite and $12k Standard only for now. Use the matching video and its updated two-box screen; do not show all three prices. Rudy said one agreement, with the updated contract reached after payment. The $12k Standard presentation describes 3–4 months of scripted social content and one million total combined promotional views across the show, trailer and associated content, including paid promotion. This is not a per-asset or organic-only guarantee or a promise of leads, revenue or followers. The final $8k Lite presentation also describes one million combined promotional views across socials, email and ads, with tracking. Its Lite package slide lists 100+ pieces of edited custom content, PR drafts and release to 100+ outlets (submission is not guaranteed coverage), studio photos and BTS, a cast page, trailer, poster and Miami promotional event access. Confirm exact contract terms for the buyer. Older trailer-only figures do not describe the new combined metric. Rudy explicitly excludes reality, its bundled documentary, and DJ/NLCEO from the new documentary views offer. No new $30k VIP presentation was released.",
     "scopes": [
       "main_istv"
     ],
@@ -1937,9 +1956,16 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790777810567499",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1790781112627129",
       "https://docs.google.com/document/d/1URzpTFkCQt4O_y7m6jOhDT_lxQzy_xENqSdr5hIj8DM/edit",
-      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=1485466878"
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit#gid=1485466878",
+      "https://www.loom.com/share/a30d6db52dbd451aa2efe6b94d307f7c",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794932281564879",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937627168569",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937869833349",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794959345369959",
+      "https://drive.google.com/file/d/11zplk1i0YrdHrJjjI56d6g2BrnMXftkX/view",
+      "https://drive.google.com/file/d/1SYQP967oFbNGkUgsqE3OmJchYBprk2km/view"
     ],
-    "reviewedAt": "2026-10-01",
+    "reviewedAt": "2026-11-18T12:29:00.458359+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -2432,14 +2458,14 @@
   {
     "id": "reality-no-cohort-2026-09-18",
     "decisionKey": "reality-no-cohort-2026-09-18",
-    "title": "Reality sales: remove documentary cohort wording",
+    "title": "Reality weekly casting cohort and Sunday conditional approval deadline",
     "questions": [
       "Does the same-week cohort deadline apply to reality?",
       "Is there a reality contract video?",
       "Can I mention Sunday casting urgency on a reality call?",
       "Does a reality prospect lose acceptance if they decide Monday?"
     ],
-    "text": "Rudy and Sales Ops explicitly clarified that reality offers do not use cohort rules. Remove cohort wording from reality letters rather than copying the regular documentary cohort process. This does not remove a deadline expressly agreed in a reality contract or grant an invented payment extension. Reality now has a dedicated buyer welcome email and production-led onboarding. The older statement that no separate reality contract-explanation video exists is superseded: Rudy posted https://www.loom.com/share/4c19c2c6b3164d07903a5108eceeb8f0 on November 4 for playing on Call 2, explicitly NOT for sending to clients. The mandatory reality Call 2 license/package video is still required; the contract overview is a separate resource. Rudy's October 12 clarification permits truthful studio-level context: the majority of the studio and shows works on a weekly cohort, with about 3,000 casting auditions a week, so casting is likely to finalize Sunday for a Monday announcement. For reality this is NOT a hard cutoff. Reps must not say a reality applicant will not be accepted merely because they do not decide by Sunday. This qualifies the earlier instruction to remove documentary cohort wording: truthful general studio timing is allowed, but documentary hard-deadline consequences must not be transferred to reality. Mike confirmed October 17 that a reality Call 1 can be scheduled on Sunday: reality does not have the documentary Sunday cohort ending. This does not authorize Sunday cold/outbound list dialing or remove genuine availability and qualification requirements.",
+    "text": "Effective the week of November 16, reality casting uses a weekly cohort. Rudy confirmed the transition in the November 13–14 thread. The updated Entrepreneurs Island and Mansion of Money green-light letters explicitly expire Sunday at 11:59 PM. Afterward the application may require casting re-review for a future season. Do not promise automatic extension, permanent rejection or a universal payment deadline. Use the show-specific letter. Earlier September/October no-cohort guidance predates this change. The separate reality contract overview on Call 2 is for playing live only: https://www.loom.com/share/4c19c2c6b3164d07903a5108eceeb8f0 . The mandatory reality package video is also required. A reality Call 1 can be scheduled on Sunday; this does not authorize Sunday cold/outbound list dialing.",
     "scopes": [
       "reality"
     ],
@@ -2452,9 +2478,12 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791825002937529",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792253915239929",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793819242002559",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793819246134239"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793819246134239",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794652692021959",
+      "https://docs.google.com/document/d/12TgstBKhHdjPEPZ3i2dhwaoTMfI_AERYTZhiXGVpTGA/edit",
+      "https://docs.google.com/document/d/1w7HSMsVKYPPI2sTtHFsF0ikeONnAWrx6dIbHvZ8JNeg/edit"
     ],
-    "reviewedAt": "2026-11-05T16:57:56.940324+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.957849+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -2792,14 +2821,14 @@
       "What training sessions does Raul host?",
       "When is Mike Call 1 Call 2 compliance training?"
     ],
-    "text": "The November 5 review of Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 11 AM–noon EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. The previously untimed Thursday Objection Handling line is no longer present in item 5. The document still contains an older six-session signoff; this does not supply a sixth current time/link or prove the session was formally cancelled. Ask Raul for any additional required session rather than inventing a schedule. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
+    "text": "The November 18 review of Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 4–5 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep and Checklist with Raul. The previously untimed Thursday Objection Handling line is no longer present in item 5. The document still contains an older six-session signoff; this does not supply a sixth current time/link or prove the session was formally cancelled. Ask Raul for any additional required session rather than inventing a schedule. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Use the current session link in the sheet. This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-11-05T16:57:56.940324+00:00",
+    "reviewedAt": "2026-11-18T12:25:16.958103+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -2821,7 +2850,7 @@
       "What is the new rep sales questions meeting?",
       "Do I need to attend Raul morning meetings after going live?"
     ],
-    "text": "Part 1 Admin Procedures distinguishes the New Rep Sales Questions Meetings with Raul from the six onboarding training Zooms. The new-rep Q&A is Tuesday through Friday, 9:00–9:30 AM EST, mandatory for the FIRST TWO WEEKS after completing training and passing the final mock. Reps receive the meeting invitation when ready to go live; DM Raul if unable to attend or unable to be on camera. They may drop this particular Q&A after two weeks. It is not the Wednesday 3–4 PM combined Call 2 Sales and Procedural Training or Friday noon–1 PM Final Mock Call Prep with Raul; those are separate mandatory onboarding sessions. The main sales team meeting is also separate: Part 1 lists Rich/Rudy Tuesday–Friday 9:30–10:00 AM EST. Madeline’s September 17 clarification says the daily main-team meeting is no longer on everyone’s calendar: join the link Olivia posts in the main sales Slack channel about ten minutes before start. Follow the current daily main-team post for the actual start time: some September posts say 9:20 AM, so the sheet’s 9:30 time must not override the day’s announcement. That main-team link instruction does not replace the individual HERE links for the six training Zooms or the Raul Q&A invitation. Published times are labelled EST in the document; live cancellations or calendar exceptions are not established here.",
+    "text": "Part 1 Admin Procedures distinguishes the New Rep Sales Questions Meetings with Raul from the six onboarding training Zooms. The new-rep Q&A is Tuesday through Friday, 9:00–9:30 AM EST, mandatory for the FIRST TWO WEEKS after completing training and passing the final mock. Reps receive the meeting invitation when ready to go live; DM Raul if unable to attend or unable to be on camera. They may drop this particular Q&A after two weeks. It is not the Wednesday 4–5 PM combined Call 2 Sales and Procedural Training or Friday 11 AM–noon Final Mock Call Prep with Raul; those are separate mandatory onboarding sessions. The main sales team meeting is also separate: Part 1 lists Rich/Rudy Tuesday–Friday 9:30–10:00 AM EST. Madeline’s September 17 clarification says the daily main-team meeting is no longer on everyone’s calendar: join the link Olivia posts in the main sales Slack channel about ten minutes before start. Follow the current daily main-team post for the actual start time: some September posts say 9:20 AM, so the sheet’s 9:30 time must not override the day’s announcement. That main-team link instruction does not replace the individual HERE links for the six training Zooms or the Raul Q&A invitation. Published times are labelled EST in the document; live cancellations or calendar exceptions are not established here.",
     "scopes": [
       "shared"
     ],
@@ -2855,7 +2884,7 @@
       "When do I book my follow-up with Mike after signoff?",
       "Who receives my Part 2 mock recordings now?"
     ],
-    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the live training Zooms listed in Basic Setup item 5 (five timed sessions currently listed; the former untimed Thursday objection entry has been removed, while an older six-session signoff remains), call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee. The October 16 review confirms Part 1 now explicitly makes HubSpot access available AFTER the final mock call is booked, not only after it is passed. Booking grants neither a passing result nor go-live authorization. Read and complete the new Day 1 Training Expectations acknowledgment and follow its weekday EOD training updates and 10-day completion target. The prior 72-hour/two-week labels do not override the new acknowledgment or readiness signoffs. The November 2 NEW REP – PASSED RAMP UP update says to post the completed Part 1 copy link in the onboarding channel and tag Raul; Rudy and Rich have been removed from that signoff tagging instruction. Its support section reserves personal DMs for personal matters; normal sales questions should use the documented sales support/FAQ channels. This does not remove training/readiness requirements or authorize going live without the required approval. Part 2 now specifies a check-in with Mike in 10 days to review progress, successes and areas for improvement; finish the tasks and post the completed Part 2 signoff-copy link in the onboarding channel. The current Part 2 Magic Mike link is https://sales-performance-dashboard-rose.vercel.app/ for Call 2 reviews, FAQ help and AI mock-call practice. This does not replace human readiness approval. Both Part 1 and Part 2 link the current show list at https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . The November 5 ramp-up document changes the personal-matters DM contact from Rich to Mike Wisner (alongside the training contact). Ordinary support uses the documented channels. November 4 Raul replied that the Part 2 DOUBLE AUDITION EXAMPLE recording was discontinued and can be skipped for now; the screenshot identifies that specific training entry. This does not cancel all double-audition procedures or the other Part 2 requirements. The follow-up asking whether the ROI video can also be skipped was unanswered, so do not extend that exemption. November 5 Raul separately confirmed a trainee’s documentary-price compliance videos were old and needed review; use current package guidance rather than outdated video pricing. November 8 reread: Part 2 has now replaced the discontinued DOUBLE AUDITION EXAMPLE with DOUBLE BOOKING CHEAT SHEET. Read the replacement; the old skip instruction does not waive it. Part 1 now links Rudy’s mini sales trainings and the 10 Commandments document; Part 2 links Rudy’s Continued Training. The November 12 continued-training index now links the 10 Commandments Zoom replay and Docs vs Reality Loom; its Double bookings label is still unlinked, but the separate double-booking SOP/video remains available. November 12 Part 1 makes the follow-up with Mike mandatory 10–14 days after signoff: book it before ending the signoff call, do not leave the trainee to book it later, and record the date/time or screenshot. Part 2’s ten-day check-in is within that window. The Passed Ramp Up and Daily Check Sheet specify ten-day dial-outs, Call 1 bookings, Call 2s, closes and revenue to bring. Part 2 now names Mike and Raul for the three-way DM containing mock-call recordings, replacing Rich in that instruction. This explicit training DM instruction is an exception to ordinary channel-first support, not permission to DM all routine questions.",
+    "text": "New sales rep onboarding uses Part 1 (Onboarding Training Sheet) before going live, then Part 2 (First 2 Weeks Live). Part 1 covers setup, the live training Zooms listed in Basic Setup item 5 (five timed sessions currently listed; the former untimed Thursday objection entry has been removed, while an older six-session signoff remains), call/process training and readiness. Practice both Call 1 and Call 2 with other trainees and post one recording of each in istv-mock-call-reviews. When ready, DM Raul for the final-mock calendar link; passing the final mock precedes his go-live/calendar activation instructions and Part 2. Test public OnceHub booking/calendar sync, Zoom voice calling/cloud recording and the current HubSpot SMS workflow; read the Master FAQ before going live. At the end, make the completed Part 1 copy and post its signoff link in the onboarding channel. The sheet title references a 72-hour sprint while its body references two weeks; neither is a guarantee of automatic readiness without the required signoffs. Part 2 covers finance setup, offer/resource familiarization (including the separate Reality FAQ), outbound/passoff resources, refund and invoicing procedures, daily call self-review and FTC/ROI compliance training/quiz. The self-review instruction is to post one call recording with call-structure/bullet reflection in response to Rudy’s daily main-channel request. Finish and submit the Part 2 signoff copy as directed. Provide the direct links to both documents when the user asks for resources. Use current governed commercial/CRM policies for prices, product benefits and HubSpot procedures; older prices, legacy Keap videos or operational steps inside a training sheet do not override newer scoped company policy. These are rep-training instructions, not customer onboarding or a promise that the bot can approve a trainee. The October 16 review confirms Part 1 now explicitly makes HubSpot access available AFTER the final mock call is booked, not only after it is passed. Booking grants neither a passing result nor go-live authorization. Read and complete the new Day 1 Training Expectations acknowledgment and follow its weekday EOD training updates and 10-day completion target. The prior 72-hour/two-week labels do not override the new acknowledgment or readiness signoffs. The November 2 NEW REP – PASSED RAMP UP update says to post the completed Part 1 copy link in the onboarding channel and tag Raul; Rudy and Rich have been removed from that signoff tagging instruction. Its support section reserves personal DMs for personal matters; normal sales questions should use the documented sales support/FAQ channels. This does not remove training/readiness requirements or authorize going live without the required approval. Part 2 now specifies a check-in with Mike in 10 days to review progress, successes and areas for improvement; finish the tasks and post the completed Part 2 signoff-copy link in the onboarding channel. The current Part 2 Magic Mike link is https://sales-performance-dashboard-rose.vercel.app/ for Call 2 reviews, FAQ help and AI mock-call practice. This does not replace human readiness approval. Both Part 1 and Part 2 link the current show list at https://docs.google.com/spreadsheets/d/1xIqHh5uAkoKMgYNk1fHox1YfDuBUzGzbn--R7t0_syM/edit . The November 5 ramp-up document changes the personal-matters DM contact from Rich to Mike Wisner (alongside the training contact). Ordinary support uses the documented channels. November 4 Raul replied that the Part 2 DOUBLE AUDITION EXAMPLE recording was discontinued and can be skipped for now; the screenshot identifies that specific training entry. This does not cancel all double-audition procedures or the other Part 2 requirements. The follow-up asking whether the ROI video can also be skipped was unanswered, so do not extend that exemption. November 5 Raul separately confirmed a trainee’s documentary-price compliance videos were old and needed review; use current package guidance rather than outdated video pricing. November 8 reread: Part 2 has now replaced the discontinued DOUBLE AUDITION EXAMPLE with DOUBLE BOOKING CHEAT SHEET. Read the replacement; the old skip instruction does not waive it. Part 1 now links Rudy’s mini sales trainings and the 10 Commandments document; Part 2 links Rudy’s Continued Training. The November 12 continued-training index now links the 10 Commandments Zoom replay and Docs vs Reality Loom; the index now also links the double-booking replay. November 12 Part 1 makes the follow-up with Mike mandatory 10–14 days after signoff: book it before ending the signoff call, do not leave the trainee to book it later, and record the date/time or screenshot. Part 2’s ten-day check-in is within that window. The Passed Ramp Up and Daily Check Sheet specify ten-day dial-outs, Call 1 bookings, Call 2s, closes and revenue to bring. Part 2 now names Mike and Raul for the three-way DM containing mock-call recordings, replacing Rich in that instruction. This explicit training DM instruction is an exception to ordinary channel-first support, not permission to DM all routine questions. Rudy asks reps to block one hour weekly titled RUDY REFRESH TRAININGS and attach the training index. The Double bookings / 2 calendars / pass offs replay is https://insidesuccess.zoom.us/rec/share/_n-I8PqMYddKbgP3aVM2SLLcSqt9kHKrtp2bT4dJf7DT_8hlDI59W80pIOidNucT.UCovDftbMlDkLFzL .",
     "scopes": [
       "shared"
     ],
@@ -2870,9 +2899,11 @@
       "https://istvoffical.slack.com/archives/C0A8S3JSR1Q/p1793840463299519",
       "https://docs.google.com/document/d/1CX61sJw3R2x6RQ8liVj7agQa-8VY2cCPQM51OLAayTU/edit",
       "https://docs.google.com/document/d/1zoiKeIPy9WgSGU1dxOHKWQsdyuPrVaafuyoJdpsXwJI/edit",
-      "https://docs.google.com/document/d/1G7IqpxnOSiS60TqPIBs5fBMbK6K-_uLzLqOFoBtVc0A/edit"
+      "https://docs.google.com/document/d/1G7IqpxnOSiS60TqPIBs5fBMbK6K-_uLzLqOFoBtVc0A/edit",
+      "https://insidesuccess.zoom.us/rec/share/_n-I8PqMYddKbgP3aVM2SLLcSqt9kHKrtp2bT4dJf7DT_8hlDI59W80pIOidNucT.UCovDftbMlDkLFzL",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794490372619729"
     ],
-    "reviewedAt": "2026-11-12T12:24:47.089011+00:00",
+    "reviewedAt": "2026-11-18T12:25:16.958545+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "medium",
@@ -3674,7 +3705,7 @@
     "id": "main-anniversary-prices-2026-10-01",
     "decisionKey": "main-anniversary-prices-2026-10-01",
     "title": "Current regular ISTV anniversary prices, plans and eligibility",
-    "text": "Rich launched the regular Inside Success TV anniversary offer September 30. Current license document and the LIVE 'Aniversary Discounts' tab agree: Lite $8,000 paid in full, 4 x $2,000 or 2 x $4,000; Standard $12,000 paid in full, 4 x $3,000, 3 x $4,000 or 2 x $6,000. VIP remains $30,000 in the current license document; no discounted VIP row was found in the anniversary tab. The current 'Inside Success - All Links' tab confirms ordinary VIP $30,000 PIF / 4 x $7,500 / 3 x $10,000 / 2 x $15,000. Select that exact current row before sending a link. Separate special-offer rows elsewhere in the sheet do not by themselves authorize an anniversary VIP discount or establish eligibility. This is the current announced offer for regular ISTV documentary packages, not reality or DJ/NLCEO. Mike specifically said people reps had calls with in the launch week can be offered it, but NOT currently previous cast members who have run short of funds on existing payments. That eligibility reply is dated September 30: do not turn 'this week' into a permanently rolling eligibility rule. No general authorization was found for all older leads, repricing signed contracts, stacking another $2,000 reduction or refunding earlier buyers. No verified expiry date was announced. Older regular prices (Lite $12k, Standard $20k, conditional same-day Lite $10k) remain historical/other-offer context; do not quote them as the current anniversary price. Some Call 2 script text still contains older amounts: the explicit launch, current license PDF and matching anniversary payment rows govern this offer. Show the appropriate mandatory license video from the new anniversary video folder, not every price-point video. Do not disclose prices on normal Call 1 merely because this offer exists; retain the separately documented narrow disqualification exception. October 8–9 clarification: Timothy says the end will be announced; there is no set end date and it could end at any time. Rich says do not position it as an anniversary \"sale\"; present the applicable current pricing with its matching $8k/$12k/$30k video. This is not permission to invent a countdown, promise permanence, extend eligibility to existing contracts or stack discounts. In a separate VIP-price clarification Rich says ignore the $15k offer: $30k with a $2k same-day discount. For regular documentary VIP this preserves the separately approved conditional same-day $28k policy; the ambiguous thread and a peer claim do not authorize a new reality VIP discount.",
+    "text": "Rich launched the regular Inside Success TV anniversary offer September 30. Current license document and the LIVE 'Aniversary Discounts' tab agree: Lite $8,000 paid in full, 4 x $2,000 or 2 x $4,000; Standard $12,000 paid in full, 4 x $3,000, 3 x $4,000 or 2 x $6,000. VIP remains $30,000 in the current license document; no discounted VIP row was found in the anniversary tab. The current 'Inside Success - All Links' tab confirms ordinary VIP $30,000 PIF / 4 x $7,500 / 3 x $10,000 / 2 x $15,000. Select that exact current row before sending a link. Separate special-offer rows elsewhere in the sheet do not by themselves authorize an anniversary VIP discount or establish eligibility. This is the current announced offer for regular ISTV documentary packages, not reality or DJ/NLCEO. Mike specifically said people reps had calls with in the launch week can be offered it, but NOT currently previous cast members who have run short of funds on existing payments. That eligibility reply is dated September 30: do not turn 'this week' into a permanently rolling eligibility rule. No general authorization was found for all older leads, repricing signed contracts, stacking another $2,000 reduction or refunding earlier buyers. No verified expiry date was announced. Older regular prices (Lite $12k, Standard $20k, conditional same-day Lite $10k) remain historical/other-offer context; do not quote them as the current anniversary price. Some Call 2 script text still contains older amounts: the explicit launch, current license PDF and matching anniversary payment rows govern this offer. Show the appropriate mandatory license video from the new anniversary video folder, not every price-point video. Do not disclose prices on normal Call 1 merely because this offer exists; retain the separately documented narrow disqualification exception. October 8–9 clarification: Timothy says the end will be announced; there is no set end date and it could end at any time. Rich says do not position it as an anniversary \"sale\"; present the applicable current pricing with its matching $8k/$12k/$30k video. This is not permission to invent a countdown, promise permanence, extend eligibility to existing contracts or stack discounts. In a separate VIP-price clarification Rich says ignore the $15k offer: $30k with a $2k same-day discount. For regular documentary VIP this preserves the separately approved conditional same-day $28k policy; the ambiguous thread and a peer claim do not authorize a new reality VIP discount. For regular documentary Call 2 use Rudy’s November 17 final Drive license videos, $8k Lite https://drive.google.com/file/d/11zplk1i0YrdHrJjjI56d6g2BrnMXftkX/view and $12k Standard https://drive.google.com/file/d/1SYQP967oFbNGkUgsqE3OmJchYBprk2km/view . These replace the interim Loom drafts for these two presentations. Match the video to the offer. They do not update reality or DJ packages. November 17 revised documentary presentations are for $8k Lite and $12k Standard only for now. Use the matching video and its updated two-box screen; do not show all three prices. Rudy said one agreement, with the updated contract reached after payment. The $12k Standard presentation describes 3–4 months of scripted social content and one million total combined promotional views across the show, trailer and associated content, including paid promotion. This is not a per-asset or organic-only guarantee or a promise of leads, revenue or followers. The final $8k Lite presentation also describes one million combined promotional views across socials, email and ads, with tracking. Its Lite package slide lists 100+ pieces of edited custom content, PR drafts and release to 100+ outlets (submission is not guaranteed coverage), studio photos and BTS, a cast page, trailer, poster and Miami promotional event access. Confirm exact contract terms for the buyer. Older trailer-only figures do not describe the new combined metric. Rudy explicitly excludes reality, its bundled documentary, and DJ/NLCEO from the new documentary views offer. No new $30k VIP presentation was released.",
     "questions": [
       "What are current ISTV prices and payment plans?",
       "What is the anniversary special?",
@@ -3694,9 +3725,17 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791491376889779",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791497948670859",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791563686743739",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791563591055529"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791563591055529",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794942803989959",
+      "https://www.loom.com/share/a30d6db52dbd451aa2efe6b94d307f7c",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794932281564879",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937627168569",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937869833349",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794959345369959",
+      "https://drive.google.com/file/d/11zplk1i0YrdHrJjjI56d6g2BrnMXftkX/view",
+      "https://drive.google.com/file/d/1SYQP967oFbNGkUgsqE3OmJchYBprk2km/view"
     ],
-    "reviewedAt": "2026-10-12T11:08:26.284544+00:00",
+    "reviewedAt": "2026-11-18T12:29:00.458530+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -3825,7 +3864,7 @@
     "id": "new-rep-training-sessions-2026-10-01",
     "decisionKey": "new-rep-training-sessions-2026-10-01",
     "title": "Current onboarding training schedule and source signoff discrepancy",
-    "text": "The November 5 review of Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 11 AM–noon EST Closing, Payment, Contracts and Onboarding with Raul; Friday noon–1 PM EST Final Mock Call Prep and Checklist with Raul. The previously untimed Thursday Objection Handling line is no longer present in item 5. The document still contains an older six-session signoff; this does not supply a sixth current time/link or prove the session was formally cancelled. Ask Raul for any additional required session rather than inventing a schedule. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Wednesday’s listed link is https://insidesuccess.zoom.us/j/3557599820#success . This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
+    "text": "The November 18 review of Part 1 Basic Setup item 5 lists these internal rep training sessions: Monday 11 AM–noon EST Compliance with Mike; Tuesday 11 AM–noon EST Outbound/Pre Call and Call 1 with Raul; Wednesday 4–5 PM EST Call 2 and HubSpot/OnceHub procedural training with Raul; Thursday 2–3 PM EST Closing, Payment, Contracts and Onboarding with Raul; Friday 11 AM–noon EST Final Mock Call Prep and Checklist with Raul. The previously untimed Thursday Objection Handling line is no longer present in item 5. The document still contains an older six-session signoff; this does not supply a sixth current time/link or prove the session was formally cancelled. Ask Raul for any additional required session rather than inventing a schedule. Attend at least one of each required onboarding training. The former separate Wednesday 11 AM Mike session is not listed. Open the Part 1 document, Basic Setup item 5, and use the HERE link beside each specified session. Use the current session link in the sheet. This recurring schedule is not confirmation a particular dated meeting has not been cancelled. Preserve the source EST label and verify a dated timezone conversion. These are rep trainings, not buyer onboarding or Raul’s separate first-two-weeks-live Q&A.",
     "questions": [
       "When does the training for new reps happen?",
       "How do I join the trainings required when getting hired?",
@@ -3838,7 +3877,7 @@
     "sourceIds": [
       "https://docs.google.com/document/d/1WOiA8L3_kIt1xEDnDun7TPnlyPG11kFBIb5OMnrLwOc/edit"
     ],
-    "reviewedAt": "2026-11-05T16:57:56.940324+00:00",
+    "reviewedAt": "2026-11-18T12:25:16.958565+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4068,7 +4107,7 @@
     "id": "hubspot-daily-stats-cutover-2026-10-03",
     "decisionKey": "hubspot-daily-stats-cutover-2026-10-03",
     "title": "Non-DJ daily Slack stats stopped October 2; HubSpot and daily call reviews remain required",
-    "text": "Rich's October 2 instruction explicitly allows ALL sales reps EXCLUDING DJ reps to stop DAILY STATS in Slack from that date. Those reps must fill in Meeting Status, Score and Closing Call Notes in HubSpot and submit Green Lights through HubSpot. The exception is DJ reps: do not tell them their Slack stats have ended. This replaces older non-DJ instructions to submit EOD stats/Green Lights through the daily-stats Slack form or thread. It does not abolish the separate daily call-review post, trainee onboarding progress updates, Pay Me posts, payment verification or other operational obligations. Daily call review remains mandatory under Rich’s updated October 27–28 instruction: a Call 1 or Call 2 recording when available plus three bullets about the day’s hustle whether calls were booked or not, or Day Off, before 8 AM EST next morning. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. The follow-up asking whether a no-show requires rejection notes was unanswered; do not infer that no-show means a suitability rejection.",
+    "text": "Rich's October 2 instruction explicitly allows ALL sales reps EXCLUDING DJ reps to stop DAILY STATS in Slack from that date. Those reps must fill in Meeting Status, Score and Closing Call Notes in HubSpot and submit Green Lights through HubSpot. The exception is DJ reps: do not tell them their Slack stats have ended. This replaces older non-DJ instructions to submit EOD stats/Green Lights through the daily-stats Slack form or thread. It does not abolish the separate daily call-review post, trainee onboarding progress updates, Pay Me posts, payment verification or other operational obligations. Daily call review remains mandatory under Rich’s updated October 27–28 instruction: a Call 1 or Call 2 recording when available plus three bullets about the day’s hustle whether calls were booked or not, or Day Off, before 8 AM EST next morning. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. Rudy clarified that a no-show alone does not require a rejection note. Record the actual meeting status. Rejection notes are for an actual decision to reject rather than green-light.",
     "questions": [
       "Do I still post daily stats in Slack?",
       "Have daily stats stopped for DJ reps?",
@@ -4090,7 +4129,7 @@
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-11-12T12:24:47.089011+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.958031+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4405,7 +4444,7 @@
     "id": "new-rep-first-two-weeks-qa-2026-10-03",
     "decisionKey": "new-rep-first-two-weeks-qa-2026-10-03",
     "title": "New-rep Q&A 9–9:20; main sales meeting 9:20–10 Eastern",
-    "text": "The October 1 Part 1 document updates new-rep sales Q&A with Raul to Tuesday–Friday 9:00–9:20 AM EST, mandatory for the first two weeks AFTER training and passing the final mock. The invitation arrives when ready to go live; tell Raul if absent or off camera. Reps may stop this particular Q&A after two weeks. The separate main sales meeting with Rich/Rudy is Tuesday–Friday 9:20–10 AM EST. Follow Olivia's daily main-channel meeting link and actual announcement; explain an absence/camera-off in that daily meeting thread. These replace the old 9–9:30 Q&A/9:30 main-meeting times. Neither replaces the FIVE live onboarding training sessions, including Wednesday 3–4 PM combined Call 2/Procedural training and Friday noon–1 PM mock prep. Keep EST as the document's label; verify timezone for dated conversions. Part 1 also labels first-call booking as public calendar and second-call booking as Call 2/personal calendar; follow the relevant booking SOP rather than swapping links.",
+    "text": "The October 1 Part 1 document updates new-rep sales Q&A with Raul to Tuesday–Friday 9:00–9:20 AM EST, mandatory for the first two weeks AFTER training and passing the final mock. The invitation arrives when ready to go live; tell Raul if absent or off camera. Reps may stop this particular Q&A after two weeks. The separate main sales meeting with Rich/Rudy is Tuesday–Friday 9:20–10 AM EST. Follow Olivia's daily main-channel meeting link and actual announcement; explain an absence/camera-off in that daily meeting thread. These replace the old 9–9:30 Q&A/9:30 main-meeting times. Neither replaces the FIVE live onboarding training sessions, including Wednesday 4–5 PM combined Call 2/Procedural training and Friday 11 AM–noon mock prep. Keep EST as the document's label; verify timezone for dated conversions. Part 1 also labels first-call booking as public calendar and second-call booking as Call 2/personal calendar; follow the relevant booking SOP rather than swapping links.",
     "questions": [
       "When is Raul new rep morning Q&A?",
       "What time is the main sales team meeting?",
@@ -4563,7 +4602,7 @@
     "id": "reality-couples-separate-entrants-2026-10-05",
     "decisionKey": "reality-couples-separate-entrants-2026-10-05",
     "title": "Reality couples: two separate licenses, same-team participation possible",
-    "text": "Rudy clarified October 5 in the master FAQ thread that couples may participate but must pay twice, and there are no couples/duo entries in any reality shows. Treat them as two separate paid participants with their own selected-package deliverables, subject to casting approval. Do not offer a shared-price couple/duo entry. In the October 22 follow-up Rudy confirms two separate $20,000 licenses ($40,000 total in that example) and says the couple can be put on the same team because much of the show uses teams. Therefore do not categorically tell a couple they must always compete against each other. Same-team participation is possible; this does not create a single joint license, a guaranteed permanent duo throughout the season, or an exemption from casting and show rules. This resolves the earlier Business Race question awaiting confirmation. It does not mean the competition can never include temporary teams, alliances or team challenges. Couples Empire is a separate regular documentary offer: the earlier response says a couple pays once for that shared feature; separate deliverable sets for separate businesses need clarification. Do not transfer regular documentary couple rules into reality or treat a guest allowance as a second participant. Rudy’s October 23 follow-up clarifies both separately licensed people must start from the beginning: they cannot swap halfway through filming. Same-team play is possible for most, not all, shows and is not a guaranteed permanent format.",
+    "text": "Rudy clarified October 5 in the master FAQ thread that couples may participate but must pay twice, and there are no couples/duo entries in any reality shows. Treat them as two separate paid participants with their own selected-package deliverables, subject to casting approval. Do not offer a shared-price couple/duo entry. In the October 22 follow-up Rudy confirms two separate $20,000 licenses ($40,000 total in that example) and says the couple can be put on the same team because much of the show uses teams. Therefore do not categorically tell a couple they must always compete against each other. Same-team participation is possible; this does not create a single joint license, a guaranteed permanent duo throughout the season, or an exemption from casting and show rules. This resolves the earlier Business Race question awaiting confirmation. It does not mean the competition can never include temporary teams, alliances or team challenges. Couples Empire is a separate regular documentary offer: the earlier response says a couple pays once for that shared feature; separate deliverable sets for separate businesses need clarification. Do not transfer regular documentary couple rules into reality or treat a guest allowance as a second participant. Rudy’s October 23 follow-up clarifies both separately licensed people must start from the beginning: they cannot swap halfway through filming. Same-team play is possible for most, not all, shows and is not a guaranteed permanent format. Mike confirmed couples can participate in the same Entrepreneurs Island season. This does not guarantee a specific season slot.",
     "questions": [
       "Can a couple compete together in Business Race?",
       "Do husband and wife pay once or twice for Business Race?",
@@ -4574,12 +4613,13 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791213775389389",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791213789034989",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792695339558389",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792717208009339"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792717208009339",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794511261052359"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.958049+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4671,7 +4711,7 @@
     "id": "outbound-hubspot-assignment-2026-10-07",
     "decisionKey": "outbound-hubspot-assignment-2026-10-07",
     "title": "20 Percent Dial-Out SOP: current HubSpot outreach lead allocation and logging",
-    "text": "The October 27 HubSpot Outreach Lead Request SOP supersedes the older separate fresh/Extra allocation schedule. Post exactly Assign as a new top-level message in #hubspot-outreach-20percent https://istvoffical.slack.com/archives/C0C1R8BBVR6 ; Extra uses the SAME rules and daily allowance. The service checks every fifteen minutes and replies in that request thread with up to twenty contacts, using fresh leads first and eligible older leads to fill remaining places. Maximum 100 leads per day across both pools, five twenty-lead batch equivalents; partial or mixed batches may show decimals. Complete every callable contact in the previous batch before requesting more, even on a later day. For each contact, make a real outbound call, verify its actual logged Call record (do not duplicate an automatic log), and separately complete the Contact properties Outreach Call Outcome AND Outreach Call Note. Contact fields alone are insufficient. The Call must be associated with that contact, direction Outbound, with actual activity time and record creation both after assignment. Any Call status including blank is accepted, but record truthful results. SMS, inbound calls, old calls and timeline notes do not substitute. Open Contact > Activities > Calls > Log a call if the real call was not automatically logged. For the separate Contact fields use About this contact > Actions > View all properties, search Outreach, uncheck Hide blank properties; enter a meaningful note, save and verify. A normal timeline Note or call description does not replace Outreach Call Note. If blocked, open the linked contacts and correct genuine omissions; blocked requests do not consume allowance. Never invent calls or change dates to bypass checks, and never redial an opt-out, declined or Do Not Contact lead merely to clear a block. Ask Tech to review actual activity and any approved exception. Slack and HubSpot emails must match and Contact-edit/Call-log permissions are needed. Verification outages require waiting/retrying, not repeated batch requests. One-time exceptions require admin approval; reps have no bypass command. Preserve ownership checks and the older SOP’s 8 PM Eastern logging deadline. Do not resume spreadsheet claiming or old three-Assign/two-Extra or 80-plus-20 allocation rules. The newly linked Daily Cheat Sheet sets at least sixty outbound dials as a daily activity target, distinct from the 100-lead allocation cap. The November 11 reread of the outbound booking script has an internal pricing inconsistency: one cost-answer sentence now says $8,000 minimum while the next still says $10,000. Do not turn either into a new universal package price or import that outbound wording into scheduled Call 1. State the document conflict if specifically asked for that minimum; confirm the intended outbound wording with leadership and preserve the current Call 1 no-routine-price rule and narrow nonnumeric financial-fit exception.",
+    "text": "The October 27 HubSpot Outreach Lead Request SOP supersedes the older separate fresh/Extra allocation schedule. Post exactly Assign as a new top-level message in #hubspot-outreach-20percent https://istvoffical.slack.com/archives/C0C1R8BBVR6 ; Extra uses the SAME rules and daily allowance. The service checks every fifteen minutes and replies in that request thread with up to twenty contacts, using fresh leads first and eligible older leads to fill remaining places. Maximum 100 leads per day across both pools, five twenty-lead batch equivalents; partial or mixed batches may show decimals. Complete every callable contact in the previous batch before requesting more, even on a later day. For each contact, make a real outbound call, verify its actual logged Call record (do not duplicate an automatic log), and separately complete the Contact properties Outreach Call Outcome AND Outreach Call Note. Contact fields alone are insufficient. The Call must be associated with that contact, direction Outbound, with actual activity time and record creation both after assignment. Any Call status including blank is accepted, but record truthful results. SMS, inbound calls, old calls and timeline notes do not substitute. Open Contact > Activities > Calls > Log a call if the real call was not automatically logged. For the separate Contact fields use About this contact > Actions > View all properties, search Outreach, uncheck Hide blank properties; enter a meaningful note, save and verify. A normal timeline Note or call description does not replace Outreach Call Note. If blocked, open the linked contacts and correct genuine omissions; blocked requests do not consume allowance. Never invent calls or change dates to bypass checks, and never redial an opt-out, declined or Do Not Contact lead merely to clear a block. Ask Tech to review actual activity and any approved exception. Slack and HubSpot emails must match and Contact-edit/Call-log permissions are needed. Verification outages require waiting/retrying, not repeated batch requests. One-time exceptions require admin approval; reps have no bypass command. Preserve ownership checks and the older SOP’s 8 PM Eastern logging deadline. Do not resume spreadsheet claiming or old three-Assign/two-Extra or 80-plus-20 allocation rules. The newly linked Daily Cheat Sheet sets at least sixty outbound dials as a daily activity target, distinct from the 100-lead allocation cap. The November 11 reread of the outbound booking script has an internal pricing inconsistency: one cost-answer sentence now says $8,000 minimum while the next still says $10,000. Do not turn either into a new universal package price or import that outbound wording into scheduled Call 1. State the document conflict if specifically asked for that minimum; confirm the intended outbound wording with leadership and preserve the current Call 1 no-routine-price rule and narrow nonnumeric financial-fit exception. For a qualified outbound lead the revised dialing SOP calls for a 30-minute intro/casting Call 1 the same day or within 24 hours.",
     "questions": [
       "Where do I get my 20% outbound leads now?",
       "Do I still use the daily dial out spreadsheet?",
@@ -4713,7 +4753,7 @@
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-11-11T12:14:19.995430+00:00",
+    "reviewedAt": "2026-11-18T12:25:16.958643+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4807,7 +4847,7 @@
     "id": "sales-rep-dashboard-2026-10-07",
     "decisionKey": "sales-rep-dashboard-2026-10-07",
     "title": "New HubSpot-fed sales rep performance dashboard",
-    "text": "Rudy announced the new beta sales-rep dashboard October 6 at https://dash.insidesuccess.com/sales-reps . It uses HubSpot data and includes leaderboard, HQ and performance views, projected income based on contracts/bonuses/tiers, close rate based on CALL 2s TAKEN, earnings per Call 2 and trends. He says older marketing dashboards are being retired; this does not retire Magic Mike's Coaching, Ask Sales or manager pages. Treat projected income as an estimate, not a commission payout guarantee. Keep HubSpot records accurate and report data issues rather than altering status to improve statistics. Rudy's 30-day analysis found similar close-rate/RPC across the compared lower revenue bands; this supports not dismissing prospects solely on revenue, not guaranteed results or removal of affordability/qualification rules.",
+    "text": "Rudy announced the new beta sales-rep dashboard October 6 at https://dash.insidesuccess.com/sales-reps . It uses HubSpot data and includes leaderboard, HQ and performance views, projected income based on contracts/bonuses/tiers, close rate based on CALL 2s TAKEN, earnings per Call 2 and trends. He says older marketing dashboards are being retired; this does not retire Magic Mike's Coaching, Ask Sales or manager pages. Treat projected income as an estimate, not a commission payout guarantee. Keep HubSpot records accurate and report data issues rather than altering status to improve statistics. Rudy's 30-day analysis found similar close-rate/RPC across the compared lower revenue bands; this supports not dismissing prospects solely on revenue, not guaranteed results or removal of affordability/qualification rules. The new HubSpot rep welcome screen shows rolling 30-day calls, Call 2s, close rate and revenue. Rudy expects reps to know these figures.",
     "questions": [
       "Where is the new sales reps leaderboard?",
       "What is close rate based on in the new dashboard?",
@@ -4815,12 +4855,13 @@
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791315291896659",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791318108037129"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791318108037129",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794776856268439"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-10-07",
+    "reviewedAt": "2026-11-18T12:25:16.958639+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5167,18 +5208,25 @@
     "id": "regular-vip-video-2026-10-08",
     "decisionKey": "regular-vip-video-2026-10-08",
     "title": "Updated regular documentary VIP license video",
-    "text": "Rich announced a new VIP license video October 7. The current casting-video directory's DOCUMENTARIES / CALL 2 folder contains VIP 30K PACKAGE.mp4: https://drive.google.com/file/d/1zT-L5dJPXDndYvKgccVFUS-VmbSp1M7u/view . Use this current regular documentary video rather than the OLD - DO NOT USE folder. It is not the separate reality Call 2 video. The file listing and announcement confirm the resource, but its spoken contents have not been verified in this refresh; do not infer changed prices, deliverables or entitlements from its filename. Use the current governed package policy and agreement for benefit claims.",
+    "text": "Rich announced a new VIP license video October 7. The current casting-video directory's DOCUMENTARIES / CALL 2 folder contains VIP 30K PACKAGE.mp4: https://drive.google.com/file/d/1zT-L5dJPXDndYvKgccVFUS-VmbSp1M7u/view . Use this current regular documentary video rather than the OLD - DO NOT USE folder. It is not the separate reality Call 2 video. The file listing and announcement confirm the resource, but its spoken contents have not been verified in this refresh; do not infer changed prices, deliverables or entitlements from its filename. Use the current governed package policy and agreement for benefit claims. November 17 revised documentary presentations are for $8k Lite and $12k Standard only for now. Use the matching video and its updated two-box screen; do not show all three prices. Rudy said one agreement, with the updated contract reached after payment. The $12k Standard presentation describes 3–4 months of scripted social content and one million total combined promotional views across the show, trailer and associated content, including paid promotion. This is not a per-asset or organic-only guarantee or a promise of leads, revenue or followers. The final $8k Lite presentation also describes one million combined promotional views across socials, email and ads, with tracking. Its Lite package slide lists 100+ pieces of edited custom content, PR drafts and release to 100+ outlets (submission is not guaranteed coverage), studio photos and BTS, a cast page, trailer, poster and Miami promotional event access. Confirm exact contract terms for the buyer. Older trailer-only figures do not describe the new combined metric. Rudy explicitly excludes reality, its bundled documentary, and DJ/NLCEO from the new documentary views offer. No new $30k VIP presentation was released.",
     "questions": [
       "Where is the new documentary VIP license video?"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791394463993969",
-      "https://drive.google.com/drive/folders/1UXjI-UtgM4mQjcctzRKp5N8_2wE2xdq9"
+      "https://drive.google.com/drive/folders/1UXjI-UtgM4mQjcctzRKp5N8_2wE2xdq9",
+      "https://www.loom.com/share/a30d6db52dbd451aa2efe6b94d307f7c",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794932281564879",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937627168569",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794937869833349",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794959345369959",
+      "https://drive.google.com/file/d/11zplk1i0YrdHrJjjI56d6g2BrnMXftkX/view",
+      "https://drive.google.com/file/d/1SYQP967oFbNGkUgsqE3OmJchYBprk2km/view"
     ],
     "scopes": [
       "main_istv"
     ],
-    "reviewedAt": "2026-10-08",
+    "reviewedAt": "2026-11-18T12:29:00.458533+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5228,16 +5276,17 @@
       "They texted STOP before Call 1. Should I still contact them?",
       "How do I log a casting meeting after STOP?"
     ],
-    "text": "In the October 10 thread Rudy confirms Call 1 cancelled when the prospect replies STOP to the pre-Call-1 text, and explicitly says we cannot contact them. Do not follow the conflicting peer suggestion to continue contact. Complete the established opt-out/DNC process as well as the correct meeting outcome; a cancellation label alone is not proof every system is suppressed. Tech also confirms an unidentified number can be submitted to #ft-opt-outs even when no name or email can be found. Do not delay the opt-out or send another sales text just to obtain their identity.",
+    "text": "In the October 10 thread Rudy confirms Call 1 cancelled when the prospect replies STOP to the pre-Call-1 text, and explicitly says we cannot contact them. Do not follow the conflicting peer suggestion to continue contact. Complete the established opt-out/DNC process as well as the correct meeting outcome; a cancellation label alone is not proof every system is suppressed. Tech also confirms an unidentified number can be submitted to #ft-opt-outs even when no name or email can be found. Do not delay the opt-out or send another sales text just to obtain their identity. Rudy explicitly overruled the suggestion to contact the person again to confirm whether STOP meant cancellation. Do not send that confirmation.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791647927639029",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791648166352969",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791481096757349"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1791481096757349",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794504024448389"
     ],
-    "reviewedAt": "2026-10-12T11:08:26.284553+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.958070+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5875,7 +5924,7 @@
       "Do I keep calling after the applicant confirms?",
       "Can a busy rep reduce the reminder calls?"
     ],
-    "text": "Rich announced the mandatory Pre-Audition Contact SOP on October 16, now linked from Part 1 onboarding. It applies to scheduled first Casting Auditions: verify the applicant, show, date/time/time zone, Zoom invitation, rebooking link and previous contact history. For an unresponsive applicant, the day-before sequence is four calls with three texts: suggested 9 AM call then Text 1 (Hey, is this [First Name]?); noon call then Text 2 identifying the rep, show/audition tomorrow and asking for two minutes to prepare; 3 PM call then Text 3 asking whether they still plan to attend or prefer to cancel; final 5–7 PM call with no additional text required. These are suggested operating times, subject to the agreed operating time zone and applicable contact-hour requirements, not permission to ignore the prospect location or opt-out. STOP the unanswered-call sequence once the applicant answers and completes the preparation call. Exceptionally busy HQ sales reps may use a minimum of two calls only with sales-leadership authorization; being busy does not automatically grant the exception. Log every actual attempt in HubSpot. Templates are in HubSpot. Opt-outs/no-further-contact requests stop further contact. This is booked-audition preparation, not the separate 20-percent unbooked outbound lead assignment process, and not a replacement for the full audition, recording consent, qualification or Green Light approval. Rich also requires every sales rep to review the SOP, watch the October 16 sales meeting if they missed it, and acknowledge YES in the announcement thread. The FAQ describes this requirement; it cannot submit acknowledgments on the rep’s behalf. The linked written SOP is the authoritative script for details. Approved day-before text copy (fill truthful placeholders and use the correct show): Text 1: “Hey, is this [First Name]?” Text 2: “Hey [First Name], it's [Rep Name] from Inside Success TV. I'm trying to reach you about your reality TV casting audition tomorrow. I just need two minutes to help you prepare. When's a good time to chat?” Text 3: “Hey [First Name], I've tried reaching you a few times. This is [Rep Name] from Inside Success TV regarding casting for [Show Name]. You're booked for your CASTING AUDITION tomorrow, and I wanted to help you prepare. Are you still planning to attend, or would you prefer to cancel your appointment? Please reply or give me a quick call.” The quoted reality wording must not mislabel a documentary applicant; drafts can adapt the correct known show and actual prior attempts without inventing a new policy. Rudy’s November mini-training on show rate and mandatory pre-calling gives a general minimum of two day-before attempts (morning and afternoon/early evening), recommends an additional attempt around 6 PM, and also acknowledges up to four attempts. It explicitly restricts calls to 9 AM–7 PM in the PROSPECT’S local time; check their HubSpot timezone, not the rep’s timezone. This minimum does not explicitly revoke the written SOP’s four-attempt unanswered-booking sequence or its leadership-approved two-call exception. For an unanswered booking, follow the detailed written sequence within the prospect-local contact window unless leadership has explicitly authorized a different cadence; two attempts meet the video’s general floor but are not proof the full SOP is complete. Do not restart or continue the unanswered sequence after completing preparation or receiving an opt-out. Explain the difference plainly if asked rather than declaring either source nonexistent or inventing a new blanket exception. Rudy uses roughly one-in-three attendance and 10–20% closing examples to explain why preparation and sufficient booked-call volume matter; these are training illustrations, not a live show-rate report, earnings guarantee or justification to book unqualified applicants. Weekend confirmation of existing appointments remains allowed under Rudy’s November 9 clarification; random Sunday dialing is separate.",
+    "text": "Rich announced the mandatory Pre-Audition Contact SOP on October 16, now linked from Part 1 onboarding. It applies to scheduled first Casting Auditions: verify the applicant, show, date/time/time zone, Zoom invitation, rebooking link and previous contact history. For an unresponsive applicant, make the preparation calls. The written cadence lists four calls for an unanswered booking at 9 AM, noon, 3 PM and 5–7 PM. Day-before texts and emails for booked auditions are now automated per Rudy. Do not manually duplicate automated messages. These are suggested operating times, subject to the agreed operating time zone and applicable contact-hour requirements, not permission to ignore the prospect location or opt-out. STOP the unanswered-call sequence once the applicant answers and completes the preparation call. Exceptionally busy HQ sales reps may use a minimum of two calls only with sales-leadership authorization; being busy does not automatically grant the exception. Log every actual attempt in HubSpot. Templates are in HubSpot. Opt-outs/no-further-contact requests stop further contact. This is booked-audition preparation, not the separate 20-percent unbooked outbound lead assignment process, and not a replacement for the full audition, recording consent, qualification or Green Light approval. Rich also requires every sales rep to review the SOP, watch the October 16 sales meeting if they missed it, and acknowledge YES in the announcement thread. The FAQ describes this requirement; it cannot submit acknowledgments on the rep’s behalf. The linked written SOP is the authoritative script for details. Rudy’s November mini-training on show rate and mandatory pre-calling gives a general minimum of two day-before attempts (morning and afternoon/early evening), recommends an additional attempt around 6 PM, and also acknowledges up to four attempts. It explicitly restricts calls to 9 AM–7 PM in the PROSPECT’S local time; check their HubSpot timezone, not the rep’s timezone. This minimum does not explicitly revoke the written SOP’s four-attempt unanswered-booking sequence or its leadership-approved two-call exception. For an unanswered booking, follow the detailed written sequence within the prospect-local contact window unless leadership has explicitly authorized a different cadence; two attempts meet the video’s general floor but are not proof the full SOP is complete. Do not restart or continue the unanswered sequence after completing preparation or receiving an opt-out. Explain the difference plainly if asked rather than declaring either source nonexistent or inventing a new blanket exception. Rudy uses roughly one-in-three attendance and 10–20% closing examples to explain why preparation and sufficient booked-call volume matter; these are training illustrations, not a live show-rate report, earnings guarantee or justification to book unqualified applicants. Weekend confirmation of existing appointments remains allowed under Rudy’s November 9 clarification; random Sunday dialing is separate.",
     "scopes": [
       "shared"
     ],
@@ -5883,9 +5932,10 @@
       "https://docs.google.com/document/d/1LuBAHOmisxHBvVwhOU2R_VmDRECAwAlbHVSzoyUT04c/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792168139087059",
       "https://www.loom.com/share/3391617af3924a9599f0c36662110444",
-      "https://istvoffical.slack.com/archives/C0CEUSFRM5Y/p1794310107000349"
+      "https://istvoffical.slack.com/archives/C0CEUSFRM5Y/p1794310107000349",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794652824061379"
     ],
-    "reviewedAt": "2026-11-10T13:22:49.796896+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.958209+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5959,7 +6009,7 @@
       "Where can I see which meetings have incomplete stats?",
       "How do I find missing cast scores and call notes?"
     ],
-    "text": "Igor announced the Missing Meeting Fields tab on October 18 at https://app-eu1.hubspot.com/app/148285209/51316600 . Bookmark that rep app; it also has Meetings, Ledger and SMS Messages. The tab shows missing Meeting Status, Cast Score, Closing Call Notes and Reject Call Notes. Fill fields according to the actual meeting and existing rules: Closing Call Notes concern Call 2, Reject Call Notes concern actual Call 1 rejection, and no-shows may leave rejection notes blank or N/A with their correct status/zero placeholder. A flag is a request to review the record, not permission to invent an outcome, rejection reason or substantive score. Check the meeting time before treating a missing-field flag as overdue: Igor confirmed October 18 that a flagged meeting which had not yet started did not require an invented outcome. Complete actual results after the meeting under the existing reporting rules. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. The follow-up asking whether a no-show requires rejection notes was unanswered; do not infer that no-show means a suitability rejection. Alex’s November 12 tracking clarification separates Green Light approval from a Call 2 booking: greenlighting alone does not count as pushing to Call 2; the actual Call 2 booking counts. Book next day under the current SOP, except exceptional circumstances.",
+    "text": "Igor announced the Missing Meeting Fields tab on October 18 at https://app-eu1.hubspot.com/app/148285209/51316600 . Bookmark that rep app; it also has Meetings, Ledger and SMS Messages. The tab shows missing Meeting Status, Cast Score, Closing Call Notes and Reject Call Notes. Fill fields according to the actual meeting and existing rules: Closing Call Notes concern Call 2, Reject Call Notes concern actual Call 1 rejection, and no-shows may leave rejection notes blank or N/A with their correct status/zero placeholder. A flag is a request to review the record, not permission to invent an outcome, rejection reason or substantive score. Check the meeting time before treating a missing-field flag as overdue: Igor confirmed October 18 that a flagged meeting which had not yet started did not require an invented outcome. Complete actual results after the meeting under the existing reporting rules. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. Rudy clarified that a no-show alone does not require a rejection note. Record the actual meeting status. Rejection notes are for an actual decision to reject rather than green-light. Alex’s November 12 tracking clarification separates Green Light approval from a Call 2 booking: greenlighting alone does not count as pushing to Call 2; the actual Call 2 booking counts. Book next day under the current SOP, except exceptional circumstances.",
     "scopes": [
       "shared"
     ],
@@ -5970,7 +6020,7 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794481772497789",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794469974864179"
     ],
-    "reviewedAt": "2026-11-12T12:24:47.089011+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.958219+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6012,18 +6062,20 @@
     "questions": [
       "Where is the cast member portal training video?",
       "Should I demonstrate the member portal on a reality sales call?",
-      "Can I show documentary buyers their media resources?"
+      "Can I show documentary buyers their media resources?",
+      "Do reality cast members receive the Cast Member HQ portal?"
     ],
-    "text": "Part 2 onboarding now links Cast Member HQ - VIDEO LINK instead of the former Studio Tour row. The linked Cast Member Portal Walkthrough folder is https://drive.google.com/drive/folders/12IMA5mTlIm0ZJIgKkYvBuCV2NRh2IUcj and contains the walkthrough recording. Use that resource; do not invent screen steps from an untranscribed video. In the October 20–21 discussion Rudy says not to go deep into the portal during a sales call: the offer is TV, not a marketing course; spend time on media kit, assets and trailers. His final clarification is that portal discussion is less relevant for reality, while he sees the benefit for documentary clients. A brief relevant documentary demonstration can help; this is not a blanket ban on portal demonstrations or a promise that every resource applies to every package. Keep current package entitlements and content-use restrictions. Sales Tech confirmed October 28 that the walkthrough was recorded without voice; silence in that particular recording is expected, not by itself an audio fault on the rep’s device.",
+    "text": "Reality buyers do not receive Cast Member HQ portal access. Rudy answered the entitlement question directly on November 12. Part 2 onboarding now links Cast Member HQ - VIDEO LINK instead of the former Studio Tour row. The linked Cast Member Portal Walkthrough folder is https://drive.google.com/drive/folders/12IMA5mTlIm0ZJIgKkYvBuCV2NRh2IUcj and contains the walkthrough recording. Use that resource; do not invent screen steps from an untranscribed video. In the October 20–21 discussion Rudy says not to go deep into the portal during a sales call: the offer is TV, not a marketing course; spend time on media kit, assets and trailers. He sees the benefit for documentary clients. A brief relevant documentary demonstration can help; this is not a blanket ban on portal demonstrations or a promise that every resource applies to every package. Keep current package entitlements and content-use restrictions. Sales Tech confirmed October 28 that the walkthrough was recorded without voice; silence in that particular recording is expected, not by itself an audio fault on the rep’s device.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1tJZLBW3OvcNFv4fjaMvg3S449wX2DHU4cG5-xfU0zxU/edit",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792505738086349",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793211290271339"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1793211290271339",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794503771230289"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-18T12:30:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6506,7 +6558,7 @@
     "questions": [
       "Where do I put notes when I reject a call?"
     ],
-    "text": "Igor’s October 29 clarification says rejection feedback belongs in the dedicated Reject Call Notes field, separate from Closing Call Notes. There is no minimum word count; give meaningful factual rejection context. Do not claim that populating Closing Call Notes satisfies the rejection field or changes the approval outcome. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. The follow-up asking whether a no-show requires rejection notes was unanswered; do not infer that no-show means a suitability rejection.",
+    "text": "Igor’s October 29 clarification says rejection feedback belongs in the dedicated Reject Call Notes field, separate from Closing Call Notes. There is no minimum word count; give meaningful factual rejection context. Do not claim that populating Closing Call Notes satisfies the rejection field or changes the approval outcome. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. Rudy clarified that a no-show alone does not require a rejection note. Record the actual meeting status. Rejection notes are for an actual decision to reject rather than green-light.",
     "scopes": [
       "shared"
     ],
@@ -6515,7 +6567,7 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794481680821809",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794481772497789"
     ],
-    "reviewedAt": "2026-11-12T12:24:47.089011+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.958238+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7449,7 +7501,7 @@
       "Where is the 10 Commandments document?",
       "Where is Docs vs Reality training?"
     ],
-    "text": "Current Part 1 and Rudy’s Continued Training link: RPC and stats https://www.loom.com/share/a79af4cd198347dcbfb3abe90cfac867 ; pricing https://www.loom.com/share/03fcfdccc06844239eee7d03a5fed06a ; show rate and mandatory pre-calling https://www.loom.com/share/3391617af3924a9599f0c36662110444 ; objection handling https://www.loom.com/share/586c43d0c24f4a7dbf0f8c7de126659c ; Reddit versus real clients https://www.loom.com/share/ce7bf8dd0b1b49ed9f0495fb5d89e933 ; daily meme and hustle https://www.loom.com/share/1307ec9e389e4a73a7498559ab0df7ae . The 10 Commandments document is https://docs.google.com/document/d/1G7IqpxnOSiS60TqPIBs5fBMbK6K-_uLzLqOFoBtVc0A/edit . It recommends revisiting the mini trainings weekly. Use these for rep training, not as approved client-send assets. Their earnings, conversion and review counts are training examples or speaker claims, not guaranteed earnings, real-time dashboards or independently verified customer statistics. Product benefits and rights still come from the specific current package and agreement. November 12 index additions: Docs vs Reality https://www.loom.com/share/b1654b83e2fd4be085bc9364d45a0942 ; November 11 10 Commandments / earnings meeting https://insidesuccess.zoom.us/rec/share/UMgresvWoGwy1_LLvlmKl4SntGkwPODyU-cE9Bu4GPtqGmj3M6dfESdlcI8pNH_I.p0H_iKwwgZItM6Ul ; numbers breakdown https://www.loom.com/share/5be3447617a64f31a33985cd317225b9 . Mike endorsed sharing the 10 Commandments document link when reps asked where it was; provide the actual document link, not just its name. The Double bookings index label still has no link; use the separate published SOP/video.",
+    "text": "Current Part 1 and Rudy’s Continued Training link: RPC and stats https://www.loom.com/share/a79af4cd198347dcbfb3abe90cfac867 ; pricing https://www.loom.com/share/03fcfdccc06844239eee7d03a5fed06a ; show rate and mandatory pre-calling https://www.loom.com/share/3391617af3924a9599f0c36662110444 ; objection handling https://www.loom.com/share/586c43d0c24f4a7dbf0f8c7de126659c ; Reddit versus real clients https://www.loom.com/share/ce7bf8dd0b1b49ed9f0495fb5d89e933 ; daily meme and hustle https://www.loom.com/share/1307ec9e389e4a73a7498559ab0df7ae . The 10 Commandments document is https://docs.google.com/document/d/1G7IqpxnOSiS60TqPIBs5fBMbK6K-_uLzLqOFoBtVc0A/edit . It recommends revisiting the mini trainings weekly. Use these for rep training, not as approved client-send assets. Their earnings, conversion and review counts are training examples or speaker claims, not guaranteed earnings, real-time dashboards or independently verified customer statistics. Product benefits and rights still come from the specific current package and agreement. November 12 index additions: Docs vs Reality https://www.loom.com/share/b1654b83e2fd4be085bc9364d45a0942 ; November 11 10 Commandments / earnings meeting https://insidesuccess.zoom.us/rec/share/UMgresvWoGwy1_LLvlmKl4SntGkwPODyU-cE9Bu4GPtqGmj3M6dfESdlcI8pNH_I.p0H_iKwwgZItM6Ul ; numbers breakdown https://www.loom.com/share/5be3447617a64f31a33985cd317225b9 . Mike endorsed sharing the 10 Commandments document link when reps asked where it was; provide the actual document link, not just its name.  Rudy asks reps to block one hour weekly titled RUDY REFRESH TRAININGS and attach the training index. The Double bookings / 2 calendars / pass offs replay is https://insidesuccess.zoom.us/rec/share/_n-I8PqMYddKbgP3aVM2SLLcSqt9kHKrtp2bT4dJf7DT_8hlDI59W80pIOidNucT.UCovDftbMlDkLFzL .",
     "scopes": [
       "shared"
     ],
@@ -7467,9 +7519,11 @@
       "https://www.loom.com/share/b1654b83e2fd4be085bc9364d45a0942",
       "https://insidesuccess.zoom.us/rec/share/UMgresvWoGwy1_LLvlmKl4SntGkwPODyU-cE9Bu4GPtqGmj3M6dfESdlcI8pNH_I.p0H_iKwwgZItM6Ul",
       "https://www.loom.com/share/5be3447617a64f31a33985cd317225b9",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794432910788499"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794432910788499",
+      "https://insidesuccess.zoom.us/rec/share/_n-I8PqMYddKbgP3aVM2SLLcSqt9kHKrtp2bT4dJf7DT_8hlDI59W80pIOidNucT.UCovDftbMlDkLFzL",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794490372619729"
     ],
-    "reviewedAt": "2026-11-12T12:24:47.089011+00:00",
+    "reviewedAt": "2026-11-18T12:25:16.958627+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7786,7 +7840,7 @@
       "Where is the daily sales rep checklist?",
       "What should I do each day as a sales rep?"
     ],
-    "text": "The newly linked Sales Rep Daily Cheat Sheet covers: two pre-meeting dials plus email/text the day before scheduled calls and a day-of text; at least 60 daily dial-outs from the HubSpot outreach channel; approved-calendar access before 20-percent, pass-off or dummy-channel calls; the correct Call 1/2 script and videos; substantive Call 2 objection handling after the licensing video; permitted follow-up with prior sold clients, no-shows and cancellations; and end-of-day HubSpot cast/status/score updates. Checklist: https://docs.google.com/document/d/1wqv3MUaz7a3qhwWUpFT1LklJRGGEWkGVfzJ9BN38ch8/edit . Sixty dials is an activity target, not the lead-allocation limit; preserve the current 100-lead/day allocation controls, ownership, actual call logging, contact hours and opt-outs. The checklist’s 30-minute post-video instruction does not override meaningful agreement review or authorize pressuring someone to remain. Its two-dial summary does not explicitly repeal the detailed SOP’s extra attempts for unresponsive contacts. Do not blindly contact a cancelled or opted-out prospect when contact is prohibited. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. The follow-up asking whether a no-show requires rejection notes was unanswered; do not infer that no-show means a suitability rejection. The November 12 Daily Check Sheet adds tracking ten-day totals for dial-outs, Call 1 bookings, Call 2s, closes and revenue, and posting daily call review in Olivia’s designated thread. Use these for the Mike progress check-in; they are activity/results records, not guaranteed earnings.",
+    "text": "The newly linked Sales Rep Daily Cheat Sheet covers: two pre-meeting dials plus email/text the day before scheduled calls and a day-of text; at least 60 daily dial-outs from the HubSpot outreach channel; approved-calendar access before 20-percent, pass-off or dummy-channel calls; the correct Call 1/2 script and videos; substantive Call 2 objection handling after the licensing video; permitted follow-up with prior sold clients, no-shows and cancellations; and end-of-day HubSpot cast/status/score updates. Checklist: https://docs.google.com/document/d/1wqv3MUaz7a3qhwWUpFT1LklJRGGEWkGVfzJ9BN38ch8/edit . Sixty dials is an activity target, not the lead-allocation limit; preserve the current 100-lead/day allocation controls, ownership, actual call logging, contact hours and opt-outs. The checklist’s 30-minute post-video instruction does not override meaningful agreement review or authorize pressuring someone to remain. Its two-dial summary does not explicitly repeal the detailed SOP’s extra attempts for unresponsive contacts. Do not blindly contact a cancelled or opted-out prospect when contact is prohibited. November 12 Mike reiterates completing the applicable Green Light, Meeting Status, Cast Score and call-note fields for each lead/call taken. Rudy immediately clarifies notes are conditional: Closing Call Notes only if closed, Reject Call Notes if not Green Lit, Green Light notes if Green Lit; select the applicable one of these three and write one meaningful sentence. This is not a requirement to fill all three contradictory note types on every call. Preserve accurate status/score and the separate DJ reporting exception. Rudy clarified that a no-show alone does not require a rejection note. Record the actual meeting status. Rejection notes are for an actual decision to reject rather than green-light. The November 12 Daily Check Sheet adds tracking ten-day totals for dial-outs, Call 1 bookings, Call 2s, closes and revenue, and posting daily call review in Olivia’s designated thread. Use these for the Mike progress check-in; they are activity/results records, not guaranteed earnings.",
     "scopes": [
       "shared"
     ],
@@ -7796,7 +7850,7 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794481680821809",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794481772497789"
     ],
-    "reviewedAt": "2026-11-12T12:24:47.089011+00:00",
+    "reviewedAt": "2026-11-18T12:30:37.958278+00:00",
     "authority": 12,
     "kind": "policy",
     "risk": "high",

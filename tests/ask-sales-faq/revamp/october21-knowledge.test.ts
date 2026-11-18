@@ -21,7 +21,7 @@ describe('October 21 source refresh', () => {
     for (const scope of ['main_istv', 'reality'] as const) {
       const text = evidence('How much time should I spend showing the Cast Member HQ portal on my sales call?', scope);
       expect(text).toContain('benefit for documentary clients');
-      expect(text).toContain('less relevant for reality');
+      expect(text).toContain('Reality buyers do not receive Cast Member HQ portal access');
     }
   });
   it('keeps the first-call-ready reality exception tied to both stages and approval', () => {
