@@ -36,6 +36,10 @@ The page does **not** generate letters itself. It reuses the editors' Green Ligh
 - `letter-sections.ts` knows the template's fixed marker lines. If a draft does not match (for example after a template change in the workflow), it falls back to one plain text box, so reps are never blocked. When the workflow's letter templates change, re-check `tests/green-light/letter-fixtures.json`.
 - No dashboard database table and no usage-tracking events are used, so Magic Mike coaching metrics are unaffected.
 
+## Launch
+
+Opened to every signed-in user on 2026-11-18 (the pilot allow-list was removed and the home card shows for everyone). Before opening it was tested on the live site with real recordings: Zoom link and pasted transcript, AI change, manual edit, final letter and PDF for Mansion of Money and Feature Documentary, plus the offline and headless-browser checks listed in the pull requests (#460, #461, #462).
+
 ## Activity log
 
 Each generate, "Ask AI to change it" and final letter is recorded (rep name and email, prospect, show, Zoom link or transcript, focus points, job id, letter link) by a best-effort POST to the n8n workflow `Green Light V2 - rep activity log` (`BsxB8UWoGcK8onbg`), which writes to the n8n data table `Green Light V2 - rep activity` (`3UmQlavuJVIXqKSI`). The webhook needs the shared secret header. A log failure never affects the rep's letter. A hidden admin page can be built on this table later.
