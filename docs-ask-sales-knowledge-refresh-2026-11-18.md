@@ -1,6 +1,6 @@
 # Ask Sales knowledge refresh, November 18
 
-The November 12 checkpoint was the baseline. Rudy’s November 17 documentary presentation update applies to the $8k and $12k offers. Use the matching final Drive video. The Standard training describes combined promotional views. Leadership explicitly excluded reality, the documentary bundled with reality, and Daymond John. Verify exact Lite entitlements against its applicable agreement. The final Lite agreement was inaccessible from the checked direct signing page.
+The November 12 checkpoint was the baseline. Rudy’s November 17 documentary presentation update applies to the $8k and $12k offers. Use the matching final Drive video. The Standard training describes combined promotional views. Leadership explicitly excluded reality, the documentary bundled with reality, and Daymond John. The final Lite video also explicitly presents one million combined views and 100+ edited content pieces. The relevant package agreement governs individual terms. The final Lite agreement was inaccessible from the checked direct signing page.
 
 Reality casting now uses weekly cohorts. The Island and Mansion conditional approval letters give a Sunday 11:59 PM deadline with potential re-review. Reality buyers do not receive the regular Cast Member HQ portal. Day-before booked-audition texts and emails are automated. Preparation calls and opt-out rules continue. A no-show alone does not require a rejection note.
 
