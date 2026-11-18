@@ -19,14 +19,14 @@ describe('October 12 evening source refresh', () => {
   });
   it('keeps the reality urgency and reapplication exceptions bounded', () => {
     const deadline = evidence('Does a reality prospect lose acceptance if they decide Monday?');
-    expect(deadline).toContain('NOT a hard cutoff');
+    expect(deadline).toContain('casting re-review for a future season');
     const reapply = evidence('Can someone who declined a documentary two months ago apply for a reality show now?');
     expect(reapply).toContain('not automatic permission');
   });
   it('retrieves the current schedule without the superseded Monday session', () => {
     const text = evidence('When does the training for new reps happen?', 'main_istv');
     expect(text).toContain('Monday 11 AM–noon EST Compliance with Mike');
-    expect(text).toContain('Wednesday 3–4 PM EST Call 2 and HubSpot/OnceHub');
+    expect(text).toContain('Wednesday 4–5 PM EST Call 2 and HubSpot/OnceHub');
     expect(text).not.toContain('Monday 1–2 PM EST Compliance with Raul');
   });
   it('keeps housing distinctions and duplicate-meeting caution available', () => {
