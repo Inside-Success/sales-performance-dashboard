@@ -525,7 +525,7 @@ function Generator() {
             ) : null}
             <Button type="submit" disabled={Boolean(busy)} className="h-11 rounded-full bg-[#DC2626] px-6 text-[15px] font-bold text-white hover:bg-[#B91C1C]">
               <Sparkles className="size-4" aria-hidden="true" />
-              Generate letter
+              {twoLetters ? "Generate letters" : "Generate letter"}
             </Button>
           </div>
         </form>
@@ -537,6 +537,11 @@ function Generator() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <StepHeading number={2} title="Review and edit" id="green-light-review-heading" className="mb-0" />
               <div className="flex flex-wrap gap-2">
+                {!activeDraft.saved ? (
+                  <Button type="button" onClick={() => void handleSave()} disabled={Boolean(busy)} className="h-10 rounded-full bg-[#DC2626] px-5 font-bold text-white hover:bg-[#B91C1C]">
+                    Create final letter
+                  </Button>
+                ) : null}
                 <Button type="button" variant="outline" onClick={() => setStep("details")} className="h-10 rounded-full border-slate-200 bg-white px-4">
                   Change call details
                 </Button>
