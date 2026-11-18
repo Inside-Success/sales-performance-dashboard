@@ -32,5 +32,13 @@ export async function resolveManualArchivedTranscript(recording: RecordingIdenti
   if (typeof transcript !== "string" || transcript.trim().length < 80 ||
       Buffer.byteLength(transcript) > 600000 ||
       createHash("sha256").update(transcript).digest("hex") !== hash) return null;
-  return transcript;
+  return formatManualArchivedTranscript(transcript);
+}
+
+/** Keep the original cue and speaker text. Preserve segment labels when the recording has multiple parts. */
+export function formatManualArchivedTranscript(transcript: string) {
+  const prefix = /^\[segment (\d+) (\d{1,2}:\d{2}:\d{2}(?:\.\d+)?)\]/gm;
+  const segments = new Set(Array.from(transcript.matchAll(prefix), match => match[1]));
+  return transcript.replace(prefix, (_, segment: string, timestamp: string) =>
+    segments.size > 1 ? `[${timestamp}] [segment ${segment}]` : `[${timestamp}]`);
 }
