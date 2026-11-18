@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
         ...multiClientFields(input.multi, input.prospect_name),
         request_source: "rep",
         focus_points: input.focus_points,
+        // No call transcript yet: the workflow writes the letter from the focus points alone.
+        ...(input.input_type === "focus_points" ? { transcript_mode: "none" } : {}),
         timestamp: new Date().toISOString(),
       },
     });
@@ -54,7 +56,8 @@ export async function POST(request: NextRequest) {
         prospect_name: input.prospect_name,
         show_type: input.show,
         input_type: input.input_type,
-        focus_points: input.focus_points,
+        // The log keeps the start of a long paste, not the whole thing.
+        focus_points: input.focus_points.slice(0, 40).map((line) => line.slice(0, 500)),
         multi_prospect: Boolean(input.multi?.enabled),
         job_id: jobId,
       }),

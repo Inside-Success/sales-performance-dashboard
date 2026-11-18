@@ -4,6 +4,7 @@ import {
   callWorkflow,
   logGreenLightEvent,
   multiClientFields,
+  refineFactSource,
   refineRequestSchema,
   requireGreenLightUser,
   unreachable,
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
     return badRequest(error);
   }
 
+  const factSource = refineFactSource(input.transcript, input.source_notes);
   try {
     const { ok, status, payload } = await callWorkflow("-refine", {
       method: "POST",
@@ -33,8 +35,8 @@ export async function POST(request: NextRequest) {
         letter_text: input.draft_text,
         instructions: input.instructions,
         query: input.instructions,
-        transcript: input.transcript,
-        content: input.transcript,
+        transcript: factSource,
+        content: factSource,
         show_type: input.show,
         guest_name: input.guest_name || "",
         client_name: input.prospect_name,

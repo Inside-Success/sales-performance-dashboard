@@ -27,18 +27,32 @@ export function greenLightShowLabel(show: string) {
   return GREEN_LIGHT_SHOWS.find((item) => item.value === show)?.label || "Feature Documentary";
 }
 
-export const GREEN_LIGHT_MAX_FOCUS_POINTS = 5;
-export const GREEN_LIGHT_MAX_FOCUS_POINT_LENGTH = 300;
 export const GREEN_LIGHT_MIN_TRANSCRIPT_LENGTH = 120;
+// The focus points box has no limit a rep would meet; this only stops a runaway paste.
+export const GREEN_LIGHT_MAX_FOCUS_TEXT_LENGTH = 200000;
 
-/** One focus point per line; blank lines and list markers are dropped, extra lines are ignored. */
-export function parseFocusPoints(value: string) {
+/** The lines of the focus points box as typed: blank lines dropped, nothing cut. */
+export function focusPointLines(value: string) {
   return String(value || "")
+    .slice(0, GREEN_LIGHT_MAX_FOCUS_TEXT_LENGTH)
     .split(/\r?\n/)
-    .map((line) => line.replace(/\s+/g, " ").replace(/^\s*(?:[-*•–—]+|\d{1,2}[.)])\s*/, "").trim())
-    .filter(Boolean)
-    .slice(0, GREEN_LIGHT_MAX_FOCUS_POINTS)
-    .map((line) => line.slice(0, GREEN_LIGHT_MAX_FOCUS_POINT_LENGTH).trim());
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+}
+
+/** Words that carry something (a lone dash or slash is not one). Same count the workflow makes. */
+export function countContextWords(value: string | string[]) {
+  return (Array.isArray(value) ? value.join("\n") : String(value || ""))
+    .split(/\s+/)
+    .filter((word) => /[A-Za-z0-9]/.test(word)).length;
+}
+
+// Without a call transcript the letter is written from the focus points alone, so they have to
+// say something. The four-paragraph letters need less than the five-act story letters; the
+// numbers come from test letters at each length and match the workflow's own check.
+const STORY_LETTER_SHOWS: GreenLightShow[] = ["normal", "nlceo"];
+export function greenLightMinContextWords(show: GreenLightShow) {
+  return STORY_LETTER_SHOWS.includes(show) ? 15 : 8;
 }
 
 export function isZoomRecordingLink(value: string) {

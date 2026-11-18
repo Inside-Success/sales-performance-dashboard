@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/auth", () => ({ auth: vi.fn() }));
 
-import { canUseGreenLight, generateRequestSchema, multiClientFields, repFolderName, saveRequestSchema } from "@/lib/green-light/server";
-import { googleDocPdfUrl, greenLightDeadlineText, isZoomRecordingLink, parseFocusPoints } from "@/lib/green-light/shows";
+import { canUseGreenLight, generateRequestSchema, multiClientFields, refineFactSource, refineRequestSchema, repFolderName, saveRequestSchema } from "@/lib/green-light/server";
+import { countContextWords, focusPointLines, googleDocPdfUrl, greenLightDeadlineText, greenLightMinContextWords, isZoomRecordingLink } from "@/lib/green-light/shows";
 
 describe("green light access", () => {
   it("is open to signed-in users unless a pilot list or the off switch is set", () => {
@@ -27,10 +27,20 @@ describe("green light access", () => {
 });
 
 describe("green light inputs", () => {
-  it("keeps at most five tidy focus points", () => {
-    expect(parseFocusPoints("")).toEqual([]);
-    expect(parseFocusPoints(" - first point \n\n2) second   point\n• third\n4. fourth\nfifth\nsixth")).toEqual(["first point", "second point", "third", "fourth", "fifth"]);
-    expect(parseFocusPoints("x".repeat(500))[0]).toHaveLength(300);
+  it("keeps every line of the focus points box and cuts nothing", () => {
+    expect(focusPointLines("")).toEqual([]);
+    expect(focusPointLines(" - first point \n\n2) second   point\r\nthird\n\n")).toEqual(["- first point", "2) second point", "third"]);
+    expect(focusPointLines(Array.from({ length: 60 }, (_, index) => `Q: question ${index}?`).join("\n"))).toHaveLength(60);
+    expect(focusPointLines("x".repeat(5000))[0]).toHaveLength(5000);
+  });
+
+  it("counts only real words and asks more of the story letters", () => {
+    expect(countContextWords("")).toBe(0);
+    expect(countContextWords("  -  /  ...  ")).toBe(0);
+    expect(countContextWords("Owns a roofing co, 12 yrs - started after getting laid off")).toBe(11);
+    expect(countContextWords(["Owns a roofing co", "12 yrs"])).toBe(6);
+    for (const show of ["mansion", "island", "reality"] as const) expect(greenLightMinContextWords(show)).toBe(8);
+    for (const show of ["normal", "nlceo"] as const) expect(greenLightMinContextWords(show)).toBe(15);
   });
 
   it("accepts only Zoom recording links", () => {
@@ -67,11 +77,49 @@ describe("green light inputs", () => {
     expect(generateRequestSchema.safeParse({ ...base, show: "other" }).success).toBe(false);
     expect(generateRequestSchema.safeParse({ ...base, prospect_name: " " }).success).toBe(false);
     expect(generateRequestSchema.safeParse({ ...base, transcript: "too short" }).success).toBe(false);
-    expect(generateRequestSchema.safeParse({ ...base, focus_points: ["1", "2", "3", "4", "5", "6"] }).success).toBe(false);
+    expect(generateRequestSchema.safeParse({ ...base, focus_points: ["1", "2", "3", "4", "5", "6"] }).success).toBe(true);
+    expect(generateRequestSchema.safeParse({ ...base, focus_points: Array.from({ length: 80 }, () => "A: " + "long answer ".repeat(60)) }).success).toBe(true);
+    expect(generateRequestSchema.safeParse({ ...base, focus_points: [""] }).success).toBe(false);
+    expect(generateRequestSchema.safeParse({ ...base, transcript: "" }).success).toBe(false);
     expect(saveRequestSchema.safeParse({ show: "island", draft_text: "short", prospect_name: "Jordan Example" }).success).toBe(false);
     const saved = saveRequestSchema.parse({ show: "island", draft_text: "x".repeat(600), prospect_name: "Jordan Example", guest_name: "g".repeat(500), warnings: Array.from({ length: 40 }, () => "w".repeat(5000)) });
     expect(saved.guest_name).toHaveLength(160);
     expect(saved.warnings).toHaveLength(30);
     expect(saved.warnings?.[0]).toHaveLength(2000);
+  });
+
+  it("writes from the focus points alone only when there is no call, one prospect and enough to go on", () => {
+    const words = (count: number) => [Array.from({ length: count }, (_, index) => `word${index}`).join(" ")];
+    const base = { prospect_name: "Jordan Example", transcript: "", input_type: "focus_points" };
+    for (const show of ["mansion", "island", "reality"] as const) {
+      expect(generateRequestSchema.safeParse({ ...base, show, focus_points: words(8) }).success).toBe(true);
+      expect(generateRequestSchema.safeParse({ ...base, show, focus_points: words(7) }).success).toBe(false);
+    }
+    for (const show of ["normal", "nlceo"] as const) {
+      expect(generateRequestSchema.safeParse({ ...base, show, focus_points: words(15) }).success).toBe(true);
+      expect(generateRequestSchema.safeParse({ ...base, show, focus_points: words(14) }).success).toBe(false);
+    }
+    const good = { ...base, show: "mansion", focus_points: words(30) };
+    expect(generateRequestSchema.safeParse({ ...good, focus_points: [] }).success).toBe(false);
+    expect(generateRequestSchema.safeParse({ ...good, focus_points: ["- / ...", "!!"] }).success).toBe(false);
+    expect(generateRequestSchema.safeParse({ ...good, transcript: "x".repeat(200) }).success).toBe(false);
+    expect(generateRequestSchema.safeParse({ ...good, multi: { enabled: true, letter_count: 2, position: 1, names: ["A One", "B Two"] } }).success).toBe(false);
+    expect(generateRequestSchema.safeParse({ ...good, multi: { enabled: false, letter_count: 1, position: 1, names: [] } }).success).toBe(true);
+    // A call request still needs its transcript, whatever is in the box.
+    expect(generateRequestSchema.safeParse({ ...good, input_type: "zoom_link" }).success).toBe(false);
+    expect(generateRequestSchema.safeParse({ ...good, input_type: "transcript" }).success).toBe(false);
+  });
+
+  it("gives the refine step the rep's own text when there was no transcript", () => {
+    expect(refineFactSource("the call transcript", undefined)).toBe("the call transcript");
+    expect(refineFactSource("the call transcript", "notes")).toBe("the call transcript");
+    expect(refineFactSource("", "")).toBe("");
+    const source = refineFactSource("", "Owns a roofing company.\nA: $5000 - $10,000");
+    expect(source.startsWith("There is no call transcript for this letter.")).toBe(true);
+    expect(source).toContain("Never mention budget, investment");
+    expect(source.endsWith("\n\nOwns a roofing company.\nA: $5000 - $10,000")).toBe(true);
+    const request = { show: "island", draft_text: "x".repeat(600), prospect_name: "Jordan Example", instructions: "shorter", transcript: "" };
+    expect(refineRequestSchema.safeParse(request).success).toBe(true);
+    expect(refineRequestSchema.safeParse({ ...request, source_notes: "n".repeat(150000) }).success).toBe(true);
   });
 });

@@ -4,10 +4,11 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { normalizeAuthEmail } from "@/lib/auth-utils";
 import {
-  GREEN_LIGHT_MAX_FOCUS_POINT_LENGTH,
-  GREEN_LIGHT_MAX_FOCUS_POINTS,
+  countContextWords,
+  GREEN_LIGHT_MAX_FOCUS_TEXT_LENGTH,
   GREEN_LIGHT_MIN_TRANSCRIPT_LENGTH,
   GREEN_LIGHT_SHOW_VALUES,
+  greenLightMinContextWords,
 } from "@/lib/green-light/shows";
 
 // The rep page reuses the editors' Green Light V2 n8n workflow. Requests go through these server
@@ -69,14 +70,32 @@ const multiSchema = z
 
 export const transcriptRequestSchema = z.object({ zoom_link: z.string().trim().min(10).max(2000) });
 
-export const generateRequestSchema = z.object({
-  show: z.enum(GREEN_LIGHT_SHOW_VALUES),
-  prospect_name: name.min(2),
-  transcript: z.string().trim().min(GREEN_LIGHT_MIN_TRANSCRIPT_LENGTH).max(600000),
-  input_type: z.enum(["zoom_link", "transcript"]),
-  focus_points: z.array(z.string().trim().min(1).max(GREEN_LIGHT_MAX_FOCUS_POINT_LENGTH)).max(GREEN_LIGHT_MAX_FOCUS_POINTS),
-  multi: multiSchema,
-});
+// The focus points box, one entry per line. No limit a rep would meet: the size check only stops a runaway paste.
+const focusLines = z
+  .array(z.string().trim().min(1))
+  .max(20000)
+  .refine((lines) => lines.reduce((total, line) => total + line.length + 1, 0) <= GREEN_LIGHT_MAX_FOCUS_TEXT_LENGTH + 20000);
+
+export const generateRequestSchema = z
+  .object({
+    show: z.enum(GREEN_LIGHT_SHOW_VALUES),
+    prospect_name: name.min(2),
+    transcript: z.string().trim().max(600000),
+    // "focus_points" = no call transcript yet: the letter is written from the focus points alone.
+    input_type: z.enum(["zoom_link", "transcript", "focus_points"]),
+    focus_points: focusLines,
+    multi: multiSchema,
+  })
+  .superRefine((input, context) => {
+    const fail = (path: string) => context.addIssue({ code: "custom", path: [path], message: "invalid" });
+    if (input.input_type !== "focus_points") {
+      if (input.transcript.length < GREEN_LIGHT_MIN_TRANSCRIPT_LENGTH) fail("transcript");
+      return;
+    }
+    if (input.transcript) fail("transcript");
+    if (input.multi?.enabled) fail("multi");
+    if (countContextWords(input.focus_points) < greenLightMinContextWords(input.show)) fail("focus_points");
+  });
 
 const draftFields = {
   show: z.enum(GREEN_LIGHT_SHOW_VALUES),
@@ -94,7 +113,25 @@ export const refineRequestSchema = z.object({
   ...draftFields,
   instructions: z.string().trim().min(3).max(1000),
   transcript: z.string().max(600000),
+  // Set for a letter written without a transcript: the focus points it was written from.
+  source_notes: z.string().max(GREEN_LIGHT_MAX_FOCUS_TEXT_LENGTH + 20000).optional(),
 });
+
+/**
+ * What the refine step may check facts against. A letter written without a transcript has only
+ * the rep's own text behind it, so that text is passed with the same limits the letter was written under.
+ */
+export function refineFactSource(transcript: string, sourceNotes: string | undefined) {
+  const notes = String(sourceNotes || "").trim();
+  if (transcript.trim() || !notes) return transcript;
+  return [
+    "There is no call transcript for this letter. The text below is what the casting manager wrote about the applicant, and it can include the applicant's application form answers. It is the only source of facts.",
+    "Do not add any name, number, place, date, event or result that is not in it or already in the current draft.",
+    "Never mention budget, investment, money the applicant can spend or contribute, a form, a survey, a consent or terms answer, or a season or show name written in the form.",
+    "",
+    notes,
+  ].join("\n");
+}
 
 export const saveRequestSchema = z.object(draftFields);
 

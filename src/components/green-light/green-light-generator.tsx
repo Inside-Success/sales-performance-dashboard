@@ -23,12 +23,14 @@ import {
   splitLetter,
 } from "@/lib/green-light/letter-sections";
 import {
+  countContextWords,
+  focusPointLines,
   GREEN_LIGHT_MIN_TRANSCRIPT_LENGTH,
   GREEN_LIGHT_SHOWS,
   type GreenLightShow,
+  greenLightMinContextWords,
   greenLightShowLabel,
   isZoomRecordingLink,
-  parseFocusPoints,
 } from "@/lib/green-light/shows";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +53,9 @@ type Draft = {
   docTitle: string;
   warnings: string[];
   saved: { documentUrl: string; pdfUrl: string; docTitle: string; folder: string } | null;
+  // Written from the focus points alone (no call transcript). `sourceNotes` is that text.
+  noTranscript?: boolean;
+  sourceNotes?: string;
 };
 
 type FormState = {
@@ -171,13 +176,23 @@ function Generator() {
 
   const scrollToTop = () => window.requestAnimationFrame(() => topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
 
+  // No Zoom link and no pasted transcript: the letter is written from the focus points alone.
+  const hasCall = form.inputType === "zoom_link" ? Boolean(form.zoomLink.trim()) : Boolean(form.transcript.trim());
+  const enoughContext = (show: GreenLightShow) => countContextWords(form.focus) >= greenLightMinContextWords(show);
+
   function validateForm() {
     if (!form.show) return "Pick the show this letter is for.";
-    if (form.inputType === "zoom_link") {
-      if (!form.zoomLink.trim()) return "Paste the Zoom recording link.";
-      if (!isZoomRecordingLink(form.zoomLink)) return "That is not a Zoom recording link. Paste the recording share link, or use Paste transcript.";
-    } else if (form.transcript.trim().length < GREEN_LIGHT_MIN_TRANSCRIPT_LENGTH) {
-      return "Paste the full call transcript.";
+    if (hasCall) {
+      if (form.inputType === "zoom_link" && !isZoomRecordingLink(form.zoomLink)) return "That is not a Zoom recording link. Paste the recording share link, or use Paste transcript.";
+      if (form.inputType === "transcript" && form.transcript.trim().length < GREEN_LIGHT_MIN_TRANSCRIPT_LENGTH) return "Paste the full call transcript.";
+    } else if (form.multiEnabled) {
+      return "A call with more than one prospect needs the Zoom recording link or the transcript. Without them, turn the switch off and make one letter at a time.";
+    } else if (!countContextWords(form.focus)) {
+      return form.inputType === "zoom_link"
+        ? "Paste the Zoom recording link, or add context in Focus points to generate without a transcript."
+        : "Paste the call transcript, or add context in Focus points to generate without a transcript.";
+    } else if (!enoughContext(form.show)) {
+      return "Add a little more about the prospect and their business in Focus points to generate without a transcript.";
     }
     if (!form.multiEnabled && tidyName(form.prospectName).length < 2) return "Enter the prospect's full name.";
     if (form.multiEnabled && form.letterCount === 1 && tidyName(form.prospectName).length < 2) return "Enter the name of the prospect this letter is for.";
@@ -223,12 +238,21 @@ function Generator() {
     setFormError("");
     setReviewError("");
     const show = form.show as GreenLightShow;
+    const noTranscript = !hasCall;
 
     try {
-      let transcript = form.transcript.trim();
-      if (form.inputType === "zoom_link") {
+      let transcript = noTranscript ? "" : form.transcript.trim();
+      if (!noTranscript && form.inputType === "zoom_link") {
         setBusy({ title: "Getting the call from Zoom", detail: "Fetching the transcript of this recording." });
-        transcript = (await api<{ transcript: string }>("/api/green-light/transcript", { method: "POST", body: JSON.stringify({ zoom_link: form.zoomLink.trim() }) })).transcript;
+        try {
+          transcript = (await api<{ transcript: string }>("/api/green-light/transcript", { method: "POST", body: JSON.stringify({ zoom_link: form.zoomLink.trim() }) })).transcript;
+        } catch (error) {
+          // Never fall back to the focus points silently: the rep decides, by clearing the link.
+          if (error instanceof RequestError && error.code === "not_ready" && !form.multiEnabled && enoughContext(show)) {
+            throw new RequestError("Zoom has no transcript for this recording yet. To generate from your focus points instead, clear the Zoom link and generate again.", "not_ready");
+          }
+          throw error;
+        }
       }
 
       const requests = twoLetters
@@ -244,21 +268,34 @@ function Generator() {
         const many = requests.length > 1;
         setBusy({
           title: many ? `Generating letter ${index + 1} of ${requests.length}` : "Generating your letter",
-          detail: `Writing ${item.prospectName}'s letter from the call. This usually takes under a minute.`,
+          detail: `Writing ${item.prospectName}'s letter from ${noTranscript ? "your focus points" : "the call"}. This usually takes under a minute.`,
         });
         const multi: Multi = { enabled: form.multiEnabled, letter_count: form.multiEnabled ? form.letterCount : 1, position: item.position, names: form.multiEnabled ? names : [] };
-        const started = await api<{ job_id: string }>("/api/green-light/generate", {
-          method: "POST",
-          body: JSON.stringify({
-            show,
-            prospect_name: item.prospectName,
-            transcript,
-            input_type: form.inputType,
-            focus_points: parseFocusPoints(item.focus),
-            multi,
-          }),
-        });
-        const result = await waitForDraft(started.job_id);
+        const generateOnce = async () => {
+          const job = await api<{ job_id: string }>("/api/green-light/generate", {
+            method: "POST",
+            body: JSON.stringify({
+              show,
+              prospect_name: item.prospectName,
+              transcript,
+              input_type: noTranscript ? "focus_points" : form.inputType,
+              focus_points: focusPointLines(item.focus),
+              multi,
+            }),
+          });
+          return { job, draft: await waitForDraft(job.job_id) };
+        };
+        let generated: Awaited<ReturnType<typeof generateOnce>> | null = null;
+        for (let attempt = 0; !generated; attempt += 1) {
+          try {
+            generated = await generateOnce();
+          } catch (error) {
+            // From short focus points the AI now and then leaves one section empty; asking again fixes it.
+            const sectionMissing = error instanceof RequestError && error.code === "failed" && /\bis missing\b/i.test(error.message);
+            if (!(noTranscript && sectionMissing && attempt < 2)) throw error;
+          }
+        }
+        const { job: started, draft: result } = generated;
         nextDrafts.push({
           id: started.job_id,
           prospectName: item.prospectName,
@@ -270,6 +307,8 @@ function Generator() {
           docTitle: result.doc_title || "",
           warnings: result.warnings || [],
           saved: null,
+          noTranscript,
+          sourceNotes: noTranscript ? focusPointLines(item.focus).join("\n") : "",
         });
       }
 
@@ -331,11 +370,16 @@ function Generator() {
       return;
     }
     setReviewError("");
-    setBusy({ title: "Applying your change", detail: "The AI is rewriting the sections written from the call. This can take up to a minute." });
+    setBusy({ title: "Applying your change", detail: "The AI is rewriting the outlined sections. This can take up to a minute." });
     try {
       const result = await api<{ draft_text: string; guest_name?: string; doc_title?: string; warnings?: string[] }>("/api/green-light/refine", {
         method: "POST",
-        body: JSON.stringify({ ...draftRequest(activeDraft), instructions: request, transcript: callTranscript }),
+        body: JSON.stringify({
+          ...draftRequest(activeDraft),
+          instructions: request,
+          transcript: activeDraft.noTranscript ? "" : callTranscript,
+          ...(activeDraft.noTranscript ? { source_notes: activeDraft.sourceNotes || "" } : {}),
+        }),
       });
       patchDraft(activeIndex, {
         segments: splitLetter(result.draft_text).segments,
@@ -511,7 +555,7 @@ function Generator() {
             </div>
           ) : (
             <div className="mt-6">
-              <FocusBox id="green-light-focus" label="Focus points" value={form.focus} onChange={(value) => update("focus", value)} />
+              <FocusBox id="green-light-focus" label="Focus points" withoutTranscriptHint={!form.multiEnabled} value={form.focus} onChange={(value) => update("focus", value)} />
             </div>
           )}
 
@@ -555,6 +599,13 @@ function Generator() {
               {greenLightShowLabel(activeDraft.show)} letter for {activeDraft.prospectName}
             </p>
 
+            {activeDraft.noTranscript ? (
+              <div role="note" className="mt-5 flex items-center gap-3 rounded-[16px] border-2 border-amber-400 bg-amber-100 px-4 py-4 text-amber-950">
+                <AlertTriangle className="size-7 shrink-0 text-amber-600" aria-hidden="true" />
+                <p className="text-lg font-extrabold leading-snug md:text-xl">Be extra careful when reviewing if not using a transcript</p>
+              </div>
+            ) : null}
+
             {drafts.length > 1 ? (
               <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Letters">
                 {drafts.map((draft, index) => (
@@ -597,7 +648,7 @@ function Generator() {
             </div>
 
             <p className="mt-5 text-sm font-medium text-slate-500">
-              The outlined sections were written from the call. Click one to edit it.
+              The outlined sections were written from {activeDraft.noTranscript ? "your focus points" : "the call"}. Click one to edit it.
             </p>
             <LetterView segments={activeDraft.segments} onEdit={editSegment} disabled={Boolean(busy)} />
 
@@ -705,15 +756,19 @@ function ModeButton({ active, icon, label, onClick }: { active: boolean; icon: R
   );
 }
 
-function FocusBox({ id, label, value, onChange }: { id: string; label: string; value: string; onChange: (value: string) => void }) {
+function FocusBox({ id, label, value, onChange, withoutTranscriptHint = false }: { id: string; label: string; value: string; onChange: (value: string) => void; withoutTranscriptHint?: boolean }) {
   return (
     <div>
-      <FieldLabel htmlFor={id} className="mt-0">{label} <Optional /></FieldLabel>
+      <FieldLabel htmlFor={id} className={cn("mt-0", withoutTranscriptHint && "mb-1")}>{label} <Optional /></FieldLabel>
+      {withoutTranscriptHint ? (
+        <p id={`${id}-hint`} className="mb-2 text-sm font-semibold text-slate-600">If transcript unavailable, add relevant context here</p>
+      ) : null}
       <Textarea
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="Up to 5 points, one per line"
+        placeholder="Add the gist of the business or paste their qualifying survey (Typeform) answers"
+        aria-describedby={withoutTranscriptHint ? `${id}-hint` : undefined}
         className="magic-input min-h-40"
       />
     </div>
