@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { badRequest, requireGreenLightUser, transcriptRequestSchema } from "@/lib/green-light/server";
 import { isZoomRecordingLink } from "@/lib/green-light/shows";
+import { resolveZoomCallTranscript } from "@/lib/green-light/zoom-call-transcript";
 import { resolveManualArchivedTranscript } from "@/lib/manual-transcript-archive";
 import { resolveZoomTranscript } from "@/lib/zoom-transcript";
 
@@ -27,13 +28,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // 1. Zoom's current recording page (transcript endpoint named by the page's feature config).
+  // 2. The shared Magic Mike resolver: older Zoom pages, then the signed-in rep's archived transcript.
+  let transcript = "";
   try {
-    const result = await resolveZoomTranscript(zoomLink, (recording) => resolveManualArchivedTranscript(recording, user.email));
-    const transcript = result?.transcriptText?.trim() || "";
-    if (transcript.length < 120) return NextResponse.json({ ok: false, code: "not_ready", error: NOT_READY }, { status: 422 });
-    return NextResponse.json({ ok: true, transcript });
+    transcript = (await resolveZoomCallTranscript(zoomLink))?.trim() || "";
   } catch (error) {
-    console.error("Green light Zoom transcript unavailable", error instanceof Error ? error.name : "UnknownError");
-    return NextResponse.json({ ok: false, code: "not_ready", error: NOT_READY }, { status: 422 });
+    console.error("Green light Zoom page transcript unavailable", error instanceof Error ? error.name : "UnknownError");
   }
+  if (transcript.length < 120) {
+    try {
+      const result = await resolveZoomTranscript(zoomLink, (recording) => resolveManualArchivedTranscript(recording, user.email));
+      transcript = result?.transcriptText?.trim() || "";
+    } catch (error) {
+      console.error("Green light Zoom fallback transcript unavailable", error instanceof Error ? error.name : "UnknownError");
+    }
+  }
+  if (transcript.length < 120) return NextResponse.json({ ok: false, code: "not_ready", error: NOT_READY }, { status: 422 });
+  return NextResponse.json({ ok: true, transcript });
 }
