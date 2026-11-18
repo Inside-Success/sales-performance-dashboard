@@ -10,6 +10,7 @@ import {
   workflowError,
 } from "@/lib/green-light/server";
 import { googleDocPdfUrl } from "@/lib/green-light/shows";
+import { recordGreenLightTrace } from "@/lib/green-light/trace-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
@@ -24,6 +25,17 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return badRequest(error);
   }
+
+  // The final text exactly as it goes to the Google Doc, kept in the trace log.
+  const sent = {
+    rep_email: user.email,
+    rep_name: user.name,
+    job_id: input.job_id,
+    prospect_name: input.prospect_name,
+    show_type: input.show,
+    letter_text: input.draft_text,
+    detail: { multi: input.multi?.enabled ? input.multi : null, warnings: input.warnings || [] },
+  };
 
   try {
     const { ok, status, payload } = await callWorkflow("-save", {
@@ -48,12 +60,12 @@ export async function POST(request: NextRequest) {
     });
     const documentUrl = typeof payload.document_url === "string" ? payload.document_url : "";
     if (!ok || payload.ok === false || !documentUrl) {
-      return NextResponse.json(
-        { ok: false, error: workflowError(payload, `The letter could not be created (status ${status}). Try again.`) },
-        { status: ok ? 422 : 502 },
-      );
+      const error = workflowError(payload, `The letter could not be created (status ${status}). Try again.`);
+      after(() => recordGreenLightTrace({ ...sent, event: "save_failed", error }));
+      return NextResponse.json({ ok: false, error }, { status: ok ? 422 : 502 });
     }
     const docTitle = typeof payload.doc_title === "string" ? payload.doc_title : input.doc_title || "Green light letter";
+    after(() => recordGreenLightTrace({ ...sent, event: "save", document_url: documentUrl, doc_title: docTitle }));
     after(() =>
       logGreenLightEvent({
         event: "save",
@@ -69,6 +81,7 @@ export async function POST(request: NextRequest) {
     );
     return NextResponse.json({ ok: true, document_url: documentUrl, pdf_url: googleDocPdfUrl(documentUrl), doc_title: docTitle, folder: user.name });
   } catch {
+    after(() => recordGreenLightTrace({ ...sent, event: "save_failed", error: "The letter workflow did not answer." }));
     return unreachable("create the letter");
   }
 }

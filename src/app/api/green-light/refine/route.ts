@@ -10,6 +10,7 @@ import {
   unreachable,
   workflowError,
 } from "@/lib/green-light/server";
+import { recordGreenLightTrace } from "@/lib/green-light/trace-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 180;
@@ -26,6 +27,16 @@ export async function POST(request: NextRequest) {
   }
 
   const factSource = refineFactSource(input.transcript, input.source_notes);
+  // The request and the letter as it stood (the rep's own edits included), kept in the trace log.
+  const asked = {
+    rep_email: user.email,
+    rep_name: user.name,
+    job_id: input.job_id,
+    prospect_name: input.prospect_name,
+    show_type: input.show,
+    instructions: input.instructions,
+    letter_before: input.draft_text,
+  };
   try {
     const { ok, status, payload } = await callWorkflow("-refine", {
       method: "POST",
@@ -48,11 +59,12 @@ export async function POST(request: NextRequest) {
     });
     const draft = [payload.draft_text, payload.preview].find((value) => typeof value === "string" && value.trim());
     if (!ok || payload.ok === false || typeof draft !== "string") {
-      return NextResponse.json(
-        { ok: false, error: workflowError(payload, `The change could not be applied (status ${status}). Your letter was not changed.`) },
-        { status: ok ? 422 : 502 },
-      );
+      const error = workflowError(payload, `The change could not be applied (status ${status}). Your letter was not changed.`);
+      after(() => recordGreenLightTrace({ ...asked, event: "refine_failed", error }));
+      return NextResponse.json({ ok: false, error }, { status: ok ? 422 : 502 });
     }
+    const warnings = Array.isArray(payload.warnings) ? payload.warnings.filter((item) => typeof item === "string" && item.trim()) : input.warnings || [];
+    after(() => recordGreenLightTrace({ ...asked, event: "refine", letter_text: draft, detail: { warnings } }));
     after(() =>
       logGreenLightEvent({
         event: "refine",
@@ -69,9 +81,10 @@ export async function POST(request: NextRequest) {
       draft_text: draft,
       guest_name: payload.guest_name,
       doc_title: payload.doc_title,
-      warnings: Array.isArray(payload.warnings) ? payload.warnings.filter((item) => typeof item === "string" && item.trim()) : input.warnings || [],
+      warnings,
     });
   } catch {
+    after(() => recordGreenLightTrace({ ...asked, event: "refine_failed", error: "The letter workflow did not answer." }));
     return unreachable("apply the change");
   }
 }

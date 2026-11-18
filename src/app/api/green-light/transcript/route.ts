@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { badRequest, requireGreenLightUser, transcriptRequestSchema } from "@/lib/green-light/server";
 import { isZoomRecordingLink } from "@/lib/green-light/shows";
+import { recordGreenLightTrace } from "@/lib/green-light/trace-store";
 import { resolveZoomCallTranscript } from "@/lib/green-light/zoom-call-transcript";
 import { resolveManualArchivedTranscript } from "@/lib/manual-transcript-archive";
 import { resolveZoomTranscript } from "@/lib/zoom-transcript";
@@ -44,6 +45,18 @@ export async function POST(request: NextRequest) {
       console.error("Green light Zoom fallback transcript unavailable", error instanceof Error ? error.name : "UnknownError");
     }
   }
-  if (transcript.length < 120) return NextResponse.json({ ok: false, code: "not_ready", error: NOT_READY }, { status: 422 });
+  // Which recording was asked for and whether Zoom had its transcript (the text itself is kept with the letter).
+  const found = transcript.length >= 120;
+  after(() =>
+    recordGreenLightTrace({
+      event: "zoom",
+      rep_email: user.email,
+      rep_name: user.name,
+      zoom_link: zoomLink,
+      error: found ? undefined : NOT_READY,
+      detail: { outcome: found ? "transcript_found" : "not_ready", transcript_chars: transcript.length },
+    }),
+  );
+  if (!found) return NextResponse.json({ ok: false, code: "not_ready", error: NOT_READY }, { status: 422 });
   return NextResponse.json({ ok: true, transcript });
 }

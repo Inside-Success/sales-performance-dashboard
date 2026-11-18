@@ -85,6 +85,8 @@ export const generateRequestSchema = z
     input_type: z.enum(["zoom_link", "transcript", "focus_points"]),
     focus_points: focusLines,
     multi: multiSchema,
+    // Only kept in the trace log, so a letter can be traced back to its recording.
+    zoom_link: z.string().transform((value) => value.trim().slice(0, 2000)).optional(),
   })
   .superRefine((input, context) => {
     const fail = (path: string) => context.addIssue({ code: "custom", path: [path], message: "invalid" });
