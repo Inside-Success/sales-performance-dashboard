@@ -1,5 +1,5 @@
 import "server-only";
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { normalizeAuthEmail } from "@/lib/auth-utils";
@@ -85,6 +85,8 @@ export const generateRequestSchema = z
     input_type: z.enum(["zoom_link", "transcript", "focus_points"]),
     focus_points: focusLines,
     multi: multiSchema,
+    // Only kept in the trace log, so a letter can be traced back to its recording.
+    zoom_link: z.unknown().optional().transform((value) => (typeof value === "string" ? value.trim().slice(0, 2000) : undefined)),
   })
   .superRefine((input, context) => {
     const fail = (path: string) => context.addIssue({ code: "custom", path: [path], message: "invalid" });
@@ -206,6 +208,15 @@ export type GreenLightLogEvent = {
   document_url?: string;
   detail?: string;
 };
+
+/** Runs a logging task after the response has gone out. Failing to schedule it must never reach the rep. */
+export function runAfterResponse(task: () => unknown) {
+  try {
+    after(task);
+  } catch (error) {
+    console.error("Green light log not scheduled", error instanceof Error ? error.name : "UnknownError");
+  }
+}
 
 /** Best-effort activity log (hidden n8n table). A failure here must never affect the rep's letter. */
 export async function logGreenLightEvent(event: GreenLightLogEvent) {

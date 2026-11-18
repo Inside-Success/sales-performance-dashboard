@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { callWorkflow, requireGreenLightUser, workflowError } from "@/lib/green-light/server";
+import { traceGreenLight } from "@/lib/green-light/trace-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -25,18 +26,34 @@ export async function GET(request: NextRequest) {
     }
     if (payload.status === "complete" || payload.mode === "draft") {
       const draft = [payload.draft_text, payload.preview, payload.letter_text].find((value) => typeof value === "string" && value.trim());
+      const draftText = typeof draft === "string" ? draft : "";
+      const warnings = Array.isArray(payload.warnings) ? payload.warnings.filter((item) => typeof item === "string" && item.trim()) : [];
+      // The letter exactly as the AI wrote it, before the rep touches it.
+      traceGreenLight({
+        event: "draft",
+        job_id: jobId,
+        rep_email: user.email,
+        rep_name: user.name,
+        show_type: typeof payload.show_type === "string" ? payload.show_type : "",
+        prospect_name: typeof payload.guest_name === "string" ? payload.guest_name : "",
+        doc_title: typeof payload.doc_title === "string" ? payload.doc_title : "",
+        letter_text: draftText,
+        detail: { warnings },
+      });
       return NextResponse.json({
         ok: true,
         status: "complete",
-        draft_text: typeof draft === "string" ? draft : "",
+        draft_text: draftText,
         show_type: payload.show_type,
         guest_name: payload.guest_name,
         doc_title: payload.doc_title,
-        warnings: Array.isArray(payload.warnings) ? payload.warnings.filter((item) => typeof item === "string" && item.trim()) : [],
+        warnings,
       });
     }
     if (payload.status === "failed" || payload.ok === false) {
-      return NextResponse.json({ ok: true, status: "failed", error: workflowError(payload, "The letter could not be generated.") });
+      const error = workflowError(payload, "The letter could not be generated.");
+      traceGreenLight({ event: "failed", job_id: jobId, rep_email: user.email, rep_name: user.name, error });
+      return NextResponse.json({ ok: true, status: "failed", error });
     }
     return NextResponse.json({ ok: true, status: "processing" });
   } catch {

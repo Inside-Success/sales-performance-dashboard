@@ -119,16 +119,19 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
   return payload as T;
 }
 
+// A refresh keeps a letter that is on the review screen, so finished work is not lost. A refresh on
+// the call details screen starts clean: nothing typed there is kept.
 function readStored(): Stored | null {
   try {
     const parsed = JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || "null") as Stored | null;
     if (!parsed || typeof parsed !== "object" || !parsed.form) return null;
+    if (parsed.step !== "review" || !Array.isArray(parsed.drafts) || !parsed.drafts.length) return null;
     return {
       form: { ...EMPTY_FORM, ...parsed.form },
       callTranscript: typeof parsed.callTranscript === "string" ? parsed.callTranscript : "",
-      drafts: Array.isArray(parsed.drafts) ? parsed.drafts : [],
+      drafts: parsed.drafts,
       activeIndex: Number(parsed.activeIndex) || 0,
-      step: parsed.step === "review" && Array.isArray(parsed.drafts) && parsed.drafts.length ? "review" : "details",
+      step: "review",
     };
   } catch {
     return null;
@@ -137,8 +140,8 @@ function readStored(): Stored | null {
 
 const subscribeToNothing = () => () => {};
 
-// The saved draft lives in sessionStorage, which only exists in the browser, so the generator
-// itself is rendered on the client only and starts from whatever was saved.
+// A letter under review is kept in sessionStorage, which only exists in the browser, so the
+// generator itself is rendered on the client only and starts from whatever was saved.
 export function GreenLightGenerator() {
   const isClient = useSyncExternalStore(subscribeToNothing, () => true, () => false);
   return isClient ? <Generator /> : <div className="magic-card p-7 text-sm font-medium text-slate-500">Loading the generator…</div>;
@@ -160,7 +163,11 @@ function Generator() {
 
   useEffect(() => {
     try {
-      window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ form, callTranscript, drafts, activeIndex, step } satisfies Stored));
+      if (step === "review" && drafts.length) {
+        window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ form, callTranscript, drafts, activeIndex, step } satisfies Stored));
+      } else {
+        window.sessionStorage.removeItem(STORAGE_KEY);
+      }
     } catch {
       // Restoring after a refresh is a convenience only.
     }
@@ -281,6 +288,7 @@ function Generator() {
               input_type: noTranscript ? "focus_points" : form.inputType,
               focus_points: focusPointLines(item.focus),
               multi,
+              ...(!noTranscript && form.inputType === "zoom_link" ? { zoom_link: form.zoomLink.trim() } : {}),
             }),
           });
           return { job, draft: await waitForDraft(job.job_id) };
