@@ -151,6 +151,7 @@ function Generator() {
   const [reviewError, setReviewError] = useState("");
   const [instructions, setInstructions] = useState("");
   const topRef = useRef<HTMLDivElement>(null);
+  const doneRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     try {
@@ -366,6 +367,8 @@ function Generator() {
         body: JSON.stringify(draftRequest(activeDraft)),
       });
       patchDraft(activeIndex, { saved: { documentUrl: result.document_url, pdfUrl: result.pdf_url, docTitle: result.doc_title, folder: result.folder } });
+      // The download step renders below the letter; bring it into view once it exists.
+      window.setTimeout(() => doneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 150);
     } catch (error) {
       setReviewError(error instanceof RequestError ? error.message : "The letter could not be created. Try again.");
     } finally {
@@ -605,7 +608,7 @@ function Generator() {
           </section>
 
           {activeDraft.saved ? (
-            <section className="magic-card p-5 md:p-7" aria-labelledby="green-light-done-heading">
+            <section ref={doneRef} className="magic-card scroll-mt-24 p-5 md:p-7" aria-labelledby="green-light-done-heading">
               <StepHeading number={3} title="Download and send" id="green-light-done-heading" />
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-emerald-600" aria-hidden="true" />
