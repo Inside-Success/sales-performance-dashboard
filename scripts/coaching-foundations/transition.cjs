@@ -22,10 +22,27 @@ function scopedLength(report,allowed,patches){
  return {report:patchLength(report,allowed,selected),ignoredPaths:patches.filter(x=>!x||!allowed.includes(x.path)).map(x=>String(x?.path||'<missing>'))};
 }
 function acceptReviewed(s,report,context){const normalized={...context.normalized,corrected_report:report};const review={...context.receipt,parsed_json:normalized};const candidate=r.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:review,reviewRequestId:context.receipt.request_id});return t.request({...s,candidate},'safety',s.models.safety,t.safetyBody({...s,candidate}));}
+function safetyAfterAdjudication(s,candidate){
+ const next={...s,candidate,auditAdjudication:candidate.auditAdjudication};
+ return t.request(next,'safety',s.models.safety,t.safetyBody(next));
+}
+function evidenceBeforeMatches(actual,before){
+ // JSON patches use null to represent a missing quote. All existing
+ // quote values still require exact comparison against the retained review.
+ return actual===undefined ? before===null : stable(actual)===stable(before);
+}
 function advanceInternal(s,response){
  if(response.request_id!==s.request.request_id)throw Error('Provider identity mismatch');
  if(!s.system?.includes('# Coaching report instructions'))return t.advance(s,response);
  if(['reviewer','reviewer-output-repair','review-contract-repair'].includes(s.request.stage)&&require('./reviewer-recovery.cjs').proposal(s.writer.response.parsed_json,response,s.prepared.blocks))return t.advance(s,response);
+ if(s.request.stage==='safety-adjudication'){
+  let lengthError;
+  const candidate=require('./audit-reliability.cjs').adjudicate(s,response,(report,blocks)=>{
+   try{c.validate(report,blocks);}catch(error){allowedLength(error);lengthError=error;}
+  });
+  if(lengthError)return lengthRequest(s,candidate.report,lengthError,{kind:'adjudication',candidate});
+  return safetyAfterAdjudication(s,candidate);
+ }
  if(s.request.stage==='safety-length-repair'){
   const q=s.safetyLengthRepair,original=q.receipt.parsed_json.patches,patches=response.parsed_json?.patches;
   if(!response.ok||!Array.isArray(patches)||patches.length!==original.length||['length','max_tokens','refusal'].includes(response.stop_reason))throw Error('Invalid safety length repair');
@@ -43,7 +60,7 @@ function advanceInternal(s,response){
  if(s.request.stage==='reviewer-evidence-repair'){
   const q=s.reviewEvidenceRepair,audit=structuredClone(q.receipt.parsed_json);
   if(!response.ok||!Array.isArray(response.parsed_json?.patches)||response.parsed_json.patches.length!==q.paths.length||['length','max_tokens'].includes(response.stop_reason))throw Error('Invalid evidence-only repair');
-  const seen=new Set();for(const x of response.parsed_json.patches){if(!q.paths.includes(x.path)||seen.has(x.path))throw Error('Evidence repair changed protected field');seen.add(x.path);const parts=x.path.split('.'),k=parts.pop(),obj=parts.reduce((a,k)=>a[k],audit);if(stable(obj[k])!==stable(x.before))throw Error('Stale evidence patch');obj[k]=require('./source-quote.cjs').resolve(x.value,s.call.blocks);}
+  const seen=new Set();for(const x of response.parsed_json.patches){if(!q.paths.includes(x.path)||seen.has(x.path))throw Error('Evidence repair changed protected field');seen.add(x.path);const parts=x.path.split('.'),k=parts.pop(),obj=parts.reduce((a,k)=>a[k],audit);if(!evidenceBeforeMatches(obj[k],x.before))throw Error('Stale evidence patch');obj[k]=require('./source-quote.cjs').resolve(x.value,s.call.blocks);}
   const next=advance({...q.state,reviewEvidenceUsed:true},{...q.receipt,parsed_json:audit});return {...next,reviewEvidenceReceipt:{request_id:response.request_id,patches:response.parsed_json.patches}};
  }
 
@@ -53,9 +70,13 @@ function advanceInternal(s,response){
   const updated={...s,lengthHistory:[...(s.lengthHistory||[]),{request_id:response.request_id,allowed:q.allowed,patches:response.parsed_json.patches.filter(x=>x&&q.allowed.includes(x.path)),ignored_paths:scoped.ignoredPaths}]};
   try{c.validate(report,s.call.blocks);}catch(e){return lengthRequest(updated,report,e,q.context,q.attempt+1);}
   if(q.context.kind==='writer'){let original=q.context.state;try{coverage(report,s.analysis);}catch(e){original={...original,draftCoverageIssues:[{message:e.message}]};}const next=t.advance(original,{...q.context.receipt,parsed_json:report});return {...next,lengthHistory:updated.lengthHistory};}
+  if(q.context.kind==='adjudication'){
+   const candidate={...q.context.candidate,report,digest:r.digest(report)};
+   return safetyAfterAdjudication(updated,candidate);
+  }
   return acceptReviewed(updated,report,q.context);
  }
- if(s.request.stage==='writer'&&response.ok&&response.parsed_json&&!['length','max_tokens','refusal'].includes(response.stop_reason)){
+ if(['writer','writer-contract-repair'].includes(s.request.stage)&&response.ok&&response.parsed_json&&!['length','max_tokens','refusal'].includes(response.stop_reason)){
   try{coverage(response.parsed_json,s.analysis);}catch(e){s={...s,draftCoverageIssues:[{message:e.message}]};}
   try{c.validate(response.parsed_json,s.call.blocks);}catch(e){try{allowedLength(e);}catch{return t.advance(s,response);}return lengthRequest(s,response.parsed_json,e,{kind:'writer',state:s,receipt:response});}
  }
@@ -73,4 +94,4 @@ function advance(s,response){
  if(!next.provider_results.some(x=>x.result.request_id===response.request_id))next.provider_results.push({purpose:s.request.stage,result:Object.fromEntries(Object.entries(response).filter(([key])=>!['parsed_json','raw_text','text','output'].includes(key)))});
  return next;
 }
-module.exports={...t,advance,coverage,patchLength,allowedLength,scopedLength};
+module.exports={...t,advance,coverage,patchLength,allowedLength,scopedLength,evidenceBeforeMatches};
