@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { createManualFeedbackReport, hasDatabase, updateManualFeedbackStatus } from "@/lib/db";
 import { isManualFeedbackEnabled, manualSubmitSchema } from "@/lib/manual-reports";
+import { resolveManualArchivedTranscript } from "@/lib/manual-transcript-archive";
 import { resolveZoomTranscript } from "@/lib/zoom-transcript";
 
 export const runtime = "nodejs";
@@ -54,7 +55,9 @@ export async function POST(request: NextRequest) {
 
     if (payload.input_type === "zoom_link" && payload.zoom_link) {
       try {
-        const zoomTranscript = await resolveZoomTranscript(payload.zoom_link);
+        const zoomTranscript = await resolveZoomTranscript(payload.zoom_link,
+          (recording) => resolveManualArchivedTranscript(recording, session.user?.email),
+        );
         workflowTranscriptText = zoomTranscript?.transcriptText || null;
         transcriptLink = zoomTranscript?.transcriptUrl || null;
       } catch {

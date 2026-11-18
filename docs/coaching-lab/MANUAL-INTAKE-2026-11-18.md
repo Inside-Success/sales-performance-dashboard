@@ -1,0 +1,7 @@
+# Manual coaching intake
+
+The dashboard resolves current Zoom recording shares through the player metadata endpoint and keeps compatibility with legacy player captions. It preserves caption timestamps and speaker labels. If Zoom does not expose captions, an exact recording owner, title and start-time match can reuse a complete, hash-verified transcript already stored by Script Adherence. Archive access requires the authenticated rep’s existing email mapping. Ambiguous matches, recordings outside that mapping and unavailable transcripts still accept pasted text. The archive is read-only. The manual worker uses the accepted transcript and no longer tries a second Zoom resolver.
+
+The manual coaching writer and independent reviewer now apply the Call 2+ scope to the whole conversation. An initial casting call that ends at discovery or booking a later offer review is excluded. A casting title, an unresolved objection or a call without a payment can still contain substantive selling. A reviewer reversal of a completed draft uses the existing independent adjudication path before publication can be refused. The manual rule is scoped to its own parent workflow.
+
+`scripts/coaching-foundations/manual-intake.cjs` applies the scoped changes to the verified manual workflow. The Zoom resolver is deployed through the normal dashboard release. Publish the workflow change after the dashboard resolver is available. For rollback, restore the prior active manual workflow revision and deploy the prior dashboard release if needed. Do not resubmit earlier manual rows.
