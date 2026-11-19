@@ -1,6 +1,6 @@
 export const RUBRIC_VERSION = "script-adherence-2026-11-02-v1";
 export type ScriptId = "documentary_call_1" | "documentary_call_2" | "reality_call_1" | "reality_call_2";
-export type Action = { id: string; label: string; components: string[]; when?: string; video?: string; unobservable?: boolean };
+export type Action = { id: string; label: string; components: string[]; when?: string; video?: string; unobservable?: boolean; observationOnly?: boolean };
 const a = (id: string, label: string, components: string[], extra: Partial<Action> = {}): Action => ({ id, label, components, ...extra });
 const opening = [
   a("consent", "Recording consent", ["Rep discloses recording", "Prospect agrees"]),
