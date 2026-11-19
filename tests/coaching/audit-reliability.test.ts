@@ -36,9 +36,9 @@ it('restores adjudication evidence typography without mutating receipts or skipp
  expect(JSON.stringify(receipt)).toBe(raw);
 });
 it('restores only the already-bound official show with the exact original transcript evidence',()=>{
- const s=state(),quote={id:'T1',text:'I will send the agreement'};
+ const quote={id:'T1',text:'I will send the agreement'};
  const identity={family:'main_istv',show:'Bound Documentary',evidence:[quote]};
- s.analysis={offer_identity:identity};
+ const s={...state(),analysis:{offer_identity:identity}};
  s.prepared={...s.prepared,policyRevision:'p:identity:'+r.digest(identity)};
  s.candidate.prepared=s.prepared;
  const finding={path:'show',before:'Documentary',reason:'Display label drift'};
@@ -53,4 +53,23 @@ it('restores only the already-bound official show with the exact original transc
  expect(revised.candidate.report).toEqual({...report,show:identity.show});
  expect(revised.candidate.safety).toBeNull();
  expect(revised.candidate.prepared.policyHash).toBe(s.prepared.policyHash);
+});
+it('bounds official safety shortening and requires safety on the resulting candidate',()=>{
+ const s=state();
+ const concise={...s.candidate.report,presentation:'syed-review-v1',summary:'Follow up on agreed documents.'};
+ s.candidate={...s.candidate,report:concise,digest:r.digest(concise)};
+ const findings=[{path:'lessons.0.teaching',before:concise.lessons[0].teaching,reason:'Clarify what to send.'}];
+ const repair=t.request({...s,system:'# Coaching report instructions',findings},'safety-repair','r',{system:'repair',prompt:'repair'});
+ const patches=(after:string)=>({patches:[{path:findings[0].path,before:findings[0].before,after}]});
+ const tooLong='document '.repeat(31).trim();
+ const first=t.advance(repair,response(repair,patches(tooLong)));
+ const second=t.advance(first,response(first,patches(tooLong)));
+ expect(second.request.request_id).not.toBe(first.request.request_id);
+ expect(second.request.prompt).toContain('Unpatched sibling fields count');
+ expect(()=>t.advance(second,response(second,patches(tooLong)))).toThrow('teaching exceeds 30 words');
+ const reviewed=t.advance(second,response(second,patches('Confirm and send the promised documents.')));
+ expect(reviewed.request.stage).toBe('safety');
+ expect(reviewed.candidate.safety).toBeNull();
+ expect(reviewed.candidate.report.next_steps).toEqual(concise.next_steps);
+ expect(reviewed.provider_results.map((x:any)=>x.purpose)).toEqual(['safety-repair','safety-length-repair','safety-length-repair']);
 });
