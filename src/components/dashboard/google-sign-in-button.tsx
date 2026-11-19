@@ -1,6 +1,21 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import { useFormStatus } from "react-dom";
+
+export function BrandedGoogleSignInForm({ redirectTo }: { redirectTo: string }) {
+  return (
+    <form action={async () => {
+      try {
+        await signIn("google", { redirectTo });
+      } catch {
+        window.location.assign("/sign-in?error=Configuration");
+      }
+    }}>
+      <GoogleSignInButton />
+    </form>
+  );
+}
 
 export function GoogleSignInButton() {
   const { pending } = useFormStatus();

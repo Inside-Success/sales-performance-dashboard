@@ -14,6 +14,10 @@ on:
       - 'src/app/api/internal/**'
       - 'src/app/api/ingest/**'
       - 'src/app/api/manual-reports/**'
+      - 'src/app/api/auth/**'
+      - 'src/auth.ts'
+      - 'src/lib/magic-mike-origin.ts'
+      - 'tests/branded-auth.test.ts'
       - 'src/app/call/**'
       - 'src/app/self-report/**'
       - 'src/app/submit/**'
@@ -42,7 +46,7 @@ jobs:
           node-version: '22.13.1'
           cache: npm
       - run: npm ci
-      - run: npx vitest run tests/coaching tests/coaching-review src/lib/coaching-reliability-policy.test.ts src/lib/coaching-coverage.test.ts src/lib/coaching-source-claim.test.ts src/lib/dashboard-read-snapshot.test.ts tests/dashboard-read-snapshot.test.ts src/lib/provider-checkpoint-policy.test.ts src/lib/provider-checkpoints.test.ts
+      - run: npx vitest run tests/coaching tests/coaching-review tests/branded-auth.test.ts src/lib/coaching-reliability-policy.test.ts src/lib/coaching-coverage.test.ts src/lib/coaching-source-claim.test.ts src/lib/dashboard-read-snapshot.test.ts tests/dashboard-read-snapshot.test.ts src/lib/provider-checkpoint-policy.test.ts src/lib/provider-checkpoints.test.ts
       - run: node scripts/n8n/verify-handoff-safety.mjs
       - run: node scripts/n8n/verify-recovery-retry-policy.mjs
       - run: node scripts/n8n/verify-durable-provider.mjs

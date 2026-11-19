@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Bot, ShieldCheck } from "lucide-react";
 import { signIn } from "@/auth";
-import { GoogleSignInButton } from "@/components/dashboard/google-sign-in-button";
+import { headers } from "next/headers";
+import { BRANDED_MAGIC_MIKE_HOST } from "@/lib/magic-mike-origin";
+import { BrandedGoogleSignInForm, GoogleSignInButton } from "@/components/dashboard/google-sign-in-button";
 
 export const metadata: Metadata = {
   title: "Sign in | Magic Mike Bot",
@@ -20,6 +22,8 @@ export default async function SignInPage({
   const callbackUrl = Array.isArray(params.callbackUrl) ? params.callbackUrl[0] : params.callbackUrl;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const redirectTo = getSafeRedirect(callbackUrl);
+  const branded = process.env.VERCEL_ENV === "production" &&
+    (await headers()).get("host") === BRANDED_MAGIC_MIKE_HOST;
   const errorMessage = getAuthErrorMessage(error);
 
   return (
@@ -50,14 +54,14 @@ export default async function SignInPage({
             </div>
           ) : null}
 
-          <form
-            action={async () => {
+          {branded ? <BrandedGoogleSignInForm redirectTo={redirectTo} /> : (
+            <form action={async () => {
               "use server";
               await signIn("google", { redirectTo });
-            }}
-          >
-            <GoogleSignInButton />
-          </form>
+            }}>
+              <GoogleSignInButton />
+            </form>
+          )}
 
           <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-[13px] font-medium text-slate-400">
             <ShieldCheck className="size-3.5" strokeWidth={2.3} />

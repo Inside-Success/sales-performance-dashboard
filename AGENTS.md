@@ -142,3 +142,8 @@ For dashboard/web changes:
 - Since November 19 a letter can also be written without a call transcript, from the Focus points box alone (minimum words by letter type, one prospect only, a prominent review warning). The rules for that mode live in the workflow's `Clean V2 Transcript` node; the page side is described under "Without a transcript" in docs-green-light-letters.md. Keep the page's minimum (`greenLightMinContextWords`) equal to the workflow's.
 - Keep it isolated: its code lives only in `src/app/green-light`, `src/app/api/green-light`, `src/components/green-light`, `src/lib/green-light` and `tests/green-light`. It writes only its own trace table (`green_light_letter_trace`), no other dashboard table and no usage events, so coaching usage and Sales Impact are unaffected. Every route must keep its own signed-in check because `/api/*` is outside the proxy.
 - Reps edit only the sections written from the call; the Google Doc design is built from the exact fixed lines, so never send a letter with altered fixed wording from this page.
+
+## Magic Mike production hostnames
+
+- See [the branded domain runbook](docs/magic-mike-production-hostnames.md). Serve the same production app at both hostnames without a hostname redirect. Keep both exact Google callback URIs on the existing production OAuth client.
+- Keep the legacy production manual workflow callback and delivered link contract. Both exact production hosts can open and submit reports. Do not replace the legacy origin in n8n, integrations, or saved report links.

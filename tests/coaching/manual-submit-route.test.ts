@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
+import { BRANDED_MAGIC_MIKE_ORIGIN } from "@/lib/magic-mike-origin";
 const m=vi.hoisted(()=>({auth:vi.fn(),create:vi.fn(),update:vi.fn(),zoom:vi.fn(),archive:vi.fn()}));
 vi.mock("@/auth",()=>({auth:m.auth}));
 vi.mock("@/lib/db",()=>({hasDatabase:()=>true,createManualFeedbackReport:m.create,updateManualFeedbackStatus:m.update}));
@@ -12,7 +13,7 @@ beforeEach(()=>{vi.clearAllMocks();vi.stubEnv("VERCEL_ENV","production");vi.stub
 describe("manual submission acceptance",()=>{
  it("does not dispatch unauthenticated submissions",async()=>{m.auth.mockResolvedValue(null);const fetch=vi.spyOn(globalThis,"fetch");expect((await POST(request())).status).toBe(401);expect(m.create).not.toHaveBeenCalled();expect(fetch).not.toHaveBeenCalled();});
  it("does not create or dispatch a localhost job",async()=>{const fetch=vi.spyOn(globalThis,"fetch");expect((await POST(request("http://localhost:3000"))).status).toBe(400);expect(m.create).not.toHaveBeenCalled();expect(fetch).not.toHaveBeenCalled();});
- it("authenticates dispatch and respects an already completed callback",async()=>{const fetch=vi.spyOn(globalThis,"fetch").mockResolvedValue(new Response('{"ok":true}',{status:202}));m.update.mockResolvedValue({status:"completed"});const body=await (await POST(request())).json();expect(body.status).toBe("completed");const options=fetch.mock.calls[0][1];expect(options?.headers).toMatchObject({authorization:"Bearer fixture-secret"});expect(JSON.parse(String(options?.body)).callback_url).toBe(origin+"/api/manual-reports/callback");});
+ it.each([origin, BRANDED_MAGIC_MIKE_ORIGIN])("dispatches from %s and respects an already completed callback",async(base)=>{const fetch=vi.spyOn(globalThis,"fetch").mockResolvedValue(new Response('{"ok":true}',{status:202}));m.update.mockResolvedValue({status:"completed"});const body=await (await POST(request(base))).json();expect(body.status).toBe("completed");const options=fetch.mock.calls[0][1];expect(options?.headers).toMatchObject({authorization:"Bearer fixture-secret"});const payload=JSON.parse(String(options?.body));expect(payload.callback_url).toBe(origin+"/api/manual-reports/callback");expect(payload.report_url).toBe(origin+"/self-report/"+payload.public_id);});
  it("uses the authenticated email for archive ownership and dispatches the full transcript", async()=>{
   const recording={owner:"Rep",title:"Casting Follow-up",startedAt:"2026-11-17T18:58:25.000Z"};
   const transcript="[00:00:24.001] Buyer: " + "Could I use the footage with my team after release? ".repeat(4);

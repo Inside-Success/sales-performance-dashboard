@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
+import { BRANDED_MAGIC_MIKE_ORIGIN } from "@/lib/magic-mike-origin";
 import { manualDeliveryUrls, MANUAL_PRODUCTION_ORIGIN } from "@/lib/manual-delivery";
 const id = "716dd1bd1e2944e6acf8660cf70c853e";
 describe("manual production delivery boundary", () => {
-  it("pins callbacks and report links to the verified live origin", () => {
-    expect(manualDeliveryUrls(MANUAL_PRODUCTION_ORIGIN, id, "production")).toEqual({
+  it.each([MANUAL_PRODUCTION_ORIGIN, BRANDED_MAGIC_MIKE_ORIGIN])("pins workflow URLs for requests from %s", (origin) => {
+    expect(manualDeliveryUrls(origin, id, "production")).toEqual({
       callbackUrl: `${MANUAL_PRODUCTION_ORIGIN}/api/manual-reports/callback`,
       reportUrl: `${MANUAL_PRODUCTION_ORIGIN}/self-report/${id}`,
     });
