@@ -147,3 +147,7 @@ For dashboard/web changes:
 
 - See [the branded domain runbook](docs/magic-mike-production-hostnames.md). Serve the same production app at both hostnames without a hostname redirect. Keep both exact Google callback URIs on the existing production OAuth client.
 - Keep the legacy production manual workflow callback and delivered link contract. Both exact production hosts can open and submit reports. Do not replace the legacy origin in n8n, integrations, or saved report links.
+
+## Official coaching holds (November 20)
+
+- See `docs/coaching-lab/OFFICIAL-HOLD-REPAIR-2026-11-20.md` for the official reviewer-contract and safety-length continuation rules. Keep original objection IDs during contract repair, enforce exact source/patch binding, and require independent safety after any candidate change. A show label may be restored only to its existing transcript-bound identity; never change offer family through safety adjudication. Reconcile uncertain Airtable creates by exact source and scorecard key before attempting delivery.

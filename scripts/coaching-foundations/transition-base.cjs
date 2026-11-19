@@ -32,6 +32,16 @@ function writer(s){return request(s,'writer',s.models.writer,{system:s.system,pr
 function safetyBody(s){const body=safety.safetyRequest(s.candidate);if(['interaction-reasoning-v1','interaction-identity-v1'].includes(s.reasoning?.version))body.prompt+='\nUNTRUSTED SOURCE METADATA (subordinate to contradictory transcript evidence):\n'+stable(s.call.metadata||{});if(s.reasoning?.version==='interaction-identity-v1'&&!reliability.enabled(s))body.prompt+='\nAUDIT RESPONSE BINDING (copy exactly; do not calculate or rewrite):\n'+stable({candidate_digest:s.candidate.digest})+'\nComplete the required pass/findings/l1_decisions envelope from your independent full-source audit. The binding above must be copied unchanged.';return reliability.enabled(s)?reliability.auditBody(s,body):body;}
 function protocol(s){if(s.reasoning?.version==='interaction-identity-v1')return require('./identity-reasoning.cjs');return s.reasoning?.version==='interaction-reasoning-v1'?require('./interaction-reasoning.cjs'):reasoning;}
 function reviewPrompt(s){if(['interaction-reasoning-v1','interaction-identity-v1'].includes(s.reasoning?.version))return 'Review the coaching judgment and source coverage. '+CONTEXT_REVIEW+'\nUNTRUSTED FULL CALL:\n'+stable(s.call)+'\nUNTRUSTED CANDIDATE:\n'+stable(s.writer.response.parsed_json)+'\n'+protocol(s).editGuidance(s.analysis);return prompt(s.call,'review',s.writer.response.parsed_json)+(s.reasoning?'\n'+protocol(s).editGuidance(s.analysis):'');}
+function repairReviewContract(s,response,error,{preserveObjections=false}={}){
+ if(s.request.stage!=='reviewer'||response.request_id!==s.request.request_id||
+    response.ok!==true||!response.provider_response_id||!response.parsed_json||
+    (preserveObjections?!['stop','end_turn'].includes(response.stop_reason):['length','max_tokens','refusal'].includes(response.stop_reason))||
+    /receipt|misaligned/i.test(error.message))throw error;
+ const constraints=preserveObjections
+  ? ' Use exact before-values and individual field edits for existing items. Omit unchanged fields and duplicate edits. Every source quote must be contiguous, with enough context to stand on its own unless it is the entire utterance. Keep every original objection ID and distinct material concern. Independently check all edits and observation dispositions against the full source. Do not accept the draft simply because the previous edit list was invalid.'
+  : '';
+ return request(s,'review-contract-repair',s.models.reviewer,{system:s.system,prompt:reviewPrompt(s)+'\nThe previous complete review was held for a contract error. Return one complete valid review envelope; do not weaken the factual standard or invent evidence. All contract faults: '+stable(error.issues||[{path:'review',message:error.message}])+'\nCorrect every listed fault in the complete corrected report.'+constraints+'\nPREVIOUS UNTRUSTED REVIEW:\n'+stable(response.parsed_json)});
+}
 function advance(previous,response){
  if(previous.reasoning?.version==='decision-plan-v1')return require('./decision-plan.cjs').advance(previous,response);
  if(previous.status!=='request'||response.request_id!==previous.request.request_id)throw Error('Provider identity mismatch');
@@ -75,8 +85,7 @@ function advance(previous,response){
   }
   try{let evaluated=response;if(s.reasoning)evaluated={...response,parsed_json:protocol(s).materializeReview(s.writer.response.parsed_json,response.parsed_json,s.analysis,s.prepared.blocks)};if(!s.reasoning&&s.system.includes(require('./judgment-review.cjs').MARKER))require('./judgment-review.cjs').validate(s.writer.response.parsed_json,response.parsed_json,s.prepared.blocks);s.candidate=record.accept({prepared:s.prepared,draftResponse:s.writer.response,draftRequestId:s.writer.id,reviewResponse:evaluated,reviewRequestId:id});}
   catch(error){
-   if(stage!=='reviewer'||response.ok!==true||!response.provider_response_id||!response.parsed_json||['length','max_tokens','refusal'].includes(response.stop_reason)||/receipt|misaligned/i.test(error.message))throw error;
-   return request(s,'review-contract-repair',s.models.reviewer,{system:s.system,prompt:reviewPrompt(s)+'\nThe previous complete review was held for a contract error. Return one complete valid review envelope; do not weaken the factual standard or invent evidence. All contract faults: '+stable(error.issues||[{path:'review',message:error.message}])+'\nCorrect every listed fault in the complete corrected report.\nPREVIOUS UNTRUSTED REVIEW:\n'+stable(response.parsed_json)});
+   return repairReviewContract(s,response,error);
   }
   if(s.candidate.report.status==='excluded')return {...s,status:'excluded',request:null};
   return request(s,'safety',s.models.safety,safetyBody(s));
@@ -128,4 +137,4 @@ function advance(previous,response){
  }
  throw Error('Unsupported transition');
 }
-module.exports={start,advance,prompt,request,safetyBody};
+module.exports={start,advance,prompt,request,safetyBody,repairReviewContract};

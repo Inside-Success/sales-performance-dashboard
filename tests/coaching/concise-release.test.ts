@@ -25,3 +25,33 @@ it('shortens prose without allowing removal of an objection or a changed judgmen
  expect(final.objections).toHaveLength(2);expect(final.objections[1]).toEqual(report.objections[1]);
  expect(()=>t.patchLength(report,['objections.0.teaching'],[{path:'objections.0.handling',before:'sound',value:'needs_work'}])).toThrow('Forbidden');
 });
+it('routes official review contract faults to one source-bound repair without accepting the draft',()=>{
+ const objection={id:'O1',exchange:'Buyer needs delivery before June.',teaching:'Confirm the expected delivery date.'};
+ const state=t.request({
+  channel:'official',system:'# Coaching report instructions',call:{blocks,metadata:{}},
+  prepared:{sourceHash:'source',sourceId:'exact-call',policyHash:'policy',blocks},
+  models:{reviewer:'reviewer'},reasoning:{version:'interaction-identity-v1'},
+  analysis:{observations:[],offer_identity:{family:'main_istv'}},provider_results:[],
+  writer:{response:{parsed_json:{status:'completed',presentation:'syed-review-v1',offer_family:'main_istv',objections:[objection],lessons:[]}}}
+ },'reviewer','reviewer',{system:'review',prompt:'original'});
+ const base={target:'objections:O1:teaching',before:objection.teaching,value:'Ask for the specific deadline.',reason:'Confirm the buyer deadline.',source_quote:blocks[0]};
+ for(const [edit,message] of [
+  [{...base,target:'objections:O1',value:{...objection,teaching:base.value}},'Whole-item replacement forbidden'],
+  [{...base,value:base.before},'No-op field patch'],
+  [{...base,source_quote:{id:'T0001',text:'June'}},'Reasoning quote is an incomplete short fragment'],
+ ] as const){
+  const audit={pass:false,findings:[{issue:'Deadline handling',evidence_ids:['T0001']}],edits:[edit],observation_dispositions:[],coverage_additions:[]};
+  const receipt={request_id:state.request.request_id,ok:true,provider_response_id:'paid',stop_reason:'stop',parsed_json:audit};
+  const next=t.advance(state,receipt);
+  expect(next.request.stage).toBe('review-contract-repair');
+  expect(next.request.request_id).not.toBe(state.request.request_id);
+  expect(next.request.prompt).toContain(message);
+  expect(next.writer).toEqual(state.writer);
+  expect(next.candidate).toBeUndefined();
+  expect(next.provider_results).toHaveLength(1);
+  expect(()=>t.advance(next,{...receipt,request_id:next.request.request_id})).toThrow(message);
+  expect(()=>t.advance(state,{...receipt,provider_response_id:null})).toThrow();
+  expect(()=>t.advance(state,{...receipt,request_id:'wrong'})).toThrow('Provider identity mismatch');
+  expect(()=>t.advance({...state,channel:'manual'},receipt)).toThrow(message);
+ }
+});

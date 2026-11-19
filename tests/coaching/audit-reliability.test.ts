@@ -35,3 +35,22 @@ it('restores adjudication evidence typography without mutating receipts or skipp
  expect(out.candidate.auditAdjudication.decisions[0].evidence[0].text).toBe('I will send the agreement');
  expect(JSON.stringify(receipt)).toBe(raw);
 });
+it('restores only the already-bound official show with the exact original transcript evidence',()=>{
+ const s=state(),quote={id:'T1',text:'I will send the agreement'};
+ const identity={family:'main_istv',show:'Bound Documentary',evidence:[quote]};
+ s.analysis={offer_identity:identity};
+ s.prepared={...s.prepared,policyRevision:'p:identity:'+r.digest(identity)};
+ s.candidate.prepared=s.prepared;
+ const finding={path:'show',before:'Documentary',reason:'Display label drift'};
+ const next=t.advance(s,response(s,{pass:false,findings:[finding],l1_decisions:[]}));
+ const decision={...finding,after:identity.show,evidence:[quote]};
+ for(const bad of [{...decision,after:'Other show'},{...decision,evidence:[{...quote,text:'benefits sheet'}]}]){
+  expect(()=>t.advance(next,response(next,{decisions:[bad]}))).toThrow('Identity change requires reanalysis');
+ }
+ expect(()=>t.advance({...next,channel:'manual'},response(next,{decisions:[decision]}))).toThrow('Identity change requires reanalysis');
+ const revised=t.advance(next,response(next,{decisions:[decision]}));
+ expect(revised.request.stage).toBe('safety');
+ expect(revised.candidate.report).toEqual({...report,show:identity.show});
+ expect(revised.candidate.safety).toBeNull();
+ expect(revised.candidate.prepared.policyHash).toBe(s.prepared.policyHash);
+});
