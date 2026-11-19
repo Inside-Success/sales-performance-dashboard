@@ -1,5 +1,7 @@
 # Manual/self-submitted report delivery — 2026-10-04
 
+> November 2026 update: the branded hostname can also submit manual reports. The n8n callback and delivered report links still use the original Vercel hostname. See [the current hostnames runbook](docs/magic-mike-production-hostnames.md).
+
 ## Scope
 
 Repair two Bryce Sheldon submissions saved on October 4 and prevent unsafe callback destinations and lost saved results. Official coaching, scoring, compliance, Ask Sales, and existing report content are outside this change.
