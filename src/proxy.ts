@@ -1,4 +1,5 @@
 import { NextResponse, type NextFetchEvent, type NextRequest } from "next/server";
+import type { NextAuthRequest } from "next-auth";
 import { auth } from "@/auth";
 import { BRANDED_MAGIC_MIKE_ORIGIN } from "@/lib/magic-mike-origin";
 
@@ -8,7 +9,7 @@ export function proxy(originalRequest: NextRequest, event: NextFetchEvent) {
   const branded = process.env.VERCEL_ENV === "production" &&
     originalRequest.nextUrl.origin === BRANDED_MAGIC_MIKE_ORIGIN;
 
-  return auth((request) => {
+  return auth((...[request]: [NextAuthRequest, NextFetchEvent]) => {
     // NextAuth rewrites the augmented request to AUTH_URL. Keep branded
     // navigation on the original host while using the same session checks.
     const nextUrl = branded ? originalRequest.nextUrl : request.nextUrl;

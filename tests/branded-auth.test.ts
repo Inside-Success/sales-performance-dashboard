@@ -41,7 +41,8 @@ describe("production Auth.js origin selection", () => {
       const { proxy } = await import("@/proxy");
 
       const response = await proxy(new NextRequest(`${origin}/call/9649?view=details`), {} as NextFetchEvent);
-      const location = new URL(response.headers.get("location")!);
+      expect(response).toBeInstanceOf(Response);
+      const location = new URL((response as Response).headers.get("location")!);
       expect(location.origin).toBe(origin);
       expect(location.pathname).toBe("/sign-in");
       expect(location.searchParams.get("callbackUrl")).toBe("/call/9649?view=details");
