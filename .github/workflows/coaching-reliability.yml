@@ -4,6 +4,7 @@ on:
     paths:
       - 'scripts/n8n/**'
       - 'scripts/coaching-upgrade/**'
+      - 'scripts/coaching-foundations/**'
       - 'src/lib/objection-coaching*'
       - 'src/lib/report-version.ts'
       - 'src/lib/report-chat.ts'

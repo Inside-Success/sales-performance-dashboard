@@ -8,6 +8,15 @@ function enabled(s){return s.reasoning?.auditProtocol===VERSION;}
 function value(report,path){return path.split('.').reduce((v,k)=>v?.[k],report);}
 function allowed(candidate,path){return value(candidate.report,path)!==undefined&&(safety.fields(candidate.report).some(f=>f.path===path)||/^(focus_id|outcome\.payment|offer_family|show|next_steps\.\d+\.kind|(?:objections|lessons|next_steps)\.\d+\.(?:counterevidence_ids|evidence_ids)|outcome\.evidence_ids)$/.test(path));}
 function sameBefore(actual,before){return stable(actual)===stable(before)||(Array.isArray(actual)&&typeof before==='string'&&stable(actual)===before);}
+function boundShowRestore(s,d){
+ const {prepared,analysis,candidate}=s,identity=analysis?.offer_identity;
+ if(s.channel!=='official'||d.path!=='show'||!identity||d.after!==identity.show||
+    identity.family!==candidate.report.offer_family||!identity.evidence?.length||
+    !prepared.policyRevision.endsWith(':identity:'+record.digest(identity))||
+    record.digest(prepared.policyText)!==prepared.policyHash||
+    candidate.prepared.policyHash!==prepared.policyHash)return false;
+ return identity.evidence.every(q=>d.evidence.some(e=>e.id===q.id&&e.text===q.text&&e.kind!=='policy'));
+}
 function resolveEvidence(s,q){
  const resolve=require('./source-quote.cjs').resolve;
  if(s.prepared.blocks.some(b=>b.id===q?.id))return {...resolve(q,s.prepared.blocks),kind:'transcript'};
@@ -51,8 +60,14 @@ function adjudicate(s,response,validate=contract.validate){
   if(!fs.some(f=>f.path===d.path&&sameBefore(f.before,d.before))||!d.reason?.trim()||!Array.isArray(d.evidence)||!d.evidence.length)throw Error('Unsupported adjudication');
   const original=value(c.report,d.path);
   if(Array.isArray(original)?(!Array.isArray(d.after)||d.after.some(x=>typeof x!=='string')):(typeof d.after!==typeof original||typeof d.after!=='string'||!d.after.trim()))throw Error('Invalid adjudication value');
-  if(['offer_family','show'].includes(d.path)&&d.after!==original)throw Error('Identity change requires reanalysis');
-  try{d.evidence=d.evidence.map(q=>resolveEvidence(s,q));}catch{throw Error('Unsupported adjudication');}
+  const restore=d.path==='show'&&d.after!==original&&boundShowRestore(s,d);
+  if(['offer_family','show'].includes(d.path)&&d.after!==original&&!restore)throw Error('Identity change requires reanalysis');
+  try{
+   // A retained adjudication may also cite the already-proven binding.
+   // Omit this redundant citation only on a verified exact restoration.
+   d.evidence=d.evidence.filter(q=>!(restore&&q.kind==='policy'&&q.id==='BOUND SOURCE IDENTITY'&&q.text==='"show":'+JSON.stringify(d.after)))
+    .map(q=>resolveEvidence(s,q));
+  }catch{throw Error('Unsupported adjudication');}
   if(!d.evidence.some(q=>q.kind==='transcript'))throw Error('Missing transcript evidence');
   const keys=d.path.split('.'),last=keys.pop();let parent=c.report;for(const k of keys)parent=parent[k];parent[last]=d.after;
  }
