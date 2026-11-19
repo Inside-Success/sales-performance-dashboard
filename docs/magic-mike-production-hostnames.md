@@ -28,4 +28,9 @@ For a branded-host-only outage, keep the original hostname and use it to access 
 
 ## Rollout evidence
 
-The exact branded hostname is attached to the production Vercel project. Both OAuth callback URLs were saved and reopened for verification in Google Cloud. Public DNS, authenticated browser checks, and live manual submissions are pending the application release.
+The November 19–20, 2026 rollout used [PR #469](https://github.com/Inside-Success/sales-performance-dashboard/pull/469) for dual-host routing and [PR #470](https://github.com/Inside-Success/sales-performance-dashboard/pull/470) for protected links. Both passed the GitHub coaching reliability gate and the Vercel preview build. The first live check surfaced the fixed `AUTH_URL` in the protected-page guard, which PR #470 addresses.
+
+- Cloudflare's authoritative nameservers and a public resolver returned the expected CNAME. Vercel listed both production domains as verified with no hostname redirect. The existing Google Cloud client retained the old callback and saved the new callback.
+- The authenticated browser opened existing coaching report `/call/9649` and the same previously completed manual report on both hosts.
+- Exact manual intake test records `0264e0868a7742708fb8b871335e8361` (original) and `8459e6b968fc4edd920df9d0d5d305c2` (branded) reached the expected terminal `needs_transcript_paste` state. Each intentionally referenced a nonexistent recording to exercise delivery without generating new coaching or a document. Both fixtures are labeled Domain QA.
+- Vercel production deployment `dpl_3ATHfRzbkJf3VrFWjJiCSm2PHbVL` (commit `75969e8`) was Ready with both hostnames assigned. After the deployment, a fresh branded Google sign-in from `/call/9649` returned to the same branded path and showed its coaching content. An authenticated check of the original report link opened the same content at the original hostname. Fresh Google sign-in had also returned to that exact original deep link during rollout.
