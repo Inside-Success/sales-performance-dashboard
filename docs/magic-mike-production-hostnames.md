@@ -14,7 +14,7 @@ The company Google OAuth client in project `magic-mike-dashboard-auth` retains b
 - `https://sales-performance-dashboard-rose.vercel.app/api/auth/callback/google`
 - `https://magicmike.insidesuccess.ai/api/auth/callback/google`
 
-Production retains the existing `AUTH_URL` setting and NextAuth behavior for the previous hostname. The exact branded production origin uses Auth.js directly with the same configuration and company access rules. Its sign-in form uses the same-origin Auth.js endpoint, including the CSRF check. Each origin establishes its own secure session cookie and restores the relative destination after sign-in. No OAuth client ID, secret, or application role change is required.
+Production retains the existing `AUTH_URL` setting and NextAuth behavior for the previous hostname. The exact branded production origin uses Auth.js directly with the same configuration and company access rules. Its sign-in form uses the same-origin Auth.js endpoint, including the CSRF check. The protected-page guard uses the original branded request for navigation even though NextAuth still uses the fixed environment URL internally. Each origin establishes its own secure session cookie and restores the relative destination after sign-in. No OAuth client ID, secret, or application role change is required.
 
 ## Manual reports
 

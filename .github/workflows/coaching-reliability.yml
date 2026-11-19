@@ -16,6 +16,7 @@ on:
       - 'src/app/api/manual-reports/**'
       - 'src/app/api/auth/**'
       - 'src/auth.ts'
+      - 'src/proxy.ts'
       - 'src/lib/magic-mike-origin.ts'
       - 'tests/branded-auth.test.ts'
       - 'src/app/call/**'

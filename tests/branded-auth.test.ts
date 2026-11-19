@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { type NextFetchEvent, NextRequest } from "next/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BRANDED_MAGIC_MIKE_ORIGIN } from "@/lib/magic-mike-origin";
 import { MANUAL_PRODUCTION_ORIGIN } from "@/lib/manual-delivery";
@@ -31,4 +31,21 @@ describe("production Auth.js origin selection", () => {
     expect(google.callbackUrl).toBe(`${authOrigin}/api/auth/callback/google`);
     expect(google.signinUrl).toBe(`${authOrigin}/api/auth/signin/google`);
   });
+
+  it.each([BRANDED_MAGIC_MIKE_ORIGIN, MANUAL_PRODUCTION_ORIGIN])(
+    "keeps a protected report on %s when asking the user to sign in",
+    async (origin) => {
+      vi.stubEnv("AUTH_URL", MANUAL_PRODUCTION_ORIGIN);
+      vi.stubEnv("AUTH_SECRET", "test-only-session-secret");
+      vi.stubEnv("VERCEL_ENV", "production");
+      const { proxy } = await import("@/proxy");
+
+      const response = await proxy(new NextRequest(`${origin}/call/9649?view=details`), {} as NextFetchEvent);
+      expect(response).toBeInstanceOf(Response);
+      const location = new URL((response as Response).headers.get("location")!);
+      expect(location.origin).toBe(origin);
+      expect(location.pathname).toBe("/sign-in");
+      expect(location.searchParams.get("callbackUrl")).toBe("/call/9649?view=details");
+    },
+  );
 });
