@@ -23,10 +23,10 @@ describe('October 29 source refresh', () => {
   expect(text).toContain('Do not manually change these fields');
   expect(text).toContain('not blanket removal of rep confirmation calls');
  });
- it('does not manufacture a time for the removed untimed objection session', () => {
+ it('retrieves the newly scheduled objection session and Thursday closing session', () => {
   const text=evidence('When is Thursday objection handling training?');
-  expect(text).toContain('no longer present in item 5');
-  expect(text).toContain('does not supply a sixth current time/link');
+  expect(text).toContain('six live onboarding sessions');
+  expect(text).toContain('Wednesday 3–4 PM EST Objection Handling');
   expect(text).toContain('Thursday 2–3 PM EST Closing');
  });
  it('does not turn show money or provisional lodging into a benefit guarantee', () => {

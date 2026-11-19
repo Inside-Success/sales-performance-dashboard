@@ -5,10 +5,10 @@ import type { Plan } from '../../../src/lib/ask-sales-faq/revamp/types';
 const records = getRevampKnowledge();
 const evidence = (question: string, scope: Plan['scopes'][number] = 'main_istv') => retrieveEvidence(records, question, { intent: 'company_question', question, scopes: [scope], queries: [] }).map(x => x.record.text).join('\n');
 describe('November 10 source changes', () => {
- it('retrieves the current affordability exception without reinstating a fixed Call 1 quote', () => {
+ it('retrieves the current ordinary Call 1 pricing boundary', () => {
   const text=evidence('Should I price check a financially unqualified reality applicant on the first call?', 'reality');
-  expect(text).toContain('REMOVE the previous numerical minimum');
-  expect(text).toContain('not package prices or payment plans');
+  expect(text).toContain('do not mention cost or money on ordinary Call 1');
+  expect(text).toContain('true one-call close');
  });
  it('distinguishes weekend booked-call confirmation from random Sunday dialing', () => {
   const text=evidence('Can I call Monday bookings on Sunday to confirm them?');
