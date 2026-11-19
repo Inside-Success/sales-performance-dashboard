@@ -1,13 +1,16 @@
-import NextAuth from "next-auth";
+import { Auth } from "@auth/core";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
+import type { NextRequest } from "next/server";
 import { isAllowedAuthEmail, normalizeAuthEmail } from "@/lib/auth-utils";
+import { BRANDED_MAGIC_MIKE_ORIGIN } from "@/lib/magic-mike-origin";
 
 type GoogleProfile = {
   email?: string;
   email_verified?: boolean;
 };
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const authConfig: NextAuthConfig = {
   trustHost: true,
   pages: {
     signIn: "/sign-in",
@@ -41,4 +44,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-});
+};
+
+export const { handlers, signIn, signOut, auth } = NextAuth(authConfig);
+
+/** The branded OAuth round trip must stay on the host that owns its cookies. */
+export function handleAuthRequest(request: NextRequest) {
+  if (process.env.VERCEL_ENV === "production" && request.nextUrl.origin === BRANDED_MAGIC_MIKE_ORIGIN) {
+    // Use the same config and secrets with the validated request URL, avoiding
+    // NextAuth's fixed AUTH_URL rewrite for this exact host only.
+    return Auth(request, { ...authConfig, redirectProxyUrl: undefined });
+  }
+  return request.method === "GET" ? handlers.GET(request) : handlers.POST(request);
+}

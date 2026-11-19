@@ -11,6 +11,8 @@ const vitestConfig = {
     environment: "node",
     fileParallelism: false,
     restoreMocks: true,
+    // NextAuth uses extensionless Next.js imports that require bundler resolution.
+    server: { deps: { inline: ["next-auth"] } },
   },
 };
 
