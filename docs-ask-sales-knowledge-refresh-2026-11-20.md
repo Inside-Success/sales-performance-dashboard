@@ -1,0 +1,6 @@
+# Ask Sales refresh — November 20, 2026 (Pakistan)
+Reviewed the November 18 production checkpoint through November 19 Miami time. The updated evidence covers the ordinary Call 1 money restriction and true one-call-close boundary, CEOs Island launch and US Business Race, six onboarding trainings, the 14-day check-in, documentary VIP upgrade balance, contract review, package-comparison limitations, shared documentary episodes, reality mini-documentary scope, accessibility, Daymond event availability, outbound batch timing, Zoom Phone, pre-Zoom video and automated reminders.
+
+The final offer video and contract have distinct roles. A rep reported Lite contract differences. The bot points to the applicable agreement for buyer-specific entitlements. The new onboarding cheat sheet is a workflow reference. Its historical package figures do not replace current presentations. No new military deadline exception or confirmed inventory was inferred. Daily sales totals, attendee data and individual lead cases were excluded.
+
+Five maintained Slack channel histories, indexed replies and linked threads reviewed. Ninety-two of 93 maintained Drive files were readable. Twelve Sheet ranges were reread and five tracked Drive folders checked. Historical inaccessible sources and oversized thread gaps remain open. Sources were read-only.

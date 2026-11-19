@@ -7,7 +7,7 @@ const evidence = (question: string, scope: Plan['scopes'][number] = 'main_istv')
 describe('November 5 source refresh', () => {
  it('retrieves current reality availability and preserves documentary distinction', () => {
   const text=evidence('Can I still offer Operation Profit or Business Race UK?', 'reality');
-  expect(text).toContain('only three reality shows currently being filled');
+  expect(text).toContain('CEOs Island is live');
   expect(text).toContain('Business Race UK is not being filled');
   expect(text).toContain('MOST older documentary offers');
  });
