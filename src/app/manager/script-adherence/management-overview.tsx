@@ -1,6 +1,6 @@
 import type { AdherenceGroup } from "@/lib/script-adherence/data";
 import type { ScriptId } from "@/lib/script-adherence/rubric";
-import { LEGACY_VERSION, rubricsFor } from "@/lib/script-adherence/versions";
+import { LEGACY_VERSION, CURRENT_VERSION, rubricsFor, scriptVersionLabel } from "@/lib/script-adherence/versions";
 
 const count = (value: number) => value.toLocaleString("en-US");
 const percent = (complete: number, total: number) =>
@@ -15,9 +15,9 @@ export function managementSummary(groups: AdherenceGroup[]) {
     const version = group.rubricVersion ?? LEGACY_VERSION;
     const versionLabel = groups.some((other) => other.id === group.id &&
       (other.rubricVersion ?? LEGACY_VERSION) !== version)
-      ? version === LEGACY_VERSION ? "Earlier script" : "Updated script"
+      ? scriptVersionLabel(version, groups.some(other => other.id === group.id && other.rubricVersion === CURRENT_VERSION))
       : "";
-    const actions = rubric.actions.map((action) => {
+    const actions = rubric.actions.filter(action => !action.observationOnly).map((action) => {
       const metric = group.actions.find((item) => item.id === action.id);
       return { id: action.id, label: action.label, complete: metric?.complete ?? 0,
         missed: metric?.notComplete ?? 0 };

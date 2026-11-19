@@ -1,6 +1,8 @@
 import {RUBRICS, RUBRIC_VERSION, type ScriptId, type Action} from './rubric';
 export const LEGACY_VERSION=RUBRIC_VERSION;
 export const UPDATED_VERSION='script-adherence-2026-11-10-v2';
+export const CURRENT_VERSION='script-adherence-2026-11-20-v3';
+const V2_EFFECTIVE_AT=Date.parse('2026-11-10T14:07:38.959Z');
 export type Rubric= {label:string;source:string;actions:Action[]};
 const a=(id:string,label:string,components:string[],when?:string,video?:string):Action=>({id,label,components,...(when?{when}:{}),...(video?{video}:{})});
 const onboarding='Payment is confirmed and prospect proceeds to production onboarding, or a production onboarding appointment is actually arranged';
@@ -36,9 +38,22 @@ updated.reality_call_2={label:'Reality · Call 2',source:'114byDd_3imo1jGBrtobmO
  a('social','Explain promotional assets',['Explains access to social assets','Encourages sharing'],onboarding),
  a('support','Explain production support',['Identifies the production support email','Explains where production or logistics questions should go'],onboarding),
 ]};
+const current=structuredClone(updated);
+const introduction=current.reality_call_1!.actions.find(action=>action.id==='video_1')!;
+introduction.when='The audition reaches the video presentation, or proceeds into or past substantive casting questions with an opportunity to play it';
+current.reality_call_1!.actions.find(action=>action.id==='video_2')!.when=introduction.when;
+current.documentary_call_1!.actions.push({
+ id:'price_quoted',label:'Specific price quoted on Call 1',observationOnly:true,
+ components:['The rep states a specific offer price or minimum. Exclude amounts stated only by the buyer, playback, and examples that are clearly not the offer price. General licensing and travel costs are allowed.'],
+});
+current.documentary_call_2!.actions.push({
+ id:'all_three_prices',label:'All three license prices presented',observationOnly:true,
+ components:['Rep presents the Lite license price as an option','Rep presents the Standard license price as an option','Rep presents the Premium license price as an option'],
+});
 export function rubricsFor(version:string=LEGACY_VERSION):Partial<Record<ScriptId,Rubric>>{
  if(version===LEGACY_VERSION)return RUBRICS;
  if(version===UPDATED_VERSION)return updated;
+ if(version===CURRENT_VERSION)return current;
  throw Error('Unknown script version; preserve saved result and hold processing');
 }
 export function selectVersion(startedAt:string,activation:string|null|undefined,activeVersion:string|null|undefined){
@@ -46,7 +61,8 @@ export function selectVersion(startedAt:string,activation:string|null|undefined,
  rubricsFor(activeVersion);
  const start=Date.parse(startedAt),cutoff=Date.parse(activation);
  if(!Number.isFinite(start)||!Number.isFinite(cutoff))throw Error('Invalid script activation date');
- return start>=cutoff?activeVersion:LEGACY_VERSION;
+ if(start>=cutoff)return activeVersion;
+ return activeVersion===CURRENT_VERSION&&start>=V2_EFFECTIVE_AT?UPDATED_VERSION:LEGACY_VERSION;
 }
 // Saved paid request is the authority, including old requests created before version pinning.
 export function requestVersion(body:unknown){
@@ -55,4 +71,10 @@ export function requestVersion(body:unknown){
  const match=system.match(/Version (script-adherence-[\w-]+)\./);
  if(!match)throw Error('Request has no script version');
  rubricsFor(match[1]);return match[1];
+}
+
+export function scriptVersionLabel(version:string,hasCurrent:boolean){
+ if(version===CURRENT_VERSION)return 'Current script';
+ if(version===UPDATED_VERSION)return hasCurrent?'November 10 script':'Updated script';
+ return 'Earlier script';
 }

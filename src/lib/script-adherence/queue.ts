@@ -5,7 +5,7 @@ import {z} from 'zod';
 import {buildAnalysisRequest,parseAnalysis,MODELS,type AdherenceModel,PIPELINE_VERSION,RequestPreparationError} from './model';
 import {usageCost} from './cost';
 import {actionStatus,scriptFor,summarize,type Analysis} from './contract';
-import {LEGACY_VERSION,selectVersion,requestVersion} from './versions';
+import {rubricsFor,LEGACY_VERSION,selectVersion,requestVersion} from './versions';
 const db=()=>neon(process.env.DATABASE_URL!);
 export const digest=(v:string)=>createHash('sha256').update(v).digest('hex');
 export const ACCOUNTS=['nTC8wAG7SsijjSRAP3IOng','ELrPkucySZ2nxcs4fpyAaA'] as const;
@@ -52,7 +52,13 @@ export async function saveSource(id:string,owner:string,files:Array<{id:string;v
  const updated=await sql`update script_adherence_jobs set rep=${attribution.rep},attribution=${JSON.stringify(attribution)}::jsonb,transcript=${text},transcript_hash=${digest(text)},state='ready',lease_owner=null,lease_until=null,error=null,updated_at=now() where id=${id} and lease_owner=${owner} and state='awaiting_transcript' returning id`;
  return {saved:updated.length===1};
 }
-export function metrics(result:Analysis,startedAt:string,version=LEGACY_VERSION){const s=summarize([result],[startedAt],[version]);return {...s,script:scriptFor(result,version),actions:result.actions.map(a=>({id:a.id,status:actionStatus(result,a.id,startedAt,version)}))};}
+export function metrics(result:Analysis,startedAt:string,version=LEGACY_VERSION){
+ const script=scriptFor(result,version);
+ const observations=new Set((script?rubricsFor(version)[script]!.actions:[]).filter(action=>action.observationOnly).map(action=>action.id));
+ return {...summarize([result],[startedAt],[version]),script,
+  actions:result.actions.filter(action=>!observations.has(action.id))
+   .map(action=>({id:action.id,status:actionStatus(result,action.id,startedAt,version)}))};
+}
 export async function claimModel(exclude:string[]=[],provider?:'openai'|'anthropic',transport:'realtime'|'batch'='realtime'){
  const sql=db();const configs=await sql`select * from script_adherence_control where id=true`;if(!configs.length)return null;const c=configs[0];if((c.transport??'realtime')!==transport)return null;
  const reserved=await sql`select r.id,r.request_body,j.id as job_id,r.stage from script_adherence_requests r join script_adherence_jobs j on r.id=j.draft_request_id or r.id=j.review_request_id where r.status='reserved' and r.transport=${transport} and not exists(select 1 from script_adherence_batch_members bm where bm.request_id=r.id) and not (r.id=any(${exclude}::text[])) and (${provider||''}='' or (r.model like 'gpt-%')=${provider==='openai'}) and r.request_body is not null and (${c.enabled} or ${JSON.stringify(c.canary_keys)}::jsonb ? j.id) order by r.created_at limit 1`;
