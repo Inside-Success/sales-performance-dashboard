@@ -19,7 +19,7 @@ function transcript(state){
   }
   const rows=parts.map(([start,end],index)=>{
    const key=block.id+':'+(index+1);
-   refs.set(key,{block,start,end,index,parts});
+   refs.set(key,{block,start,end,index});
    return [key,block.text.slice(start,end)];
   });
   source.push({id:block.id,timestamp:block.timestamp??null,spans:rows});

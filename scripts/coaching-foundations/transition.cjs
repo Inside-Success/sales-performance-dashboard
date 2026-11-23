@@ -148,7 +148,7 @@ function advanceInternal(s,response){
    return {...x,before:x.path.split('.').reduce((o,k)=>o[k],s.lengthRepair.report)};
   });
   const {lengthRecovery,...rest}=s;
-  return advanceInternal({...rest,request:q.request,lengthRepair:{...s.lengthRepair,attempt:1}},{...response,request_id:q.request.request_id,parsed_json:{patches}});
+  return advanceInternal({...rest,request:{...s.request,stage:q.request.stage},lengthRepair:{...s.lengthRepair,attempt:1}},{...response,parsed_json:{patches}});
  }
  if(!s.system?.includes('# Coaching report instructions'))return t.advance(s,response);
  if(reviewedStages.includes(s.request.stage)&&require('./reviewer-recovery.cjs').proposal(s.writer.response.parsed_json,response,s.prepared.blocks))return t.advance(s,response);

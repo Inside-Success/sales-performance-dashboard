@@ -25,6 +25,7 @@ it('rejects bogus, mixed, cross-block and reversed span selections',()=>{
 it('repairs only failing evidence slots, preserving judgment and refusing unsupported evidence',()=>{
  const legacy={...referenced,edits:[{...referenced.edits[0],evidence_ref:undefined,source_quote:{id:'T0001',text:'Invented payment commitment'}}]};
  const failed=evidence.decode(source,legacy,{legacy:true});
+ expect(evidence.repairBody(source,legacy,failed.issues).prompt).toMatch(/\bJSON\b/);
  const good={path:'edits.0',evidence_ref:{start:'T0001:2'}};
  const fixed=evidence.patchEvidence(source,legacy,failed.issues,[{...good,value:'Changed outcome'}],{legacy:true});
  expect(fixed.edits[0].value).toBe('No payment today');
