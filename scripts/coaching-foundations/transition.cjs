@@ -58,7 +58,8 @@ function advanceReferences(s,response){
 function resumeHeld(s,response){
  const target=s.heldRecovery;
  if(!terminal(s,response)||response.provider_response_id!==target.providerResponseId||!response.parsed_json)throw Error('Recovery receipt changed');
- const {heldRecovery,...next}=s;
+ const {heldRecovery,...rest}=s;
+ const next={...rest,reviewEvidenceVersion:evidence.VERSION};
  // Prove the originally held stage still fails for the recorded reason.
  let fault;try{advanceInternal(next,response);}catch(error){fault=error;}
  if(!fault||fault.message!==target.reason)throw Error('Recovery diagnostic changed');
