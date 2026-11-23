@@ -192,7 +192,14 @@ function advanceInternal(s,response){
   const q=s.lengthRepair,scoped=scopedLength(q.report,q.allowed,response.parsed_json.patches),report=scoped.report;
   const updated={...s,lengthHistory:[...(s.lengthHistory||[]),{request_id:response.request_id,allowed:q.allowed,patches:response.parsed_json.patches.filter(x=>x&&q.allowed.includes(x.path)),ignored_paths:scoped.ignoredPaths}]};
   try{c.validate(report,s.call.blocks);}catch(e){return lengthRequest(updated,report,e,q.context,q.attempt+1);}
-  if(q.context.kind==='writer'){let original=q.context.state;try{coverage(report,s.analysis);}catch(e){original={...original,draftCoverageIssues:[{message:e.message}]};}const next=t.advance(original,{...q.context.receipt,parsed_json:report});return {...next,lengthHistory:updated.lengthHistory};}
+  if(q.context.kind==='writer'){
+   const original={...q.context.state};
+   if(s.reviewEvidenceVersion===evidence.VERSION)original.reviewEvidenceVersion=evidence.VERSION;
+   if(!s.heldRecovery)delete original.heldRecovery;
+   try{coverage(report,s.analysis);}catch(e){original.draftCoverageIssues=[{message:e.message}];}
+   const next=t.advance(original,{...q.context.receipt,parsed_json:report});
+   return {...next,lengthHistory:updated.lengthHistory};
+  }
   if(q.context.kind==='adjudication'){
    const candidate={...q.context.candidate,report,digest:r.digest(report)};
    return safetyAfterAdjudication(updated,candidate);
