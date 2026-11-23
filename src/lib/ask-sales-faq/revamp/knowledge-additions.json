@@ -466,14 +466,15 @@
       "What are the payment options?",
       "Can a reality buyer pay monthly over ten months?"
     ],
-    "text": "Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner. The previously listed paid-in-full, two-, three- and four-payment options remain separate.",
+    "text": "Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner. The previously listed paid-in-full, two-, three- and four-payment options remain separate. The re-engagement offer is for previous leads who did not buy. Existing buyers are not generally eligible to switch retroactively. Rudy authorized one specific exception for someone who had just paid a deposit; any comparable switch needs individual approval.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329",
-      "https://www.loom.com/share/ed4b65aa61a2425da93c41c7b2f51755"
+      "https://www.loom.com/share/ed4b65aa61a2425da93c41c7b2f51755",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795452534820619"
     ],
     "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
@@ -8184,7 +8185,7 @@
     "questions": [
       "What should I text an old reality lead about monthly payments?"
     ],
-    "text": "Use the approved reality re-engagement text and email script for suitable old reality leads. Personalize the show and send the two short SMS messages back to back, or use the email and invite them to talk today. Verify actual availability before using scarcity wording. The script uses broad year-long language; quote the actual ten-month plan when giving exact terms.",
+    "text": "Use the approved reality re-engagement text and email script for suitable old reality leads. Personalize the show and send the two short SMS messages back to back, or use the email and invite them to talk today. Verify actual availability before using scarcity wording. The script uses broad year-long language; quote the actual ten-month plan when giving exact terms. The re-engagement offer is for previous leads who did not buy. Existing buyers are not generally eligible to switch retroactively. Rudy authorized one specific exception for someone who had just paid a deposit; any comparable switch needs individual approval.",
     "scopes": [
       "reality"
     ],
@@ -8209,7 +8210,7 @@
     "questions": [
       "How do I handle calls already on my Thanksgiving calendar this week?"
     ],
-    "text": "For calls already booked on Thursday November 26, Rudy directed reps to take them or phone the lead and move the call earlier. Do not cancel them or push them to the following week. This is specific to Thanksgiving 2026.",
+    "text": "For calls already booked on Thursday November 26, Rudy directed reps to take them or phone the lead and move the call earlier. Do not cancel them or push them to the following week. This is specific to Thanksgiving 2026. Block availability for new holiday bookings. Rudy explicitly allowed Call 2s on Thanksgiving while warning about low attendance.",
     "scopes": [
       "shared"
     ],
