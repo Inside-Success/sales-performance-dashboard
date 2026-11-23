@@ -137,4 +137,4 @@ function advance(previous,response){
  }
  throw Error('Unsupported transition');
 }
-module.exports={start,advance,prompt,request,safetyBody,repairReviewContract};
+module.exports={start,advance,prompt,request,safetyBody,repairReviewContract,reviewPrompt};

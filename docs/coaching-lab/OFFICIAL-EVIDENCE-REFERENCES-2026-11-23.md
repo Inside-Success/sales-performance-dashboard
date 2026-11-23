@@ -1,0 +1,7 @@
+# Official coaching evidence references
+
+The official reviewer selects deterministic span IDs from the complete, source-bound call. The application copies an exact contiguous excerpt into the existing review contract and runs the existing quotation, coverage, identity, objection preservation and independent safety checks. Unknown, crossed, reversed or insufficient references fail closed. A citation repair receives only the failed evidence slots and cannot change their judgments. Manual coaching and Script Adherence are outside this release.
+
+The recovery cohort is 32 exact official sources with retained terminal provider receipts. The recovery selector binds source, transcript digest and provider response ID. The runtime must reproduce the saved validation fault before issuing a new scoped request. Prior provider requests are reused only through their existing exact checkpoints. Existing business artifacts, ownership, and unsettled provider requests must be checked before dispatch.
+
+The published coaching core is deployed with an exact current-baseline comparison and a rollback snapshot. Only its Start and Advance code is replaced. A bounded canary selects exact recovery sources while other traffic keeps the prior behavior. Remove the cohort configuration after the authorized recovery. Verify final reports against dashboard, Airtable, document and completion receipts. Do not remove unresolved holds or reissue uncertain requests.
