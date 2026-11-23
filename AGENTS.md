@@ -151,3 +151,5 @@ For dashboard/web changes:
 ## Official coaching holds (November 20)
 
 - See `docs/coaching-lab/OFFICIAL-HOLD-REPAIR-2026-11-20.md` for the official reviewer-contract and safety-length continuation rules. Keep original objection IDs during contract repair, enforce exact source/patch binding, and require independent safety after any candidate change. A show label may be restored only to its existing transcript-bound identity; never change offer family through safety adjudication. Reconcile uncertain Airtable creates by exact source and scorecard key before attempting delivery.
+
+- See `docs/coaching-lab/OFFICIAL-EVIDENCE-REFERENCES-2026-11-23.md` for the official evidence-reference contract. The reviewer selects deterministic span IDs, and the application materializes exact transcript text before the existing validators. Keep evidence correction scoped to failed fields, preserve the original judgments and objections, and independently audit the candidate. Keep retained receipts and unresolved holds intact.

@@ -71,7 +71,7 @@ function materializeLegacy(draft,audit,analysis,blocks){
  for(const row of normalized.observation_dispositions)row.source_quote=quote(row.source_quote,blocks);
  return normalized;
 }
-module.exports={VERSION,PRINCIPLES,ANALYST_SYSTEM,config,validateAnalysis,reviewGuidance,validateReview,targets,editGuidance,materializeReview};
+module.exports={VERSION,PRINCIPLES,ANALYST_SYSTEM,config,validateAnalysis,reviewGuidance,validateReview,targets,editGuidance,materializeReview,quote};
 
 function materializeReview(draft,audit,analysis,blocks){
  if(draft.presentation!=='syed-review-v1')return materializeLegacy(draft,audit,analysis,blocks);
