@@ -19,10 +19,10 @@ describe('November 8 knowledge boundaries', () => {
  it('retrieves active documentary status despite a blank directory cell', () => {
   expect(evidence('Can I sell Dropout to CEO if its sheet status is blank?')).toContain('Dropout to CEO IS ACTIVE');
  });
- it('keeps gala purchase instructions separate from unconfirmed dates', () => {
+ it('keeps gala purchase instructions with the updated February schedule', () => {
   const text=evidence('How do I buy gala tickets for a plus one? Is February 21 confirmed?');
   expect(text).toContain('One buyer may purchase multiple tickets');
-  expect(text).toContain('final 2027 event date is NOT confirmed');
+  expect(text).toContain('February 11, 2027');
  });
  it('does not promote a proposed commission penalty into active policy', () => {
   const text=evidence('Is commission now five percent on a third call?', 'reality');

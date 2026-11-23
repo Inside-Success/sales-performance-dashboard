@@ -463,16 +463,19 @@
     "decisionKey": "reality-faq-18",
     "title": "Reality shows: What are the payment options?",
     "questions": [
-      "What are the payment options?"
+      "What are the payment options?",
+      "Can a reality buyer pay monthly over ten months?"
     ],
-    "text": "Participants may pay through:\r\n* Paid in full\r\n* 2 payments\r\n* 3 payments\r\n* 4 payments\r\nThe full balance must be paid before filming begins.",
+    "text": "Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner. The previously listed paid-in-full, two-, three- and four-payment options remain separate.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
-      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit"
+      "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329",
+      "https://www.loom.com/share/ed4b65aa61a2425da93c41c7b2f51755"
     ],
-    "reviewedAt": "2026-09-12T20:20:48.267Z",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -882,7 +885,7 @@
       "Where is the reality Call 2 script?",
       "How do I run my first Mansion or Island Call 2?"
     ],
-    "text": "Rudy’s September 14 instruction requires showing the reality license video on Call 2. The video can be played at 1.2x or 1.5x speed as instructed. Use its reality-specific explanation and current package presentation. General main-show scripts with copied $10,000 or Miami language do not override the reality FAQ’s $20,000/$30,000 packages or provisional filming locations. Rich's October 13 response to reps unable to find a separate reality Call 2 script gives the process: go over Green Light, help the prospect connect emotionally and explain how the opportunity would help them, play Rudy's video, then close. Use this as the practical Call 2 flow alongside the mandatory reality-specific license video and current terms; it does not mean copy documentary prices, benefits or cohort deadlines into reality.",
+    "text": "Rudy’s September 14 instruction requires showing the reality license video on Call 2. The video can be played at 1.2x or 1.5x speed as instructed. Use its reality-specific explanation and current package presentation. General main-show scripts with copied $10,000 or Miami language do not override the reality FAQ’s $20,000/$30,000 packages or provisional filming locations. Rich's October 13 response to reps unable to find a separate reality Call 2 script gives the process: go over Green Light, help the prospect connect emotionally and explain how the opportunity would help them, play Rudy's video, then close. Use this as the practical Call 2 flow alongside the mandatory reality-specific license video and current terms; it does not mean copy documentary prices, benefits or cohort deadlines into reality. November 23 updated sequence: For the November 23 reality-only trial, end ordinary Call 1 by telling the applicant to expect the Green Light email with a link to review the cast agreement. After approval the Green Light team sends it the next morning; ask them to review it and sign before Call 2 if possible. This agreement covers casting terms without package prices. At the start of Call 2 check whether they reviewed and signed. If needed play the new four-minute cast-agreement walkthrough, answer questions and review the Green Light in the first 15 minutes. Then proceed to the mandatory license presentation, fees and payment. The separate one-page package summary at checkout describes the selected fees and deliverables. Signing the cast agreement does not confirm payment. Rudy described signature notifications as planned; check actual signature status. This trial applies to reality only.",
     "scopes": [
       "reality"
     ],
@@ -890,9 +893,13 @@
       "slack:1789354338",
       "slack:1789240875.961299",
       "https://www.loom.com/share/f078b83cd34248d4b3308078bcafac09",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791933379242319"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791933379242319",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456471124479",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795457793576559",
+      "https://www.loom.com/share/64c05a35637c4aaf8e362dfc391b7921",
+      "https://www.loom.com/share/8fa61cab9caa4eea95dbf51ab4dff2b1"
     ],
-    "reviewedAt": "2026-10-14T12:32:30.878848+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -1250,15 +1257,17 @@
       "What is the Entrepreneurs Island deposit and where is the contract?",
       "What are reality Standard and VIP payment plans?"
     ],
-    "text": "Rich announced separate reality contracts and payment links in the master spreadsheet on September 8. The refreshed September 14 contract list includes explicit Reality Standard and VIP rows. Use the exact reality product and approved installment row; do not reuse a normal-show link solely because the amount is the same. Discount rows in the workbook do not by themselves grant permission to discount. October 8 current sheet review: in Inside Success - All Links, the Inside Success Reality Show section lists Standard $20,000 paid in full, 4 x $5,000, 3 x $7,000 (total $21,000), or 2 x $10,000; VIP $30,000 paid in full, 4 x $7,500, 3 x $10,000, or 2 x $15,000. The lowest listed initial installment is $5,000 for Standard and $7,500 for VIP, not a separate holding deposit or permission to split across days. These are the reality rows, including Entrepreneurs Island; use the corresponding current agreement/payment link and confirm the selected plan. Do not apply anniversary documentary pricing to reality or infer bankruptcy eligibility from a payment plan. The sheet lists links and plans, not an automatic background-review approval.",
+    "text": "Rich announced separate reality contracts and payment links in the master spreadsheet on September 8. The refreshed September 14 contract list includes explicit Reality Standard and VIP rows. Use the exact reality product and approved installment row; do not reuse a normal-show link solely because the amount is the same. Discount rows in the workbook do not by themselves grant permission to discount. October 8 current sheet review: in Inside Success - All Links, the Inside Success Reality Show section lists Standard $20,000 paid in full, 4 x $5,000, 3 x $7,000 (total $21,000), or 2 x $10,000; VIP $30,000 paid in full, 4 x $7,500, 3 x $10,000, or 2 x $15,000. Those four-payment plans start at $5,000 and $7,500 respectively. These are the reality rows, including Entrepreneurs Island; use the corresponding current agreement/payment link and confirm the selected plan. Do not apply anniversary documentary pricing to reality or infer bankruptcy eligibility from a payment plan. The sheet lists links and plans, not an automatic background-review approval. Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "slack:1788884225.101759",
-      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit"
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329",
+      "https://www.loom.com/share/ed4b65aa61a2425da93c41c7b2f51755"
     ],
-    "reviewedAt": "2026-10-08",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 10,
     "kind": "policy",
     "risk": "high",
@@ -3405,7 +3414,7 @@
       "Do I show the Island video first?",
       "Does the cofunded video mean I can quote 20k on call 1?"
     ],
-    "text": "The October 29 reviewed Reality FAQ and current Reality Call 1 script specify: introduction and two or three quick questions; Video 2, the short show-specific pitch/concept overview (about four to five minutes); the main five qualification questions; Green Light/congratulations and reasons the applicant fits; Video 1, the longer roughly twelve-minute introduction; then calendar and next steps if qualified. Both videos are required during the call. This replaces the older master-video-first and show-specific-video-at-the-end sequence. Use the maintained Call 1 video folder https://drive.google.com/drive/folders/1ecDubaYysQPUA1HvmYAn2qKN_8K16YER and current show resources. The longer introduction is https://www.loom.com/share/ffec603b64514bf1878504d68b9d1c50 . These are not the mandatory Call 2 license presentation. Do not routinely quote prices on Call 1. Rudy’s November 18 directive: do not mention cost or money on ordinary Call 1, even when pressed or when the lead appears financially unqualified. Qualify through business and fit questions; defer fees to Call 2 after acceptance. The current script removed the numerical minimum. The only exception Rudy named was a true one-call close. That is rare and requires the applicable approval, Green Light and complete presentation steps; it is not permission to shortcut a normal call. Compliance is audited weekly. This newer direction governs over older affordability wording; package prices and payment plans themselves did not change.",
+    "text": "The October 29 reviewed Reality FAQ and current Reality Call 1 script specify: introduction and two or three quick questions; Video 2, the short show-specific pitch/concept overview (about four to five minutes); the main five qualification questions; Green Light/congratulations and reasons the applicant fits; Video 1, the longer roughly twelve-minute introduction; then calendar and next steps if qualified. Both videos are required during the call. This replaces the older master-video-first and show-specific-video-at-the-end sequence. Use the maintained Call 1 video folder https://drive.google.com/drive/folders/1ecDubaYysQPUA1HvmYAn2qKN_8K16YER and current show resources. The longer introduction is https://www.loom.com/share/ffec603b64514bf1878504d68b9d1c50 . These are not the mandatory Call 2 license presentation. Do not routinely quote prices on Call 1. Rudy’s November 18 directive: do not mention cost or money on ordinary Call 1, even when pressed or when the lead appears financially unqualified. Qualify through business and fit questions; defer fees to Call 2 after acceptance. The current script removed the numerical minimum. The only exception Rudy named was a true one-call close. That is rare and requires the applicable approval, Green Light and complete presentation steps; it is not permission to shortcut a normal call. Compliance is audited weekly. This newer direction governs over older affordability wording; package prices and payment plans themselves did not change under that Call 1 direction. Use the updated November 22 show-specific overviews in the show-specific download folder https://drive.google.com/drive/folders/13kfnI_5Sr7ibtimX2nXGeWRLvrMmEk2I : Entrepreneurs Island https://drive.google.com/file/d/1qFzpJk4wmWdUCSY3xIT2Wuuj6KR6qSYZ/view and Mansion of Money https://drive.google.com/file/d/1cbzqyBKPP5eNDmotkdllCjiBoNcQAUVM/view . Download the current versions. Before ending Call 1, explain that the Green Light email will include a cast-agreement review link.",
     "scopes": [
       "reality"
     ],
@@ -3418,9 +3427,11 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792766481353259",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792773165369739",
       "https://docs.google.com/document/d/1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ/edit",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795012120888289"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795012120888289",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795440697257089",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456471124479"
     ],
-    "reviewedAt": "2026-11-19T19:26:36.793446+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4398,7 +4409,7 @@
     "id": "reality-call1-video-2026-10-03",
     "decisionKey": "reality-call1-video-2026-10-03",
     "title": "Reality master Call 1 video plus current five-minute Island overview",
-    "text": "The October 29 reviewed Reality FAQ and current Reality Call 1 script specify: introduction and two or three quick questions; Video 2, the short show-specific pitch/concept overview (about four to five minutes); the main five qualification questions; Green Light/congratulations and reasons the applicant fits; Video 1, the longer roughly twelve-minute introduction; then calendar and next steps if qualified. Both videos are required during the call. This replaces the older master-video-first and show-specific-video-at-the-end sequence. Use the maintained Call 1 video folder https://drive.google.com/drive/folders/1ecDubaYysQPUA1HvmYAn2qKN_8K16YER and current show resources. The longer introduction is https://www.loom.com/share/ffec603b64514bf1878504d68b9d1c50 . These are not the mandatory Call 2 license presentation. Do not routinely quote prices on Call 1. The updated Island show overview is https://drive.google.com/file/d/1tc9MW1PB9jELYuUIgvMNaaKOu5RC-VgS/view . The longer cast logistics overview https://www.loom.com/share/e404e280dba14b8481e156f3a4776564 is separate. Folder listings and announcements establish these resources, not a reviewed full transcript or new package promises. Rudy’s November 18 directive: do not mention cost or money on ordinary Call 1, even when pressed or when the lead appears financially unqualified. Qualify through business and fit questions; defer fees to Call 2 after acceptance. The current script removed the numerical minimum. The only exception Rudy named was a true one-call close. That is rare and requires the applicable approval, Green Light and complete presentation steps; it is not permission to shortcut a normal call. Compliance is audited weekly. This newer direction governs over older affordability wording; package prices and payment plans themselves did not change.",
+    "text": "The October 29 reviewed Reality FAQ and current Reality Call 1 script specify: introduction and two or three quick questions; Video 2, the short show-specific pitch/concept overview (about four to five minutes); the main five qualification questions; Green Light/congratulations and reasons the applicant fits; Video 1, the longer roughly twelve-minute introduction; then calendar and next steps if qualified. Both videos are required during the call. This replaces the older master-video-first and show-specific-video-at-the-end sequence. Use the maintained Call 1 video folder https://drive.google.com/drive/folders/1ecDubaYysQPUA1HvmYAn2qKN_8K16YER and current show resources. The longer introduction is https://www.loom.com/share/ffec603b64514bf1878504d68b9d1c50 . These are not the mandatory Call 2 license presentation. Do not routinely quote prices on Call 1. The longer cast logistics overview https://www.loom.com/share/e404e280dba14b8481e156f3a4776564 is separate. Folder listings and announcements establish these resources, not a reviewed full transcript or new package promises. Rudy’s November 18 directive: do not mention cost or money on ordinary Call 1, even when pressed or when the lead appears financially unqualified. Qualify through business and fit questions; defer fees to Call 2 after acceptance. The current script removed the numerical minimum. The only exception Rudy named was a true one-call close. That is rare and requires the applicable approval, Green Light and complete presentation steps; it is not permission to shortcut a normal call. Compliance is audited weekly. This newer direction governs over older affordability wording; package prices and payment plans themselves did not change under that Call 1 direction. Use the updated November 22 show-specific overviews in the show-specific download folder https://drive.google.com/drive/folders/13kfnI_5Sr7ibtimX2nXGeWRLvrMmEk2I : Entrepreneurs Island https://drive.google.com/file/d/1qFzpJk4wmWdUCSY3xIT2Wuuj6KR6qSYZ/view and Mansion of Money https://drive.google.com/file/d/1cbzqyBKPP5eNDmotkdllCjiBoNcQAUVM/view . Download the current versions. Before ending Call 1, explain that the Green Light email will include a cast-agreement review link.",
     "questions": [
       "Which video do I play at end of Island Call 1?",
       "Where is the short Island video?",
@@ -4420,12 +4431,14 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792766481353259",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1792773165369739",
       "https://docs.google.com/document/d/1GGVlvdJFTqZH12bCA0zevDBjXDbBbZvusJHsRFIsAeQ/edit",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795012120888289"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795012120888289",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795440697257089",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456471124479"
     ],
     "scopes": [
       "reality"
     ],
-    "reviewedAt": "2026-11-19T19:26:36.793446+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -4603,7 +4616,7 @@
     "id": "greenlight-rejection-owner-2026-10-03",
     "decisionKey": "greenlight-rejection-owner-2026-10-03",
     "title": "Rep handles rejection email and cancellation after failed Green Light",
-    "text": "Adedokun's October 2 answer confirms the rep handles the rejection email/cancelling Call 2 after a failed Green Light; the Green Light team does not send the rejection email. Use the approved rejection process/template and actual review result; do not invent background-check findings. A request for a separate background-check rejection template is not evidence that a new approved template exists. Mike’s November 1 clarification says send the approved rejection letter the NEXT DAY, matching the maintained Green Light cheat sheet. His short reply does not establish a new HubSpot “unqualified” value or remove existing required Meeting Status/Reject Call Notes; follow the documented reporting fields for the actual outcome. November 10 Mike asks reps to send rejection reasons to him for final approval. Do not automatically reject on assumed wealth or an unverified name-only background match; preserve actual screening and case-specific review. His permission to advance one disputed case to Call 2 does not approve every applicant. The closer reads column M for status and N for the reason. The SOP directs the closer to check these fields and supply requested details in the existing review thread; it does not instruct the closer to edit the screening decision or its reason. FAILED can be a preliminary flag. Check #greenlight-background-review for Mike or Jen’s final decision via the Greenlight team. If more information is requested, get it from the applicant and reply in the existing case thread, or tell the team if unavailable. While pending, hold onboarding and communicate neither approval nor rejection. Proceed normally only after final approval; if finally declined, stop onboarding and follow the rejection process.",
+    "text": "Adedokun's October 2 answer confirms the rep handles the rejection email/cancelling Call 2 after a failed Green Light; the Green Light team does not send the rejection email. Use the approved rejection process/template and actual review result; do not invent background-check findings. A request for a separate background-check rejection template is not evidence that a new approved template exists. Mike’s November 1 clarification says send the approved rejection letter the NEXT DAY, matching the maintained Green Light cheat sheet. His short reply does not establish a new HubSpot “unqualified” value or remove existing required Meeting Status/Reject Call Notes; follow the documented reporting fields for the actual outcome. November 10 Mike asks reps to send rejection reasons to him for final approval. Do not automatically reject on assumed wealth or an unverified name-only background match; preserve actual screening and case-specific review. His permission to advance one disputed case to Call 2 does not approve every applicant. The closer reads column M for status and N for the reason. The SOP directs the closer to check these fields and supply requested details in the existing review thread; it does not instruct the closer to edit the screening decision or its reason. FAILED can be a preliminary flag. Check #greenlight-background-review for Mike or Jen’s final decision via the Greenlight team. If more information is requested, get it from the applicant and reply in the existing case thread, or tell the team if unavailable. While pending, hold onboarding and communicate neither approval nor rejection. Proceed normally only after final approval; if finally declined, stop onboarding and follow the rejection process. November 23: Igor said the workflow and templates were prepared and instructed reps to keep sending manual rejection emails pending activation. A conditional approval to enable it is not a go-live announcement.",
     "questions": [
       "Who emails rejection after failed greenlight and cancels call two?"
     ],
@@ -4614,12 +4627,13 @@
       "https://docs.google.com/document/d/12nMn-bIdqdo84-UJdaswpgwys9wUx7lXAMZBXQFhoCk/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794319225967289",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794323357418149",
-      "https://docs.google.com/document/d/1VYep6RJOxt4mVMYK3oIc8t-9-nr8nAnnpi_HBgmI3Gw/edit"
+      "https://docs.google.com/document/d/1VYep6RJOxt4mVMYK3oIc8t-9-nr8nAnnpi_HBgmI3Gw/edit",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795455927968949"
     ],
     "scopes": [
       "shared"
     ],
-    "reviewedAt": "2026-11-22T20:00:00Z",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5414,7 +5428,7 @@
       "Does the paid production clause mean they must say they paid, or disclose being part of the production?",
       "Do reality participants still need ad or promotion disclosures?"
     ],
-    "text": "Rudy's latest October 12 clarification of the PAID PRODUCTION CONTRACT CLAUSE says it is about participants disclosing that they are part of the production, like influencers using #ad or #promotion; it is not about saying that they paid to participate. Explain both parts together: no requirement to announce their own payment under this company explanation, but promotional/production-relationship disclosure still applies. Do not shorten this to 'no disclosure is needed' or assume end credits remove participants' promotional disclosure obligations. Earlier statements remain context: on September 29 Rudy wrote 'No he doesn't need to say that on all his posts. We have to just add it in the credits somewhere at some point'; on October 9, when asked whether participants have to say it is a paid thing, his exact reply was 'No they don’t', with a separate statement about disclaimers at the end of shows/trailers. The newer October 12 message resolves what the paid-production wording means; it must accompany those earlier quotes when explaining the current position. The attached screenshots are general online explanations of promotional disclosure, not a new signed agreement or company legal opinion. These replies do not establish that a revised agreement has been issued or provide final replacement contractual wording. Answer the meaning directly; if someone specifically requests legal's final written clause, obtain the applicable approved wording rather than inventing it. Do not tell reps to edit or disregard an agreement. Rudy says the company uses US/Florida terms and reps must not edit contracts. Individual travel-credit, UK-view targeting or extraordinary-family-emergency discussions are case-specific, not standard benefits or blanket waivers. An unanswered request to cap liability is not approved. In the October 12 early-departure discussion Rich said they would not sue the particular participant for having to leave, while Rudy distinguished simply quitting from ruining a costly production, which could create liability. This is not a blanket no-liability promise, contract amendment, refund right or approved liability cap. October 14–15 follow-up: Rudy says the paid-production clause cannot be removed and reiterates disclosure of the production affiliation when promoting the show, not disclosure of the participant's own payment. On October 15 he distinguishes general announcements from endorsements. For a general announcement he suggests a footer such as #tv #castmember #paidcast; for an endorsement such as 'This is the best new reality show go watch it' he gives #paidcastmember #ad, emphasizing the affiliation when influencing others. Mike points the rep to that answer. These are Rudy's company examples, not a guarantee that those exact hashtags alone satisfy every legal/platform requirement or replacement contract wording. Do not omit the disclosure entirely, waive the existing clause, or claim legal has issued a revised agreement. October 20 Rudy advises scanning through the contract during reality Call 2 and says he will make a Loom. The reviewed discussion does not supply that promised Loom; do not invent a link or claim it is already available. Keep material terms accurate, do not rewrite the contract or provide final legal confirmation.",
+    "text": "Rudy's latest October 12 clarification of the PAID PRODUCTION CONTRACT CLAUSE says it is about participants disclosing that they are part of the production, like influencers using #ad or #promotion; it is not about saying that they paid to participate. Explain both parts together: no requirement to announce their own payment under this company explanation, but promotional/production-relationship disclosure still applies. Do not shorten this to 'no disclosure is needed' or assume end credits remove participants' promotional disclosure obligations. Earlier statements remain context: on September 29 Rudy wrote 'No he doesn't need to say that on all his posts. We have to just add it in the credits somewhere at some point'; on October 9, when asked whether participants have to say it is a paid thing, his exact reply was 'No they don’t', with a separate statement about disclaimers at the end of shows/trailers. The newer October 12 message resolves what the paid-production wording means; it must accompany those earlier quotes when explaining the current position. The attached screenshots are general online explanations of promotional disclosure, not a new signed agreement or company legal opinion. These replies do not establish that a revised agreement has been issued or provide final replacement contractual wording. Answer the meaning directly; if someone specifically requests legal's final written clause, obtain the applicable approved wording rather than inventing it. Do not tell reps to edit or disregard an agreement. Rudy says the company uses US/Florida terms and reps must not edit contracts. Individual travel-credit, UK-view targeting or extraordinary-family-emergency discussions are case-specific, not standard benefits or blanket waivers. An unanswered request to cap liability is not approved. In the October 12 early-departure discussion Rich said they would not sue the particular participant for having to leave, while Rudy distinguished simply quitting from ruining a costly production, which could create liability. This is not a blanket no-liability promise, contract amendment, refund right or approved liability cap. October 14–15 follow-up: Rudy says the paid-production clause cannot be removed and reiterates disclosure of the production affiliation when promoting the show, not disclosure of the participant's own payment. On October 15 he distinguishes general announcements from endorsements. For a general announcement he suggests a footer such as #tv #castmember #paidcast; for an endorsement such as 'This is the best new reality show go watch it' he gives #paidcastmember #ad, emphasizing the affiliation when influencing others. Mike points the rep to that answer. These are Rudy's company examples, not a guarantee that those exact hashtags alone satisfy every legal/platform requirement or replacement contract wording. Do not omit the disclosure entirely, waive the existing clause, or claim legal has issued a revised agreement. October 20 Rudy advises scanning through the contract during reality Call 2 and says he will make a Loom. The reviewed discussion does not supply that promised Loom; do not invent a link or claim it is already available. Keep material terms accurate, do not rewrite the contract or provide final legal confirmation. For one Mansion Season 4 applicant, Rudy approved written confirmation allowing a transfer to Mansion Season 5 or 6 if unavailable, likely within two to three months, without switching shows. This was a specific approval, not a refund, guaranteed filming date or automatic entitlement for everyone. In the same conversation Rudy described the non-compete as covering similar media or TV activities. Use the actual agreement for scope; do not narrow it to poaching employees.",
     "scopes": [
       "reality"
     ],
@@ -5435,9 +5449,11 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1791980918566449",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792084687211519",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792084784434489",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792501972886709"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1792501972886709",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795384129633009",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795390048532559"
     ],
-    "reviewedAt": "2026-10-21T14:16:51.479446+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -5594,15 +5610,16 @@
       "What is the Island filming venue?",
       "Are Park Place Mansion and Tea Table confirmed?"
     ],
-    "text": "On October 13 Rudy shared Mansion location https://www.luxuri.com/properties/park-place-mansion and Island location https://teatableislamorada.com with the explicit qualifier 'Not 100% but mostly confirmed'. Explain these as the provisional named venues, not final contractual venue guarantees. His separate October 12 Entrepreneurs Island Season 1 financing/production confirmation remains recorded, but it does not remove the newer qualification about the precise named property. Do not promise an exact address, travel date, room allocation, Season 2 venue, non-refundable travel booking or entitlement inferred from either property's public website. Existing show-specific housing rules and capacity limits remain applicable. On October 26 Rudy explicitly says the Island venue contract is not signed yet and describes it as about eighty percent. He clarifies the pictured house is for staff and participants are camping. Do not present the property as secured or the staff house as cast lodging; this does not retract the separate Season 1 financing statement.",
+    "text": "On October 13 Rudy shared Mansion location https://www.luxuri.com/properties/park-place-mansion and Island location https://teatableislamorada.com with the explicit qualifier 'Not 100% but mostly confirmed'. Explain these as the provisional named venues, not final contractual venue guarantees. His separate October 12 Entrepreneurs Island Season 1 financing/production confirmation remains recorded, but it does not remove the newer qualification about the precise named property. Do not promise an exact address, travel date, room allocation, Season 2 venue, non-refundable travel booking or entitlement inferred from either property's public website. Existing show-specific housing rules and capacity limits remain applicable. On October 26 Rudy explicitly says the Island venue contract is not signed yet and describes it as about eighty percent. He clarifies the pictured house is for staff and participants are camping. Do not present the property as secured or the staff house as cast lodging; this does not retract the separate Season 1 financing statement. November 23 Mansion update supersedes the earlier named Mansion property as a sales talking point: Rudy described a prospective house awaiting signature and explicitly instructed reps to withhold it from cast until the contract is signed. No finalized address or cast-shareable listing was announced. The mention of Netflix filming at that property does not establish distribution for our show.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1791898877481989",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793043565376619"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793043565376619",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795466061474479"
     ],
-    "reviewedAt": "2026-10-29T13:25:57.332101+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -6487,7 +6504,7 @@
       "What are n24hour_text_sent and mot_text_sent?",
       "Why did a prospect get the wrong reminder time?"
     ],
-    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label. Rudy clarified November 2 that the greeting should use the prospect’s first name rather than a formal Mr./surname. Check the actual submitted first-name field if a greeting is wrong. Igor identified a separate truncated-rep-name case as the current 160-character reminder budget cutting the name and said he would optimize it; that is an identified cause in that case, not evidence that the fix is already live or permission to edit automated sent flags. November 4 Igor checked a nine-meeting missing-reminder report: three qualified and received reminders; six were excluded by existing meeting-type rules. He said he was updating those rules to cover second calls and Next Level CEO. This is an identified eligibility cause and planned update, not verified completion or a guarantee that every Call 2/NLCEO booking receives reminders now. Check actual sent flags and the contact timeline; retain required manual confirmation duties and avoid duplicating an already-delivered message. November 5 Igor confirmed a separate wrong-time incident: texts were sent before HubSpot finished syncing corrected meeting times, so the temporary values were delivered before the records corrected. He said he was adding a safeguard; this is not verified completion or proof all reminder problems are solved. Compare the actual sent text with the corrected meeting record and timezone; give Tech the specific mismatch for correction, and do not treat an already-sent incorrect text as retracted. His separate reply about email timezone says it should be correct from now on; that statement is distinct from the SMS sync safeguard. November 6 Igor’s later, specific confirmation supersedes the earlier planned NLCEO status: first-call reminders and Next Level CEO reminders are now active. Second-call and repeat-contact reminders are still not automated and are being tested, not released. Keep manual Call 2 confirmation duties and check sent flags/timeline rather than assuming every meeting type is covered. November 11 Igor explicitly announces all SMS reminders are now live, with separate Call 1 and Call 2 versions: booking confirmation, 24 hours before, same-day, one hour before and ten minutes before. This supersedes the November 6 statement that Call 2 reminders were still in testing. Messages include relevant meeting-owner/client-name, customer-timezone and Zoom details where applicable. This rollout is not proof any particular text was delivered, a guarantee for an undocumented edge case, or removal of preparation calls. Continue checking actual timeline/sent status, opt-outs and duplicates. For missing or wrong-time reminders give Tech the client and meeting date/time; for excess texts supply example contact records so Tech can inspect trigger history rather than disabling all reminders. November 11–12 Igor clarifies quiet hours: automated messages send between 8 AM and 8 PM in the client’s local timezone. An overnight queued reminder waits until 8 AM if still useful; an already-too-late reminder is skipped. Separately, a wrong displayed appointment-time issue was corrected for future texts to use the booking timezone rather than the contact timezone. These are distinct rules: client-local quiet hours versus booking-timezone appointment display. New missing/wrong-time reports still exist, so do not claim all delivery failures are solved; verify the specific booking, timezone and timeline with Tech. Call 2 reminder wording issues were also reported without a confirmed general resolution. Separately, Timothy approved revised wording for the text about an hour after Call 2 is booked: the audition is under review and results are due before the next call. Booking confirms the next meeting only. Final approval and the greenlight email are separate. Approval of this wording does not prove delivery to an individual. Tech corrected the duplicate under-review SMS on rescheduling Call 2: changing the time should no longer resend that initial text. Regular reminders should follow the updated appointment time.",
+    "text": "The maintained Automated SMS Reminders SOP says eligible meetings receive a text around twenty-four hours beforehand and a meeting-day text at 8 AM in the customer timezone. For a meeting before 9 AM, the latter sends one hour before the meeting. The time displayed uses the meeting’s customer timezone, not automatically Eastern. Verify meeting owner, actual start time, customer timezone, associated contact, valid first name/mobile and no SMS opt-out. HubSpot automatically sets n24hour_text_sent and mot_text_sent to Yes after the corresponding text is delivered; a failed or undelivered text leaves it blank/false. Do not manually change these fields. Check outgoing SMS and delivery status on the contact activity timeline, where replies may also appear. Do not immediately duplicate a text whose sent flag is true. Report wrong names, wrong times, duplicate or missing reminders to automation support after checking the fields. This documents eligible SMS automation, not proof every booking received a text, not a read receipt, and not blanket removal of rep confirmation calls, manual outreach emails or post-Call-1 preparation duties. October 29 Igor clarified that the reminder reads the CUSTOMER TIMEZONE SAVED WITH THE ONCEHUB BOOKING. A wrong saved zone can produce a correctly formatted but wrong local-time reminder; it is not necessarily a conversion to the rep’s timezone. Compare the customer’s actual location/date with that stored booking timezone and send the meeting/contact details and screenshot to Tech for correction. Do not assume every GMT or MST label is itself wrong or manually move the real appointment just to change a displayed label. Rudy clarified November 2 that the greeting should use the prospect’s first name rather than a formal Mr./surname. Check the actual submitted first-name field if a greeting is wrong. Igor identified a separate truncated-rep-name case as the current 160-character reminder budget cutting the name and said he would optimize it; that is an identified cause in that case, not evidence that the fix is already live or permission to edit automated sent flags. November 4 Igor checked a nine-meeting missing-reminder report: three qualified and received reminders; six were excluded by existing meeting-type rules. He said he was updating those rules to cover second calls and Next Level CEO. This is an identified eligibility cause and planned update, not verified completion or a guarantee that every Call 2/NLCEO booking receives reminders now. Check actual sent flags and the contact timeline; retain required manual confirmation duties and avoid duplicating an already-delivered message. November 5 Igor confirmed a separate wrong-time incident: texts were sent before HubSpot finished syncing corrected meeting times, so the temporary values were delivered before the records corrected. He said he was adding a safeguard; this is not verified completion or proof all reminder problems are solved. Compare the actual sent text with the corrected meeting record and timezone; give Tech the specific mismatch for correction, and do not treat an already-sent incorrect text as retracted. His separate reply about email timezone says it should be correct from now on; that statement is distinct from the SMS sync safeguard. November 6 Igor’s later, specific confirmation supersedes the earlier planned NLCEO status: first-call reminders and Next Level CEO reminders are now active. Second-call and repeat-contact reminders are still not automated and are being tested, not released. Keep manual Call 2 confirmation duties and check sent flags/timeline rather than assuming every meeting type is covered. November 11 Igor explicitly announces all SMS reminders are now live, with separate Call 1 and Call 2 versions: booking confirmation, 24 hours before, same-day, one hour before and ten minutes before. This supersedes the November 6 statement that Call 2 reminders were still in testing. Messages include relevant meeting-owner/client-name, customer-timezone and Zoom details where applicable. This rollout is not proof any particular text was delivered, a guarantee for an undocumented edge case, or removal of preparation calls. Continue checking actual timeline/sent status, opt-outs and duplicates. For missing or wrong-time reminders give Tech the client and meeting date/time; for excess texts supply example contact records so Tech can inspect trigger history rather than disabling all reminders. November 11–12 Igor clarifies quiet hours: automated messages send between 8 AM and 8 PM in the client’s local timezone. An overnight queued reminder waits until 8 AM if still useful; an already-too-late reminder is skipped. Separately, a wrong displayed appointment-time issue was corrected for future texts to use the booking timezone rather than the contact timezone. These are distinct rules: client-local quiet hours versus booking-timezone appointment display. New missing/wrong-time reports still exist, so do not claim all delivery failures are solved; verify the specific booking, timezone and timeline with Tech. Call 2 reminder wording issues were also reported without a confirmed general resolution. Separately, Timothy approved revised wording for the text about an hour after Call 2 is booked: the audition is under review and results are due before the next call. Booking confirms the next meeting only. Final approval and the greenlight email are separate. Approval of this wording does not prove delivery to an individual. Tech corrected the duplicate under-review SMS on rescheduling Call 2: changing the time should no longer resend that initial text. Regular reminders should follow the updated appointment time. Booking confirmation emails can still display GMT in reported cases. Check the actual booking time and timezone with the prospect and flag mismatches to Tech. This email issue is separate from the SMS schedule.",
     "scopes": [
       "shared"
     ],
@@ -6508,9 +6525,10 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794471867548869",
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794485409314539",
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795029605490679",
-      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795266642760619"
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795266642760619",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795466112226959"
     ],
-    "reviewedAt": "2026-11-22T20:00:00Z",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7295,7 +7313,7 @@
       "How should I structure a second call for a reality applicant?",
       "Should I discuss both personal branding and adventure on reality Call 2?"
     ],
-    "text": "Rudy instructed immediate use of REALITY CALL 2 SCRIPT - NEW RUDY NOVEMBER on November 4 and reconfirmed Yes on November 5; Raul reposted the same link. Current script: https://docs.google.com/document/d/114byDd_3imo1jGBrtobmOmPl1ZO_qBJ_dlI5SQLYQFI/edit . Use this for reality, not the documentary or Next Level CEO script. Flow: welcome, recording consent and correct show/casting-status check; review the Greenlight and production document and the applicant’s WHY; choose ONE main motivation branch from Call 1/application (personal brand/online presence OR experience/adventure), not both by default; connect the benefits to that motivation; check readiness and invite a relevant spouse/partner if needed; play mandatory license video #2; address questions/objections and clarify exact package costs; cover the contract overview as needed; verify payment AND signature independently, then review the reality welcome email and onboarding form. The outline targets roughly an hour, not a guaranteed calendar length. Explain total price and automatic installment terms accurately, use only actual package/contract terms and do not imply results are guaranteed. The checklist requires a meaningful chance to ask questions and review the agreement. Use actual available onboarding arrangements; reality production contact occurs after casting closes, not the regular documentary onboarding call.",
+    "text": "Rudy instructed immediate use of REALITY CALL 2 SCRIPT - NEW RUDY NOVEMBER on November 4 and reconfirmed Yes on November 5; Raul reposted the same link. Current script: https://docs.google.com/document/d/114byDd_3imo1jGBrtobmOmPl1ZO_qBJ_dlI5SQLYQFI/edit . Use this for reality, not the documentary or Next Level CEO script. Flow: welcome, recording consent and correct show/casting-status check; review the Greenlight and production document and the applicant’s WHY; choose ONE main motivation branch from Call 1/application (personal brand/online presence OR experience/adventure), not both by default; connect the benefits to that motivation; check readiness and invite a relevant spouse/partner if needed; play mandatory license video #2; address questions/objections and clarify exact package costs; cover the contract overview as needed; verify payment AND signature independently, then review the reality welcome email and onboarding form. The outline targets roughly an hour, not a guaranteed calendar length. Explain total price and automatic installment terms accurately, use only actual package/contract terms and do not imply results are guaranteed. The checklist requires a meaningful chance to ask questions and review the agreement. Use actual available onboarding arrangements; reality production contact occurs after casting closes, not the regular documentary onboarding call. November 23 updated sequence: For the November 23 reality-only trial, end ordinary Call 1 by telling the applicant to expect the Green Light email with a link to review the cast agreement. After approval the Green Light team sends it the next morning; ask them to review it and sign before Call 2 if possible. This agreement covers casting terms without package prices. At the start of Call 2 check whether they reviewed and signed. If needed play the new four-minute cast-agreement walkthrough, answer questions and review the Green Light in the first 15 minutes. Then proceed to the mandatory license presentation, fees and payment. The separate one-page package summary at checkout describes the selected fees and deliverables. Signing the cast agreement does not confirm payment. Rudy described signature notifications as planned; check actual signature status. This trial applies to reality only.",
     "scopes": [
       "reality"
     ],
@@ -7303,9 +7321,13 @@
       "https://docs.google.com/document/d/114byDd_3imo1jGBrtobmOmPl1ZO_qBJ_dlI5SQLYQFI/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793824346207879",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793884797496179",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793893145057599"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1793893145057599",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456471124479",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795457793576559",
+      "https://www.loom.com/share/64c05a35637c4aaf8e362dfc391b7921",
+      "https://www.loom.com/share/8fa61cab9caa4eea95dbf51ab4dff2b1"
     ],
-    "reviewedAt": "2026-11-05T16:57:56.940324+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7350,7 +7372,7 @@
       "What does the new reality agreement overview cover?",
       "How long is the reality shoot according to the contract overview?"
     ],
-    "text": "Rudy’s November 4 reality contract overview is https://www.loom.com/share/4c19c2c6b3164d07903a5108eceeb8f0 . His explicit replies say it is for playing on Call 2 and NOT to be sent to clients. The November script includes PLAY CONTRACT LOOM VIDEO near agreement review. The transcript covers payments, filming expectations, conduct, promoting participation, creative control, content rights, refunds/transfers and dispute terms. Rudy describes filming generally 7–14 days, currently 12 full shooting days with possibly one or two backup/pickup days; this is overview guidance, not confirmed dates or a universal maximum trip length. Flights and possibly a hotel the night before are participant expenses; check the specific show’s existing accommodation/contract terms before repeating the overview’s broad everything-else statement. He describes promotion identifying oneself as a cast member, company final creative control, Inside Success network distribution and pitches to outside platforms (not guaranteed placement), and use of cuts featuring oneself rather than resale/reuse of full episodes. He describes non-refundable participation with notice-based transfer/delay possibilities; this is not automatic approval or a waiver of the applicable agreement, existing refund conditions, or assignment restrictions. Do not substitute the short video for reading the actual agreement or invent revised legal wording.",
+    "text": "Rudy’s November 4 reality contract overview is https://www.loom.com/share/4c19c2c6b3164d07903a5108eceeb8f0 . His explicit replies say it is for playing on Call 2 and NOT to be sent to clients. The November script includes PLAY CONTRACT LOOM VIDEO near agreement review. The transcript covers payments, filming expectations, conduct, promoting participation, creative control, content rights, refunds/transfers and dispute terms. Rudy describes filming generally 7–14 days, currently 12 full shooting days with possibly one or two backup/pickup days; this is overview guidance, not confirmed dates or a universal maximum trip length. Flights and possibly a hotel the night before are participant expenses; check the specific show’s existing accommodation/contract terms before repeating the overview’s broad everything-else statement. He describes promotion identifying oneself as a cast member, company final creative control, Inside Success network distribution and pitches to outside platforms (not guaranteed placement), and use of cuts featuring oneself rather than resale/reuse of full episodes. He describes non-refundable participation with notice-based transfer/delay possibilities; this is not automatic approval or a waiver of the applicable agreement, existing refund conditions, or assignment restrictions. Do not substitute the short video for reading the actual agreement or invent revised legal wording. November 23 updated sequence: For the November 23 reality-only trial, end ordinary Call 1 by telling the applicant to expect the Green Light email with a link to review the cast agreement. After approval the Green Light team sends it the next morning; ask them to review it and sign before Call 2 if possible. This agreement covers casting terms without package prices. At the start of Call 2 check whether they reviewed and signed. If needed play the new four-minute cast-agreement walkthrough, answer questions and review the Green Light in the first 15 minutes. Then proceed to the mandatory license presentation, fees and payment. The separate one-page package summary at checkout describes the selected fees and deliverables. Signing the cast agreement does not confirm payment. Rudy described signature notifications as planned; check actual signature status. This trial applies to reality only.",
     "scopes": [
       "reality"
     ],
@@ -7359,9 +7381,13 @@
       "https://docs.google.com/document/d/114byDd_3imo1jGBrtobmOmPl1ZO_qBJ_dlI5SQLYQFI/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793818812721309",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793819242002559",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793819246134239"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1793819246134239",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456471124479",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795457793576559",
+      "https://www.loom.com/share/64c05a35637c4aaf8e362dfc391b7921",
+      "https://www.loom.com/share/8fa61cab9caa4eea95dbf51ab4dff2b1"
     ],
-    "reviewedAt": "2026-11-05T16:57:56.940324+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7603,20 +7629,21 @@
   {
     "id": "gala-ticket-purchase-and-date-2026-11-08",
     "decisionKey": "gala-ticket-purchase-and-date-2026-11-08",
-    "title": "Gala tickets: official email link, paid guests and unconfirmed date",
+    "title": "February 11 Mastermind and Red Carpet schedule, tickets and VIP entry",
     "questions": [
       "Where do cast members buy gala tickets for themselves and a plus one?",
       "Is February 21 confirmed for the 2027 red carpet event?"
     ],
-    "text": "Luke confirmed November 7 that cast members should use the ticket-purchase link in the official Red Carpet announcement email. Every attendee, including a +1, needs a paid ticket. One buyer may purchase multiple tickets in the same order; separate checkouts or payment through Finance are not required. Collect the full name of each additional guest so tickets can be allocated correctly. If the email link is missing, ask Events/fulfillment for the official link rather than inventing one. The final 2027 event date is NOT confirmed; do not promise February 21 or another fixed date. VIP ticket/sponsor-table upsell availability was asked but not answered in the reviewed thread. A package’s event-access description does not by itself waive the stated ticket requirement or establish travel costs.",
+    "text": "Luke confirmed November 7 that cast members should use the ticket-purchase link in the official Red Carpet announcement email. Every attendee, including a +1, needs a paid ticket. One buyer may purchase multiple tickets in the same order; separate checkouts or payment through Finance are not required. Collect the full name of each additional guest so tickets can be allocated correctly. If the email link is missing, ask Events/fulfillment for the official link rather than inventing one. Luke announced Thursday, February 11, 2027. The Mastermind runs 9 AM–3 PM Eastern. Red Carpet runs from 6 PM until close, with 5 PM entry for VIP ticket buyers. This supersedes the earlier tentative February dates. VIP ticket/sponsor-table upsell availability was asked but not answered in the reviewed thread. A package’s event-access description does not by itself waive the stated ticket requirement or establish travel costs.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794083155205849",
-      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794083156462709"
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1794083156462709",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795451951279299"
     ],
-    "reviewedAt": "2026-11-08T12:43:07.267277+00:00",
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -8115,6 +8142,81 @@
       "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795295345867489"
     ],
     "reviewedAt": "2026-11-22T20:00:00Z",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-greenlight-cast-agreement-2026-11-23",
+    "decisionKey": "reality-greenlight-cast-agreement-2026-11-23",
+    "title": "Reality cast agreement with the Green Light before Call 2",
+    "questions": [
+      "When do we send the reality cast agreement?",
+      "They did not sign overnight. What do I do on the second call?"
+    ],
+    "text": "For the November 23 reality-only trial, end ordinary Call 1 by telling the applicant to expect the Green Light email with a link to review the cast agreement. After approval the Green Light team sends it the next morning; ask them to review it and sign before Call 2 if possible. This agreement covers casting terms without package prices. At the start of Call 2 check whether they reviewed and signed. If needed play the new four-minute cast-agreement walkthrough, answer questions and review the Green Light in the first 15 minutes. Then proceed to the mandatory license presentation, fees and payment. The separate one-page package summary at checkout describes the selected fees and deliverables. Signing the cast agreement does not confirm payment. Rudy described signature notifications as planned; check actual signature status. This trial applies to reality only.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456471124479",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795457793576559",
+      "https://www.loom.com/share/64c05a35637c4aaf8e362dfc391b7921",
+      "https://www.loom.com/share/8fa61cab9caa4eea95dbf51ab4dff2b1"
+    ],
+    "reviewedAt": "2026-11-23T21:50:00Z",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "reality-reengagement-2026-11-23",
+    "decisionKey": "reality-reengagement-2026-11-23",
+    "title": "Re-engaging previous reality applicants with the monthly plan",
+    "questions": [
+      "What should I text an old reality lead about monthly payments?"
+    ],
+    "text": "Use the approved reality re-engagement text and email script for suitable old reality leads. Personalize the show and send the two short SMS messages back to back, or use the email and invite them to talk today. Verify actual availability before using scarcity wording. The script uses broad year-long language; quote the actual ten-month plan when giving exact terms.",
+    "scopes": [
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795452534820619",
+      "https://docs.google.com/document/d/1xslOXQ_B37sOsdYmfPaQF-Rcc4_9Y783SZfUgSomm4o/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329"
+    ],
+    "reviewedAt": "2026-11-23T21:50:00Z",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "thanksgiving-booked-calls-2026-11-26",
+    "decisionKey": "thanksgiving-booked-calls-2026-11-26",
+    "title": "Thanksgiving November 26, 2026 booked calls",
+    "questions": [
+      "How do I handle calls already on my Thanksgiving calendar this week?"
+    ],
+    "text": "For calls already booked on Thursday November 26, Rudy directed reps to take them or phone the lead and move the call earlier. Do not cancel them or push them to the following week. This is specific to Thanksgiving 2026.",
+    "scopes": [
+      "shared"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795444069321449"
+    ],
+    "reviewedAt": "2026-11-23T21:50:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",

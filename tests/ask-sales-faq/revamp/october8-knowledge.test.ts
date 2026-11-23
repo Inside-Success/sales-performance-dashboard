@@ -18,7 +18,7 @@ describe('October 8 source refresh', () => {
   });
   it('retrieves season restrictions and initial onboarding without importing regular rules', () => {
     expect(rows('Can my Island season two VIP buyer waitlist season one?', 'reality').map(r => r.text).join('\n')).toContain('may request the Season 1 waitlist');
-    expect(rows('What is the Entrepreneurs Island deposit and contract?', 'reality').map(r => r.text).join('\n')).toContain('lowest listed initial installment is $5,000');
+    expect(rows('What is the Entrepreneurs Island deposit and contract?', 'reality').map(r => r.text).join('\n')).toContain('$2,000 per month for 10 months');
     expect(rows('What form do we send after a reality sale?', 'reality').map(r => r.text).join('\n')).toContain('https://form.typeform.com/to/yO8sUq2m');
     expect(rows('Where is the new VIP video?', 'reality').map(r => r.id)).not.toContain('regular-vip-video-2026-10-08');
   });
