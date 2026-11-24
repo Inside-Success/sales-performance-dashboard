@@ -1,7 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { calls, choices, clock, playbackLink } from "./data";
+import { calls, choices, clock } from "./data";
+import { Player } from "./player";
 import { saveMark } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -104,14 +105,12 @@ export default async function CallTiming({
               )}
               <p className="text-sm text-slate-700">{s.outcome}</p>
               <div className="flex flex-wrap gap-x-6">
-                <a
-                  href={playbackLink(s, cue)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex min-h-11 items-center font-semibold text-red-700"
-                >
-                  {cue ? "Listen to exchange" : "Open recording"} ↗
-                </a>
+                <Player
+                  key={String(cue?.id ?? "none")}
+                  occurrence={row.occurrence}
+                  start={Math.max(0, (cue?.playback ?? 0) - 3)}
+                  marked={Boolean(cue)}
+                />
                 <Link
                   prefetch={false}
                   href={

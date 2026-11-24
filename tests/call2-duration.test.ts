@@ -1,4 +1,3 @@
-import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { PGlite } from "@electric-sql/pglite";
@@ -15,12 +14,9 @@ vi.mock("next/navigation", () => ({
     throw Error(path);
   },
 }));
+import { GET, HEAD } from "@/app/manager/call2-duration/audio/route";
 import Page from "@/app/manager/call2-duration/page";
-import {
-  calls,
-  choices,
-  playbackLink,
-} from "@/app/manager/call2-duration/data";
+import { calls, choices } from "@/app/manager/call2-duration/data";
 import { saveMark } from "@/app/manager/call2-duration/actions";
 
 const db = new PGlite();
@@ -39,6 +35,9 @@ const sample = {
 };
 beforeAll(async () => {
   await db.exec(readFileSync("migrations/20261124_call2_duration.sql", "utf8"));
+  await db.exec(
+    readFileSync("migrations/20261124_call2_duration_audio.sql", "utf8"),
+  );
   await db.query(
     "insert into call2_duration_pilot values ($1,$2,now(),$3,$4,null,null)",
     ["sample", "digest", JSON.stringify(sample), JSON.stringify([cue])],
@@ -83,21 +82,8 @@ it("renders saved timing and jumps to the aligned cue with lead-in", async () =>
   const html = renderToStaticMarkup(
     await Page({ searchParams: Promise.resolve({}) }),
   );
-  for (const item of [
-    "7:00",
-    "6:43",
-    "4:00",
-    cue.text,
-    "Listen to exchange",
-    "startTime=1000167000",
-  ])
+  for (const item of ["7:00", "6:43", "4:00", cue.text, "Listen to exchange"])
     expect(html).toContain(item);
-  expect(() =>
-    playbackLink(
-      { ...sample, recording: "https://zoom.us.example.org/rec/play/anything" },
-      cue,
-    ),
-  ).toThrow();
 });
 it("saves a correction without rewriting the original and prevents stale overwrites", async () => {
   mocks.auth.mockResolvedValue({ user: { email: "tester@example.com" } });
@@ -115,4 +101,24 @@ it("saves a correction without rewriting the original and prevents stale overwri
     "/manager/call2-duration",
   );
   expect((await calls())[0].review?.signal).toEqual(cue);
+});
+
+it("requires admin access to audio and supports byte-exact seeking", async () => {
+  const url = "https://example.com/manager/call2-duration/audio?call=sample";
+  mocks.auth.mockRejectedValueOnce(Error("forbidden"));
+  await expect(GET(new Request(url))).rejects.toThrow("forbidden");
+  mocks.auth.mockResolvedValue({ user: { email: "tester@example.com" } });
+  await db.query(
+    "INSERT INTO call2_duration_audio_parts VALUES ('sample',0,'test',6,decode('010203040506','hex'))",
+  );
+  expect((await HEAD(new Request(url))).headers.get("content-length")).toBe(
+    "6",
+  );
+  const r = await GET(new Request(url, { headers: { range: "bytes=2-4" } }));
+  expect(r.status).toBe(206);
+  expect(r.headers.get("content-range")).toBe("bytes 2-4/6");
+  expect([...new Uint8Array(await r.arrayBuffer())]).toEqual([3, 4, 5]);
+  expect(
+    (await GET(new Request(url, { headers: { range: "bytes=10-20" } }))).status,
+  ).toBe(416);
 });
