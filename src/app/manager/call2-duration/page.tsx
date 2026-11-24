@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { calls, clock, medianClock } from "./data";
+import { calls, clock, medianClock, timeWithCast } from "./data";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -51,10 +51,8 @@ export default async function CallTiming({
   const [all, query] = await Promise.all([calls(), searchParams]);
   const reps = [...new Set(all.map((row) => row.summary.rep))].sort();
   const rows = all.filter((row) => !query.rep || row.summary.rep === query.rep);
-  const pullbackTimes = rows.flatMap(({ review, summary }) => {
-    const signal = review ? review.signal : summary.signal;
-    return signal ? [summary.total - signal.at] : [];
-  });
+  const times = rows.map(timeWithCast).filter((seconds) => seconds !== null);
+  const marked = rows.filter((row) => (row.review ?? row.summary).signal).length;
   return (
     <main className="magic-page">
       <div className="mx-auto max-w-4xl space-y-5 px-4 py-8 sm:px-8">
@@ -63,8 +61,7 @@ export default async function CallTiming({
             Call 2 Cast Tracker
           </h1>
           <p className="mt-2 text-slate-600">
-            Call 2 pilot · See the prospect’s first sign of hesitation, the rep’s
-            reply, and how much longer the call lasted.
+            Call 2 pilot · See how long each rep stayed with the cast member after their first objection.
           </p>
         </header>
         <section
@@ -75,24 +72,10 @@ export default async function CallTiming({
             {query.rep || "Pilot overview"} · {rows.length}{" "}
             {rows.length === 1 ? "call" : "calls"}
           </h2>
-          <dl className="grid gap-4 sm:grid-cols-3">
+          <dl className="grid gap-4 sm:grid-cols-2">
             {[
-              [
-                "Median time cast stayed",
-                medianClock(
-                  rows.flatMap((r) =>
-                    r.summary.attendance === null ? [] : [r.summary.attendance],
-                  ),
-                ),
-              ],
-              [
-                "Calls with a sign of hesitation",
-                String(pullbackTimes.length) + " of " + rows.length,
-              ],
-              [
-                "Median time after hesitation",
-                medianClock(pullbackTimes),
-              ],
+              ["Median time reps stayed after an objection", medianClock(times)],
+              ["Calls with an objection", marked + " of " + rows.length],
             ].map(([label, value]) => (
               <div key={label}>
                 <dt className="text-sm text-slate-600">{label}</dt>
@@ -101,8 +84,7 @@ export default async function CallTiming({
             ))}
           </dl>
           <p className="text-sm text-slate-600">
-            Times are in minutes and seconds. Time after hesitation runs from the
-            first sign of hesitation to the end of the call.
+            Time counts only the minutes and seconds both people were on Zoom after the first sign the cast member was reluctant to move forward.
           </p>
         </section>
         <form className="flex flex-wrap items-center gap-3">
@@ -126,6 +108,7 @@ export default async function CallTiming({
         {rows.map((row) => {
           const s = row.summary;
           const cue = row.review ? row.review.signal : s.signal;
+          const shared = timeWithCast(row);
           const date = new Intl.DateTimeFormat("en-US", {
             month: "short",
             day: "numeric",
@@ -145,15 +128,8 @@ export default async function CallTiming({
               </header>
               <dl className="flex flex-wrap gap-x-8 gap-y-3">
                 {[
+                  ...(cue ? [["Rep time with cast after objection", shared === null ? "Unverified" : clock(shared)]] : []),
                   ["Call length", clock(s.total)],
-                  [
-                    "Cast present",
-                    s.attendance === null ? "Unverified" : clock(s.attendance),
-                  ],
-                  [
-                    "Time after hesitation",
-                    cue ? clock(s.total - cue.at) : "—",
-                  ],
                 ].map(([label, value]) => (
                   <div key={label}>
                     <dt className="text-sm text-slate-600">{label}</dt>
@@ -166,7 +142,7 @@ export default async function CallTiming({
               {cue ? (
                 <div>
                   <h3 className="text-sm font-semibold">
-                    First sign of hesitation
+                    Cast’s first sign of an objection
                   </h3>
                   <blockquote className="border-l-2 border-red-300 pl-3">
                     <span className="mr-2 font-semibold tabular-nums">
@@ -187,7 +163,7 @@ export default async function CallTiming({
                   )}
                 </div>
               ) : (
-                <p>No sign of hesitation heard.</p>
+                <p>No objection identified.</p>
               )}
               <p className="text-sm text-slate-700">
                 <strong>Call outcome</strong> · {s.outcome}
