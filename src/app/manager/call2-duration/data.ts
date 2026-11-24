@@ -17,25 +17,18 @@ export type Summary = {
 };
 export type PilotCall = {
   occurrence: string;
-  digest: string;
+  transcript_doc_id: string | null;
+  verified_recording_url: string | null;
   summary: Summary;
   reply: string | null;
   review: { signal: Cue | null; feedback?: string } | null;
-  revision: string;
 };
 export async function calls() {
   await requireRepScoringAdmin();
   const sql = neon(process.env.DATABASE_URL!);
-  return (await sql`SELECT occurrence, digest, summary, review,
-    rep_replies ->> (CASE WHEN review IS NULL THEN summary ELSE review END -> 'signal' ->> 'id') AS reply, coalesce(reviewed_at::text, '') as revision
+  return (await sql`SELECT occurrence, transcript_doc_id, verified_recording_url, summary, review,
+    rep_replies ->> (CASE WHEN review IS NULL THEN summary ELSE review END -> 'signal' ->> 'id') AS reply
     FROM call2_duration_pilot ORDER BY started_at DESC, occurrence`) as PilotCall[];
-}
-export async function choices(id: string) {
-  await requireRepScoringAdmin();
-  const sql = neon(process.env.DATABASE_URL!);
-  const rows =
-    await sql`SELECT cast_cues FROM call2_duration_pilot WHERE occurrence = ${id}`;
-  return (rows[0]?.cast_cues || []) as Cue[];
 }
 export function clock(seconds: number) {
   return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");

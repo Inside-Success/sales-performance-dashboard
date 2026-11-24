@@ -9,15 +9,8 @@ vi.mock("@/lib/rep-scoring/access", () => ({
   requireRepScoringAdmin: mocks.auth,
 }));
 vi.mock("@neondatabase/serverless", () => ({ neon: () => mocks.query }));
-vi.mock("next/navigation", () => ({
-  redirect: (path: string) => {
-    throw Error(path);
-  },
-}));
-import { GET, HEAD } from "@/app/manager/call2-duration/audio/route";
 import Page from "@/app/manager/call2-duration/page";
-import { calls, choices } from "@/app/manager/call2-duration/data";
-import { saveMark } from "@/app/manager/call2-duration/actions";
+import { calls } from "@/app/manager/call2-duration/data";
 
 const db = new PGlite();
 const cue = { id: 2, at: 180, playback: 170, text: "I want to think it over." };
@@ -36,7 +29,7 @@ const sample = {
 beforeAll(async () => {
   await db.exec(readFileSync("migrations/20261124_call2_duration.sql", "utf8"));
   await db.exec(
-    readFileSync("migrations/20261124_call2_duration_audio.sql", "utf8"),
+    readFileSync("migrations/20261124_call2_duration_sources.sql", "utf8"),
   );
   await db.exec(
     readFileSync("migrations/20261124_call2_duration_replies.sql", "utf8"),
@@ -61,30 +54,17 @@ beforeEach(() => {
   );
 });
 afterAll(() => db.close());
-function form(cue: string, revision = "") {
-  const f = new FormData();
-  for (const [k, v] of Object.entries({
-    id: "sample",
-    digest: "digest",
-    revision,
-    cue,
-  }))
-    f.set(k, v);
-  return f;
-}
-it("checks admin access before list, transcript choices and writes", async () => {
-  mocks.auth.mockRejectedValue(Error("forbidden"));
+it("checks admin access before reading source links", async () => {
+  mocks.auth.mockRejectedValueOnce(Error("forbidden"));
   const count = mocks.query.mock.calls.length;
-  for (const read of [
-    calls,
-    () => choices("sample"),
-    () => saveMark(form("none")),
-  ])
-    await expect(read()).rejects.toThrow("forbidden");
+  await expect(calls()).rejects.toThrow("forbidden");
   expect(mocks.query).toHaveBeenCalledTimes(count);
 });
-it("renders saved timing and jumps to the aligned cue with lead-in", async () => {
+it("renders saved timing and source links without review or playback controls", async () => {
   mocks.auth.mockResolvedValue({ user: { email: "tester@example.com" } });
+  await db.query("update call2_duration_pilot set transcript_doc_id = $1", [
+    "sample-doc",
+  ]);
   const html = renderToStaticMarkup(
     await Page({ searchParams: Promise.resolve({}) }),
   );
@@ -93,7 +73,7 @@ it("renders saved timing and jumps to the aligned cue with lead-in", async () =>
     "6:43",
     "4:00",
     cue.text,
-    "Listen to exchange",
+    "Open transcript",
     "Rep’s next reply",
     "What would you like to think through?",
     "Call outcome",
@@ -101,68 +81,31 @@ it("renders saved timing and jumps to the aligned cue with lead-in", async () =>
     "Median time cast stayed",
   ])
     expect(html).toContain(item);
+  for (const removed of [
+    "Listen to exchange",
+    "<audio",
+    "Right moment",
+    "Choose a different transcript line",
+    "Watch Zoom recording",
+    sample.recording,
+  ])
+    expect(html).not.toContain(removed);
+  expect(html).toContain("https://docs.google.com/document/d/sample-doc/edit");
   expect(html.indexOf("Pilot overview")).toBeLessThan(
     html.indexOf("Cast member"),
   );
 });
-it("saves a correction without rewriting the original and prevents stale overwrites", async () => {
-  mocks.auth.mockResolvedValue({ user: { email: "tester@example.com" } });
-  await expect(saveMark(form("none"))).rejects.toThrow(
-    "/manager/call2-duration",
-  );
-  const [row] = await calls();
-  expect(row.review?.signal).toBeNull();
-  expect(row.summary.signal).toEqual(cue);
-  await expect(saveMark(form("2"))).rejects.toThrow("changed=1");
-  await expect(saveMark(form("999", row.revision))).rejects.toThrow(
-    "changed=1",
-  );
-  await expect(saveMark(form("2", row.revision))).rejects.toThrow(
-    "/manager/call2-duration",
-  );
-  expect((await calls())[0].review?.signal).toEqual(cue);
-});
 
-it("requires admin access to audio and supports byte-exact seeking", async () => {
-  const url = "https://example.com/manager/call2-duration/audio?call=sample";
-  mocks.auth.mockRejectedValueOnce(Error("forbidden"));
-  await expect(GET(new Request(url))).rejects.toThrow("forbidden");
-  mocks.auth.mockResolvedValue({ user: { email: "tester@example.com" } });
+it("shows only a verified recording and respects a saved no-pullback decision", async () => {
   await db.query(
-    "INSERT INTO call2_duration_audio_parts VALUES ('sample',0,'test',6,decode('010203040506','hex'))",
+    "update call2_duration_pilot set verified_recording_url = $1, transcript_doc_id = null, review = $2",
+    [sample.recording, JSON.stringify({ signal: null })],
   );
-  expect((await HEAD(new Request(url))).headers.get("content-length")).toBe(
-    "6",
-  );
-  const r = await GET(new Request(url, { headers: { range: "bytes=2-4" } }));
-  expect(r.status).toBe(206);
-  expect(r.headers.get("content-range")).toBe("bytes 2-4/6");
-  expect([...new Uint8Array(await r.arrayBuffer())]).toEqual([3, 4, 5]);
-  expect(
-    (await GET(new Request(url, { headers: { range: "bytes=10-20" } }))).status,
-  ).toBe(416);
-});
-
-it("records quick timing feedback without requiring a replacement cue", async () => {
-  const [row] = await calls();
-  const f = form("2", row.revision);
-  f.set("feedback", "early");
-  await expect(saveMark(f)).rejects.toThrow("saved=sample");
-  expect((await calls())[0].review).toMatchObject({
-    signal: cue,
-    feedback: "early",
-  });
-});
-
-it("updates the overview and hides the old reply when a reviewer hears no pullback", async () => {
-  const [row] = await calls();
-  const f = form("2", row.revision);
-  f.set("feedback", "none");
-  await expect(saveMark(f)).rejects.toThrow("saved=sample");
   const html = renderToStaticMarkup(
     await Page({ searchParams: Promise.resolve({ rep: sample.rep }) }),
   );
+  expect(html).toContain("Watch Zoom recording");
+  expect(html).toContain(sample.recording);
   expect(html).toContain("0 of 1");
-  expect(html).toContain("I heard a pullback");
-  expect(html).not.toContain("What would you like to think through?");
+  expect(html).not.toContain("Open transcript");
 });
