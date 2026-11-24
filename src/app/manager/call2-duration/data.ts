@@ -38,21 +38,3 @@ export async function choices(id: string) {
 export function clock(seconds: number) {
   return Math.floor(seconds / 60) + ":" + String(seconds % 60).padStart(2, "0");
 }
-export function playbackLink(summary: Summary, cue: Cue | null) {
-  const url = new URL(summary.recording);
-  if (
-    url.protocol !== "https:" ||
-    (!url.hostname.endsWith(".zoom.us") && url.hostname !== "zoom.us") ||
-    !/^\/rec\/(play|share)\//.test(url.pathname)
-  )
-    throw Error("Invalid Zoom recording");
-  url.searchParams.set(
-    "startTime",
-    String(
-      Math.round(
-        (summary.recordingStart + Math.max(0, (cue?.playback ?? 0) - 3)) * 1000,
-      ),
-    ),
-  );
-  return url.toString();
-}
