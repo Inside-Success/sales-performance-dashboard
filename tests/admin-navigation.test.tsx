@@ -28,7 +28,7 @@ it('renders nothing for reps and no forbidden groups for FAQ-only admins',()=>{
  vi.stubEnv('ASK_SALES_FAQ_ADMIN_EMAILS','legacy.faq@insidesuccess.com');
  const html=renderToStaticMarkup(<AdminNavbar pathname="/ask-sales-faq/admin/usage" links={getAdminNavigationLinks('legacy.faq@insidesuccess.com')} />);
  expect(html).toContain('Admin pages');expect(html).toContain('Admin Insights');expect(html).toContain('FAQ');
- for(const text of ['Sales Operations','Mock Calls','Call 2 Timing','Objection Library','Closer Scorecard'])expect(html).not.toContain(text);
+ for(const text of ['Sales Operations','Mock Calls','Time After Hesitation','Objection Library','Closer Scorecard'])expect(html).not.toContain(text);
 });
 
 it('exposes every authorized page as a direct link without menu triggers',()=>{
