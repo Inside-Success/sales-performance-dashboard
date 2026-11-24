@@ -79,7 +79,7 @@ it("renders saved timing and source links without review or playback controls", 
     "What would you like to think through?",
     "Call outcome",
     "1 of 1",
-    "Median time reps stayed after an objection",
+    "Median rep time after an objection",
   ])
     expect(html).toContain(item);
   for (const removed of [
