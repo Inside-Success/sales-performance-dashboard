@@ -77,3 +77,18 @@ A single reviewer checked the transcript context with model identities hidden. T
 Luna's three misses were early. It selected exploration before a request to discuss a business expense, a signing-deadline question before a bank restriction, and confirmation of the deadline before a request to defer payment. Both calls without a supported objection were identified correctly by all three. The earlier calibration cohort favored 5.4 mini. The fresh result supports Luna for this pilot but the one-call margin is small.
 
 The dashboard now contains 40 calls. The new 20 display Luna's raw selection, including its three misses. The original 20 retain their saved selections and reviews. All new rows include verified transcript documents, playable Zoom recordings, outcome and shared attendance intervals. The bounded worker now defaults to Luna. Use a separate private state directory for a new model comparison. Historical receipts remain under their original model. Automatic intake is off.
+
+## Independent Luna check on the same fresh 20
+
+A separate offline worker, `scripts/call2-duration/check_exchange.py`, read the same 20 transcripts with GPT-6 Luna at medium reasoning effort. It received speaker roles, cue IDs and transcript text. It had no access to the first marks, reviewed answers or outcomes. Its question asked for the earliest concrete obstacle to proceeding and an exact excerpt. The first pass was replayed from saved results. The comparison used the previous review as its fixed reference. These are known cases and a single run.
+
+The rule accepted two no-objection decisions or two marks in one uninterrupted cast turn. A different turn, disagreement about whether an objection occurred, or an invalid quote required review. The simulation kept the first mark on accepted calls. It neither replaced marks nor submitted dashboard writes.
+
+| First-pass result against reference | Accepted | Sent to review |
+| --- | ---: | ---: |
+| Correct exchange or correct no-objection decision | 8 | 9 |
+| Early mark | 1 | 2 |
+
+Of the three early marks, the two checks disagreed on Susan and Lawrence. The second selection was also too early on both. Both checks agreed on Amalia's early exploration remark, overstating rep time by 26 minutes. Both correct first-pass no-objection calls would have gone to review. Two replies failed verbatim quote validation. One selected a different, unsupported cue and the other selected the correct cue but stitched its excerpt together. Neither request was retried.
+
+The 20 new receipts used 328,080 input tokens, zero cached tokens and 8,025 output tokens. At standard rates the second check cost $0.0368205. Including the saved first pass, the two passes cost $0.082162 for the 20 calls. The second check remains an offline experiment. The 55% review rate and the largest shared error do not support enabling this gate for automatic tracking.

@@ -1,6 +1,8 @@
+import json
 import sqlite3
 import unittest
 from unittest.mock import patch
+from check_exchange import check, same_exchange
 from review import union_seconds, prepare, review, first_pullback, speech_rows
 
 
@@ -79,3 +81,28 @@ class TimingTest(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 review(self.call(), db, "key")
             self.assertEqual(send.call_count, 1)
+
+    def test_second_check_routes_separate_cast_turns_and_signal_disagreements(self):
+        cast_ids = {0, 1, 3}
+        for pair in [(0, 0), (1, 0), (-1, -1)]:
+            self.assertTrue(same_exchange(*pair, cast_ids))
+        for pair in [(0, 3), (1, -1), (-1, 0)]:
+            self.assertFalse(same_exchange(*pair, cast_ids))
+
+    def test_second_check_validates_evidence_and_keeps_prior_results_blind(self):
+        call = self.call() | {"review": "private prior mark", "signal": 999}
+        for cue, quote, valid in [(0, "need to pause", True), (-1, "", True),
+                                  (0, "invented quote", False), (1, "pause", False),
+                                  (0, "", False), (-1, "pause", False)]:
+            result = {"cue": cue, "quote": quote}
+            choice = {"finish_reason": "stop", "message": {"content": json.dumps(result)}}
+            with patch("check_exchange.obtain_receipt", return_value=({"choices": [choice]}, "digest")) as send:
+                if valid:
+                    self.assertEqual(check(call, None, "key"), result)
+                else:
+                    with self.assertRaises(ValueError):
+                        check(call, None, "key")
+                messages = send.call_args.args[1]["messages"]
+                self.assertNotIn(call["officialOutcome"], str(messages))
+                self.assertNotIn(call["review"], str(messages))
+                self.assertEqual(json.loads(messages[1]["content"]), [[0, "cast", "", "I need to pause."]])
