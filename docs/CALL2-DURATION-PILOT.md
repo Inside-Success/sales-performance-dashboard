@@ -1,6 +1,14 @@
-# Call 2 Cast Tracker pilot
+# Call 2 Cast Tracker
 
 The admin directory links to `/manager/call2-duration`. The manager allowlist protects the layout and the data reader. Reps and FAQ-only admins receive no tracker navigation or results. The page reads saved results. Filtering and viewing source links make no model requests.
+
+## Live tracking
+
+The production workflow `.github/workflows/call2-tracker.yml` runs twice hourly on main. It reads new source-matched official coaching outcomes, verifies the underlying attended second call and Zoom attendance, and runs one GPT-6 Luna request using the frozen first-clear-blocker definition. A single shared-attendance measurement contributes one observation to that rep. The rep view shows “Building sample” below ten measured calls. Counts include calls without a mark, while the median includes only measured objections. Zero seconds is a measurement. The team view and rep views calculate their statistics across the entire selection, with 40 detail cards per page.
+
+The job uses its own OpenAI project key, a limited database login, and three header-authenticated n8n source readers (Airtable history and the two Zoom accounts). Existing coaching workflows run independently. Its repository secrets are CALL2_DATABASE_URL, CALL2_READERS and CALL2_DURATION_OPENAI_API_KEY. The job emits aggregate counts and exception classes. Keep provider receipts and source data private. Install `psycopg[binary]==3.2.13` for the live worker. Apply `migrations/20261125_call2_tracker.sql` before enabling it. The launch timestamp persists through redeployments.
+
+Intake matches an exact source record and transcript link, checks an identified cast speaker and overlapping rep and cast sessions, and rejects evidence of a previous second call. Incomplete or ambiguous sources cannot create dashboard marks. Source failures retry up to eight times after the first attempt. Uncertain provider submissions require receipt reconciliation. Saved receipts allow publication to resume without a second paid request. Pilot rows and manual corrections are insert-protected by occurrence. Operations can inspect `call2_tracker_intake` for status and retry time and `call2_tracker_requests` for provider receipts. Historical sources are accepted only through an explicitly populated backfill queue and require an exact prior attended Call 1 with the same rep and cast. Disable the Call 2 tracker Actions workflow to pause future processing while keeping all published results visible.
 
 ## Reading a call
 

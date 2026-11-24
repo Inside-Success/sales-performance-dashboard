@@ -1,7 +1,7 @@
 import { TranscriptEvidence } from "@/components/dashboard/transcript-evidence";
 import React from "react";
 import type { Metadata } from "next";
-import { calls, clock, medianClock, timeWithCast } from "./data";
+import { calls, clock, PAGE_SIZE, timeWithCast } from "./data";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -47,13 +47,14 @@ export default async function CallTiming({
 }: {
   searchParams: Promise<{
     rep?: string;
+    page?: string;
   }>;
 }) {
-  const [all, query] = await Promise.all([calls(), searchParams]);
-  const reps = [...new Set(all.map((row) => row.summary.rep))].sort();
-  const rows = all.filter((row) => !query.rep || row.summary.rep === query.rep);
-  const times = rows.map(timeWithCast).filter((seconds) => seconds !== null);
-  const marked = rows.filter((row) => (row.review ?? row.summary).signal).length;
+  const query = await searchParams;
+  const page = /^\d{1,6}$/.test(query.page ?? "") ? Math.max(1, Number(query.page)) : 1;
+  const { rows, reps, total, measured, median } = await calls(query.rep, page);
+  const building = Boolean(query.rep) && measured < 10;
+  const pageHref = (n: number) => "?" + new URLSearchParams({ rep: query.rep ?? "", page: String(n) });
   return (
     <main className="magic-page">
       <div className="mx-auto max-w-4xl space-y-5 px-4 py-8 sm:px-8">
@@ -62,7 +63,7 @@ export default async function CallTiming({
             Call 2 Cast Tracker
           </h1>
           <p className="mt-2 text-slate-600">
-            Call 2 pilot · See how long each rep stayed with the cast member after their first objection.
+            See how long each rep stayed with the cast member after their first clear objection.
           </p>
         </header>
         <form className="flex flex-wrap items-center gap-3">
@@ -83,17 +84,17 @@ export default async function CallTiming({
           </button>
         </form>
         <section
-          aria-label="Pilot overview"
+          aria-label="Call overview"
           className="magic-card space-y-4 p-5"
         >
           <h2 className="text-xl font-bold">
-            {query.rep || "Pilot overview"} · {rows.length}{" "}
-            {rows.length === 1 ? "call" : "calls"}
+            {query.rep || "Team overview"} · {total}{" "}
+            {total === 1 ? "call" : "calls"}
           </h2>
           <dl className="grid gap-4 sm:grid-cols-2">
             {[
-              ["Median time reps stayed after an objection", medianClock(times)],
-              ["Calls with an objection", marked + " of " + rows.length],
+              ["Median time reps stayed after an objection", building ? "Building sample" : median === null ? "—" : clock(median)],
+              ["Calls with a measured objection", measured + " of " + total],
             ].map(([label, value]) => (
               <div key={label}>
                 <dt className="text-sm text-slate-600">{label}</dt>
@@ -102,10 +103,10 @@ export default async function CallTiming({
             ))}
           </dl>
           <p className="text-sm text-slate-600">
-            Time counts only the minutes and seconds both people were on Zoom after the first sign the cast member was reluctant to move forward.
+            {building ? "The median appears after 10 calls with a measured objection." : "Time counts only while the rep and cast member were both on Zoom after the objection."}
           </p>
         </section>
-        {rows.length === 0 && <p>No pilot calls in this view.</p>}
+        {rows.length === 0 && <p>No calls on this page.</p>}
         {rows.map((row) => {
           const s = row.summary;
           const cue = row.review ? row.review.signal : s.signal;
@@ -202,6 +203,12 @@ export default async function CallTiming({
             </article>
           );
         })}
+        {(page > 1 || page * PAGE_SIZE < total) && (
+          <nav aria-label="Call pages" className="flex gap-6">
+            {page > 1 && <a className="text-red-700 underline" href={pageHref(page - 1)}>Newer calls</a>}
+            {page * PAGE_SIZE < total && <a className="text-red-700 underline" href={pageHref(page + 1)}>Older calls</a>}
+          </nav>
+        )}
       </div>
     </main>
   );
