@@ -1,4 +1,4 @@
-# Time After Hesitation pilot
+# Call 2 Cast Tracker pilot
 
 The admin directory links to `/manager/call2-duration`. The manager allowlist protects the layout and the data reader. Reps and FAQ-only admins receive no tracker navigation or results. The page reads saved results. Filtering and viewing source links make no model requests.
 
