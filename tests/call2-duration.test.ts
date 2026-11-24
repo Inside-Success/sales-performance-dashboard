@@ -90,6 +90,7 @@ it("renders saved timing and source links without review or playback controls", 
     sample.recording,
   ])
     expect(html).not.toContain(removed);
+  expect(html).not.toContain("<details");
   expect(html).toContain("https://docs.google.com/document/d/sample-doc/edit");
   expect(html.indexOf("Pilot overview")).toBeLessThan(
     html.indexOf("Cast member"),
@@ -108,4 +109,21 @@ it("shows only a verified recording and respects a saved no-pullback decision", 
   expect(html).toContain(sample.recording);
   expect(html).toContain("0 of 1");
   expect(html).not.toContain("Open transcript");
+});
+
+it("expands only the live reply and keeps the video out of both views", async () => {
+  const live = "Yes, let me first show you the license video, okay? Because it explains what you can do and what you cannot do. " +
+    "There are a few options and I will explain them after you watch. Then I will answer your questions. I'll play the video for you.";
+  const narration = "Hello, welcome back. Congratulations on being selected.";
+  await db.query("update call2_duration_pilot set review = null, rep_replies = $1", [
+    JSON.stringify({ 2: live + " " + narration }),
+  ]);
+  const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({}) }));
+  expect(html).toContain("Show full reply");
+  expect(html).toContain("Show less");
+  expect(html).toContain("cannot do.”");
+  expect(html).toContain("answer your questions.");
+  expect(html).not.toContain(narration);
+  expect(html).not.toMatch(/<details[^>]* open/);
+  expect(html.indexOf("</details>")).toBeLessThan(html.indexOf("Call outcome"));
 });

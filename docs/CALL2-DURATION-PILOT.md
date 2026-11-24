@@ -45,3 +45,7 @@ The first frozen v4 run was limited to three previously reviewed calls. It indep
 The same frozen v4 worker ran on the seventeen other existing occurrences. Seventeen final receipts completed without a continuation. Nine model marks matched v3. Eight changed. A transcript and recording-excerpt audit accepted five changed timestamps and identified an earlier supported cue on three. For those three, the database retains the raw v4 selection in `summary.signal` and the source-reviewed selection in `review.signal`. The dashboard uses the reviewed selection and its matching reply. The nine stable marks were not independently re-audited in this pass.
 
 All twenty pilot rows now have v4 results. To reconstruct the raw result set, combine the three-call and seventeen-call v4 private receipt directories by occurrence. Apply the separate recorded review decisions to reproduce the displayed results. Automatic intake and the next cohort remain on hold.
+
+## Pilot reply excerpts
+
+The card displays short replies in full. Longer turns show a verbatim preview of up to 180 characters and expand inline. A verified playback handoff followed by the recorded welcome ends the live quote, including when Zoom gives both speakers the same name. The full transcript remains available through the existing link. This display change reads the existing replies without modifying stored cues, timestamps, review decisions or sources. All 20 effective pilot cards were checked against the saved transcripts.

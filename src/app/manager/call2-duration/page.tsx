@@ -8,6 +8,39 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+function RepReply({ saved }: { saved: string }) {
+  // Some Zoom transcripts assign the video's welcome to the rep. Require
+  // both the live handoff and the presentation opening before cutting a turn.
+  const reply = saved.split(/(?<=play the video for you[.!?])\s+(?=hello,? welcome back\b)/i, 1)[0];
+  const quoteClass = "border-l-2 border-slate-300 pl-3";
+  if (reply.length <= 180) {
+    return <blockquote className={quoteClass}>“{reply}”</blockquote>;
+  }
+
+  const prefix = reply.slice(0, 180);
+  const sentenceEnd = Array.from(prefix.matchAll(/[.!?](?=\s)/g)).find(
+    (match) => match.index >= 60,
+  )?.index;
+  const cut = sentenceEnd !== undefined && sentenceEnd >= 60
+    ? sentenceEnd + 1
+    : prefix.lastIndexOf(" ");
+  const preview = reply.slice(0, cut > 0 ? cut : 180);
+  return (
+    <div className="group/reply">
+      <blockquote className={quoteClass + " group-has-[details[open]]/reply:hidden"}>
+        “{preview}{sentenceEnd === undefined ? "…" : ""}”
+      </blockquote>
+      <details className="group">
+        <summary className="w-fit cursor-pointer py-1 text-sm font-semibold text-red-700 underline">
+          <span className="group-open:hidden">Show full reply</span>
+          <span className="hidden group-open:inline">Show less</span>
+        </summary>
+        <blockquote className={quoteClass}>“{reply}”</blockquote>
+      </details>
+    </div>
+  );
+}
+
 export default async function CallTiming({
   searchParams,
 }: {
@@ -145,9 +178,7 @@ export default async function CallTiming({
                     Rep’s next reply
                   </h3>
                   {row.reply ? (
-                    <blockquote className="border-l-2 border-slate-300 pl-3">
-                      “{row.reply}”
-                    </blockquote>
+                    <RepReply saved={row.reply} />
                   ) : (
                     <p>
                       The transcript does not identify a rep reply at this
