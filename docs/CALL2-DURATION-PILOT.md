@@ -61,3 +61,19 @@ The 20-call check found 19 effective marks and one call without an objection. An
 Apply the rep filter above the overview. Each call can open a transcript drawer. The admin-only endpoint resolves the saved Google Doc for that occurrence, verifies the source meeting UUID and returns the transcript body on demand. Highlighting requires unique matching quote text and recording-relative time. The card continues to show meeting time.
 
 The offline GPT-6 Luna comparison used the same 20 transcripts and v4 prompt, schema, reasoning effort and selection logic. Each payload reproduced the original request digest after restoring the baseline model name. Neither model saw marks or outcomes. Compare raw selections, before human overrides. Twelve cues matched. Of eight disagreements, transcript review favored 5.4 mini on five, Luna on two and neither on one. The 20 Luna receipts cost approximately $0.042 at standard token prices, versus $0.328 for the saved baseline receipts. This is one pass on a previously calibrated cohort. No model switch, mark publication or new intake accompanies this comparison.
+
+## November 25 fresh comparison and pilot expansion
+
+Twenty previously unscored, attended second calls from November 22–24 (UTC) were selected from recent processed Call 2+ records. Eligibility required second-call evidence, attributable speakers, complete aligned recording and transcript, rep and cast attendance, and an exact source-matched official outcome. This selects for usable evidence. The three models received identical role-labeled transcripts, cue identifiers, v4 prompt, output schema and medium reasoning effort. Per-call request hashes matched after removing model identity. Each model finished all 20 in one request per call.
+
+A single reviewer checked the transcript context with model identities hidden. The primary score accepts the first objection exchange, including adjacent fragments of the same statement, or a correct finding of no objection. The stricter score uses one preferred cue per call. Costs use provider receipt tokens at standard prices.
+
+| Model | First exchange | Preferred cue | Estimated cost for 20 |
+| --- | ---: | ---: | ---: |
+| GPT-6 Luna | 17 | 15 | $0.04534 |
+| GPT-5.4 mini | 16 | 13 | $0.33988 |
+| GPT-6.1 Terra | 14 | 10 | $0.40456 |
+
+Luna's three misses were early. It selected exploration before a request to discuss a business expense, a signing-deadline question before a bank restriction, and confirmation of the deadline before a request to defer payment. Both calls without a supported objection were identified correctly by all three. The earlier calibration cohort favored 5.4 mini. The fresh result supports Luna for this pilot but the one-call margin is small.
+
+The dashboard now contains 40 calls. The new 20 display Luna's raw selection, including its three misses. The original 20 retain their saved selections and reviews. All new rows include verified transcript documents, playable Zoom recordings, outcome and shared attendance intervals. The bounded worker now defaults to Luna. Use a separate private state directory for a new model comparison. Historical receipts remain under their original model. Automatic intake is off.
