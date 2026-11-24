@@ -1,10 +1,32 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
-from live import Ineligible, shared_intervals, verified_input
+from live import Ineligible, process, shared_intervals, verified_input
 
 
 class LiveTrackerTest(unittest.TestCase):
+    def test_first_calls_and_prelaunch_calls_never_reach_zoom_or_luna(self):
+        db = Mock()
+        source = "record"
+        for label, floor in [("Call 1", 0), ("Call 2+", 1800000000)]:
+            row = {"id": source, "fields": {"Call #": label, "Meeting Start Date": "2026-11-25T00:00:00Z"}}
+            with patch("live.source_read", return_value={"records": [row]}) as reader, patch("live.publish") as publish:
+                self.assertEqual(process(db, source, floor), "outside")
+                reader.assert_called_once_with("source", {"id": source})
+                publish.assert_not_called()
+
+    def test_source_outcome_must_match_transcript_before_model_spend(self):
+        db = Mock()
+        db.execute.return_value.fetchall.return_value = [("other transcript", "Closed")]
+        row = {"id": "record", "fields": {"Call #": "Call 2+", "Meeting Start Date": "2026-11-25T00:00:00Z",
+               "Processing Status": "Processed", "AI Decision Reason": "attendance_status=normal",
+               "Meeting Transcript Link": "current transcript"}}
+        with patch("live.source_read", return_value={"records": [row]}) as reader, patch("live.publish") as publish:
+            with self.assertRaisesRegex(ValueError, "Outcome pending"):
+                process(db, "record", 0)
+            reader.assert_called_once()
+            publish.assert_not_called()
+
     def test_call_two_label_alone_is_insufficient(self):
         row = {"Client Name": "Test Guest", "Meeting Start Date": "2026-11-25", "Rep Name": "Rep"}
         with self.assertRaises(Ineligible):
