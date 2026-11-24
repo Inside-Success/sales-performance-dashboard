@@ -9,5 +9,5 @@ it.each([null,'regular.rep@insidesuccess.com'])('does not serialize admin links 
 });
 it('supplies the authorized destination projection from the server session',async()=>{
  mocks.auth.mockResolvedValue({user:{email:'syed.haider@insidesuccess.com',name:'Syed'}});
- const header=await AppHeader();expect(header.props.adminLinks).toHaveLength(11);expect(header.props.userName).toBe('Syed');
+ const header=await AppHeader();expect(header.props.adminLinks).toEqual(expect.arrayContaining([expect.objectContaining({href:'/manager/call2-duration'})]));expect(header.props.userName).toBe('Syed');
 });

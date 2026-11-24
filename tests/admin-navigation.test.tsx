@@ -13,7 +13,7 @@ it('projects only permitted destinations, including FAQ-only legacy admins',()=>
  expect(getAdminNavigationLinks('regular.rep@insidesuccess.com')).toEqual([]);
  expect(getAdminNavigationLinks('legacy.faq@insidesuccess.com').map(x=>x.href)).toEqual(['/ask-sales-faq/admin/usage','/ask-sales-faq/admin']);
  expect(getAdminNavigationLinks(' SYED.HAIDER@INSIDESUCCESS.COM ')).toEqual([...ADMIN_DIRECTORY_LINKS]);
- expect(getAdminNavigationLinks('legacy.manager@insidesuccess.com')).toHaveLength(11);
+ expect(getAdminNavigationLinks('legacy.manager@insidesuccess.com')).toHaveLength(ADMIN_DIRECTORY_LINKS.length);
 });
 it('matches the most specific destination without confusing sibling and nested routes',()=>{
  expect(activeAdminLink('/ask-sales-faq/admin/usage',ADMIN_DIRECTORY_LINKS)?.navLabel).toBe('Usage');
@@ -28,12 +28,12 @@ it('renders nothing for reps and no forbidden groups for FAQ-only admins',()=>{
  vi.stubEnv('ASK_SALES_FAQ_ADMIN_EMAILS','legacy.faq@insidesuccess.com');
  const html=renderToStaticMarkup(<AdminNavbar pathname="/ask-sales-faq/admin/usage" links={getAdminNavigationLinks('legacy.faq@insidesuccess.com')} />);
  expect(html).toContain('Admin pages');expect(html).toContain('Admin Insights');expect(html).toContain('FAQ');
- for(const text of ['Sales Operations','Mock Calls','Objection Library','Closer Scorecard'])expect(html).not.toContain(text);
+ for(const text of ['Sales Operations','Mock Calls','Call 2 Timing','Objection Library','Closer Scorecard'])expect(html).not.toContain(text);
 });
 
 it('exposes every authorized page as a direct link without menu triggers',()=>{
  const html=renderToStaticMarkup(<AdminNavbar pathname="/manager/usage" links={ADMIN_DIRECTORY_LINKS} />);
- expect(html.match(/<a /g)).toHaveLength(12);
+ expect(html.match(/<a /g)).toHaveLength(ADMIN_DIRECTORY_LINKS.length + 1);
  expect(html).not.toContain('<button');
  expect(html).not.toContain('role="menu');
  for(const link of ADMIN_DIRECTORY_LINKS) expect(html).toContain(`href="${link.href}"`);
