@@ -1,3 +1,4 @@
+import { TranscriptEvidence } from "@/components/dashboard/transcript-evidence";
 import React from "react";
 import type { Metadata } from "next";
 import { calls, clock, medianClock, timeWithCast } from "./data";
@@ -64,6 +65,23 @@ export default async function CallTiming({
             Call 2 pilot · See how long each rep stayed with the cast member after their first objection.
           </p>
         </header>
+        <form className="flex flex-wrap items-center gap-3">
+          <label htmlFor="rep">Rep</label>
+          <select
+            id="rep"
+            name="rep"
+            defaultValue={query.rep || ""}
+            className="min-h-11 rounded-lg border bg-white px-3"
+          >
+            <option value="">All reps</option>
+            {reps.map((rep) => (
+              <option key={rep}>{rep}</option>
+            ))}
+          </select>
+          <button type="submit" className="min-h-11 cursor-pointer rounded-lg bg-red-700 px-5 font-semibold text-white hover:bg-red-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700">
+            Apply
+          </button>
+        </form>
         <section
           aria-label="Pilot overview"
           className="magic-card space-y-4 p-5"
@@ -87,23 +105,6 @@ export default async function CallTiming({
             Time counts only the minutes and seconds both people were on Zoom after the first sign the cast member was reluctant to move forward.
           </p>
         </section>
-        <form className="flex flex-wrap items-center gap-3">
-          <label htmlFor="rep">Rep</label>
-          <select
-            id="rep"
-            name="rep"
-            defaultValue={query.rep || ""}
-            className="min-h-11 rounded-lg border bg-white px-3"
-          >
-            <option value="">All reps</option>
-            {reps.map((rep) => (
-              <option key={rep}>{rep}</option>
-            ))}
-          </select>
-          <button className="min-h-11 px-3 font-semibold text-red-700">
-            Filter
-          </button>
-        </form>
         {rows.length === 0 && <p>No pilot calls in this view.</p>}
         {rows.map((row) => {
           const s = row.summary;
@@ -139,6 +140,9 @@ export default async function CallTiming({
                   </div>
                 ))}
               </dl>
+              {row.transcript_doc_id && !cue && (
+                <TranscriptEvidence evidence={[]} reportType="call2" reportId={row.occurrence} transcriptUrl={`https://docs.google.com/document/d/${encodeURIComponent(row.transcript_doc_id)}/edit`} />
+              )}
               {cue ? (
                 <div>
                   <h3 className="text-sm font-semibold">
@@ -150,6 +154,9 @@ export default async function CallTiming({
                     </span>
                     “{cue.text}”
                   </blockquote>
+                  {row.transcript_doc_id && (
+                    <TranscriptEvidence quote={cue.text} evidence={[clock(cue.at)]} reportType="call2" reportId={row.occurrence} transcriptUrl={`https://docs.google.com/document/d/${encodeURIComponent(row.transcript_doc_id)}/edit`} />
+                  )}
                   <h3 className="mt-3 text-sm font-semibold">
                     Rep’s next reply
                   </h3>

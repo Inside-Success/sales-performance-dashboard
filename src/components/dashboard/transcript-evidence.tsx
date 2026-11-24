@@ -8,21 +8,26 @@ import { findTranscriptMatch, parseTranscriptLines } from "@/lib/transcript-evid
 
 type TranscriptEvidenceProps = {
   evidence: string[];
-  reportType: "official" | "manual";
+  reportType: "official" | "manual" | "call2";
   reportId: string;
+  quote?: string;
   transcriptUrl?: string | null;
 };
 
-export function TranscriptEvidence({ evidence, reportType, reportId, transcriptUrl }: TranscriptEvidenceProps) {
+export function TranscriptEvidence({ evidence, reportType, reportId, transcriptUrl, quote }: TranscriptEvidenceProps) {
   const [open, setOpen] = useState(false);
-  const [selectedTime, setSelectedTime] = useState(evidence[0]);
+  const [selectedTime, setSelectedTime] = useState(evidence[0] ?? "");
   const [transcript, setTranscript] = useState<string | null>(null);
+  const pilot = reportType === "call2";
+  const [lineIndex, setLineIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const descriptionId = useId();
   const selectedLineRef = useRef<HTMLDivElement>(null);
   const lines = useMemo(() => parseTranscriptLines(transcript || ""), [transcript]);
-  const match = useMemo(() => findTranscriptMatch(lines, selectedTime), [lines, selectedTime]);
+  const timeMatch = useMemo(() => findTranscriptMatch(lines, selectedTime), [lines, selectedTime]);
+
+  const match = pilot ? { index: lineIndex, kind: lineIndex < 0 ? "missing" : "exact" } : timeMatch;
 
   useEffect(() => {
     if (!open || transcript !== null) return;
@@ -33,14 +38,15 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/report-transcript?${params}`, {
+        const response = await fetch(pilot ? `/api/call2-transcript?${new URLSearchParams({ occurrence: reportId })}` : `/api/report-transcript?${params}`, {
           cache: "no-store",
           signal: controller.signal,
         });
-        const data = (await response.json()) as { transcript?: string; error?: string };
+        const data = (await response.json()) as { transcript?: string; lineIndex?: number; error?: string };
         if (!response.ok || !data.transcript) {
           throw new Error(data.error || "The transcript could not be loaded.");
         }
+        setLineIndex(data.lineIndex ?? -1);
         setTranscript(data.transcript);
       } catch (loadError) {
         if (!controller.signal.aborted) {
@@ -53,7 +59,7 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
 
     void loadTranscript();
     return () => controller.abort();
-  }, [open, reportType, reportId, transcript]);
+  }, [open, pilot, reportType, reportId, transcript]);
 
   useEffect(() => {
     if (!open || match.index < 0) return;
@@ -68,7 +74,11 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
 
   return (
     <>
-      <details className="mt-3 text-sm text-slate-500">
+      {pilot ? (
+        <button type="button" onClick={() => setOpen(true)} className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 font-semibold text-red-700 underline hover:text-red-900">
+          <FileText className="size-4" aria-hidden="true" /> {evidence.length ? "View in transcript" : "View transcript"}
+        </button>
+      ) : <details className="mt-3 text-sm text-slate-500">
         <summary className="w-fit cursor-pointer font-medium hover:text-[#a92728]">Transcript evidence</summary>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {evidence.map((time) => (
@@ -84,7 +94,7 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
           ))}
         </div>
         <p className="mt-2 text-xs text-slate-500">Select a time to read that moment in the transcript.</p>
-      </details>
+      </details>}
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent
@@ -95,10 +105,10 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
           <SheetHeader className="shrink-0 border-b border-slate-200 bg-white px-5 py-5 pr-14 sm:px-7">
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#b12b2c]">Call transcript</p>
             <SheetTitle className="text-xl font-bold tracking-tight text-slate-950 sm:text-2xl">
-              Evidence at {formatCoachingTimestamp(selectedTime)}
+              {selectedTime ? `${pilot ? "Objection" : "Evidence"} at ${formatCoachingTimestamp(selectedTime)}` : "Full transcript"}
             </SheetTitle>
             <SheetDescription id={descriptionId} className="text-sm leading-6 text-slate-500">
-              The relevant line is highlighted below when its timestamp appears in the transcript.
+              {pilot ? (evidence.length ? "The highlight marks the cast’s words in the recording transcript." : "No objection was marked on this call.") : "The relevant line is highlighted below when its timestamp appears in the transcript."}
             </SheetDescription>
             {evidence.length > 1 ? (
               <div className="flex flex-wrap gap-2 pt-2" aria-label="Evidence times">
@@ -135,7 +145,7 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
                     No exact line at {formatCoachingTimestamp(selectedTime)}. Showing the closest timestamp, {lines[match.index]?.time}.
                   </p>
                 ) : null}
-                {match.kind === "missing" ? (
+                {match.kind === "missing" && evidence.length > 0 ? (
                   <p className="mb-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-slate-600">
                     This timestamp was not found in the transcript. You can browse the text or open the source transcript.
                   </p>
@@ -148,7 +158,9 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
                       aria-current={index === match.index ? "location" : undefined}
                       className={`scroll-mt-8 whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-[13.5px] leading-6 sm:text-sm ${index === match.index ? "border border-red-200 bg-red-50 font-medium text-slate-950 shadow-sm" : "text-slate-600"}`}
                     >
-                      {line.text || "\u00a0"}
+                      {pilot && quote && index === match.index && line.text.includes(quote) ? (
+                        <>{line.text.slice(0, line.text.indexOf(quote))}<mark className="rounded bg-amber-200">{quote}</mark>{line.text.slice(line.text.indexOf(quote) + quote.length)}</>
+                      ) : line.text || "\u00a0"}
                     </div>
                   ))}
                 </div>
