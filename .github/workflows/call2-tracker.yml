@@ -1,0 +1,26 @@
+name: Call 2 tracker
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: call2-tracker-production
+  cancel-in-progress: false
+jobs:
+  track:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install 'psycopg[binary]==3.2.13'
+      - run: python scripts/call2-duration/live.py
+        env:
+          CALL2_DATABASE_URL: ${{ secrets.CALL2_DATABASE_URL }}
+          CALL2_READERS: ${{ secrets.CALL2_READERS }}
+          CALL2_DURATION_OPENAI_API_KEY: ${{ secrets.CALL2_DURATION_OPENAI_API_KEY }}

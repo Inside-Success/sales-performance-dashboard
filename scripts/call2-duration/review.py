@@ -87,6 +87,16 @@ def prepare(c):
     )
 
 
+def request_model(payload, key):
+    req = urllib.request.Request(
+        "https://api.openai.com/v1/chat/completions",
+        json.dumps(payload).encode(),
+        {"Authorization": "Bearer " + key, "Content-Type": "application/json"},
+    )
+    with urllib.request.urlopen(req, timeout=120) as response:
+        return json.load(response)
+
+
 def obtain_receipt(occurrence, payload, ledger, key):
     digest = hashlib.sha256(
         json.dumps([VERSION, payload], sort_keys=True).encode()
@@ -96,13 +106,7 @@ def obtain_receipt(occurrence, payload, ledger, key):
             "INSERT OR IGNORE INTO jobs VALUES (?,?,NULL)", (occurrence, digest)
         ).rowcount
     if reserved:
-        req = urllib.request.Request(
-            "https://api.openai.com/v1/chat/completions",
-            json.dumps(payload).encode(),
-            {"Authorization": "Bearer " + key, "Content-Type": "application/json"},
-        )
-        with urllib.request.urlopen(req, timeout=120) as response:
-            receipt = json.load(response)
+        receipt = request_model(payload, key)
         with ledger:
             ledger.execute(
                 "UPDATE jobs SET receipt=? WHERE occurrence=? AND digest=?",
@@ -131,7 +135,7 @@ def first_pullback(candidates, by_id):
     return min(qualifying, default=None)
 
 
-def review(c, ledger, key):
+def review(c, ledger, key, *, receipt_store=None, retry_length=True):
     transcript, cues, summary = prepare(c)
     if not c.get("officialOutcome"):
         raise ValueError("Missing matched official outcome")
@@ -173,11 +177,12 @@ def review(c, ledger, key):
             ),
         ),
     )
-    receipt, digest = obtain_receipt(c["uuid"], payload, ledger, key)
-    if receipt["choices"][0]["finish_reason"] == "length":
+    store = receipt_store or obtain_receipt
+    receipt, digest = store(c["uuid"], payload, ledger, key)
+    if retry_length and receipt["choices"][0]["finish_reason"] == "length":
         # A terminal receipt confirms the shorter response ended. One larger allowance.
         payload["max_completion_tokens"] = 10000
-        receipt, digest = obtain_receipt(c["uuid"] + ":length", payload, ledger, key)
+        receipt, digest = store(c["uuid"] + ":length", payload, ledger, key)
     choice = receipt["choices"][0]
     if choice["finish_reason"] != "stop":
         raise ValueError("Unfinished review")

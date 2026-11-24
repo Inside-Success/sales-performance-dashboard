@@ -95,7 +95,7 @@ it("renders saved timing and source links without review or playback controls", 
     expect(html).not.toContain(removed);
   expect(html).not.toContain("<details");
   expect(html).toContain("https://docs.google.com/document/d/sample-doc/edit");
-  expect(html.indexOf("Pilot overview")).toBeLessThan(
+  expect(html.indexOf("Team overview")).toBeLessThan(
     html.indexOf("Cast member"),
   );
 });
@@ -129,4 +129,25 @@ it("expands only the live reply and keeps the video out of both views", async ()
   expect(html).not.toContain(narration);
   expect(html).not.toMatch(/<details[^>]* open/);
   expect(html.indexOf("</details>")).toBeLessThan(html.indexOf("Call outcome"));
+});
+
+it("shows a rep median only at ten measured calls, including zero-second measurements", async () => {
+  const insert = (n: number, rep: string, intervals: string | null, marked = true) =>
+    db.query(`insert into call2_duration_pilot(occurrence,digest,started_at,summary,cast_cues,shared_intervals)
+      values($1,'test',now(),$2,'[]',$3)`, [rep + n, JSON.stringify({ ...sample, rep, signal: marked ? cue : null }), intervals]);
+  const rep = "Threshold rep";
+  for (let i = 0; i < 9; i++) await insert(i, rep, "[[10,180]]");
+  await insert(10, rep, null);
+  await insert(11, rep, "[[10,180]]", false);
+  const render = () => Page({ searchParams: Promise.resolve({ rep }) }).then(renderToStaticMarkup);
+  const nine = await render();
+  expect(nine).toContain("Building sample");
+  expect(nine).toContain("9 of 11");
+  await insert(9, rep, "[[10,180]]");
+  const ten = await render();
+  expect(ten).not.toContain("Building sample");
+  expect(ten).toContain("10 of 12");
+  expect((await calls(rep)).median).toBe(0);
+  expect((await calls(rep, 2)).total).toBe(12);
+  expect((await calls(rep, 2)).rows).toHaveLength(0);
 });
