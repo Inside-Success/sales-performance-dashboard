@@ -1,7 +1,8 @@
+import json
 import sqlite3
 import unittest
 from unittest.mock import patch
-from review import union_seconds, prepare, review, first_pullback, speech_rows
+from review import union_seconds, prepare, review, first_pullback, speech_rows, grounded_excerpt
 
 
 class TimingTest(unittest.TestCase):
@@ -46,6 +47,41 @@ class TimingTest(unittest.TestCase):
             first_pullback(candidates, {9})
         with self.assertRaises(ValueError):
             first_pullback(candidates * 2, ids)
+
+    def test_pullback_requires_evidence_from_its_own_cue(self):
+        candidate = dict(cue=0, reason="Defers", classification="pullback")
+        for evidence in ("", "invented", "need to pause"):
+            result = {"candidates": [candidate | {"evidence": evidence}]}
+            choice = dict(finish_reason="stop", message=dict(content=json.dumps(result)))
+            receipt = dict(choices=[choice], usage={})
+            with patch("review.obtain_receipt", return_value=(receipt, "test")):
+                if evidence == "need to pause":
+                    self.assertEqual(review(self.call(), None, "test")["summary"]["signal"]["at"], 15)
+                else:
+                    with self.assertRaises(ValueError):
+                        review(self.call(), None, "test")
+
+    def test_no_pullback_needs_no_confirmation(self):
+        with patch("review.completed_review", return_value=({"candidates": []}, "digest", [])) as run:
+            self.assertIsNone(review(self.call(), None, "unused")["summary"]["signal"])
+            self.assertEqual(run.call_count, 1)
+
+    def test_independent_confirmation_can_reject_candidate(self):
+        proposal = dict(cue=0, classification="pullback", reason="first reader assessment", evidence="pause")
+        rejected = proposal | dict(classification="engaged", reason="logistics", evidence="")
+        with patch("review.completed_review", side_effect=[
+            ({"candidates": [proposal]}, "first", []), ({"candidates": [rejected]}, "second", [])
+        ]) as run:
+            self.assertIsNone(review(self.call(), None, "unused")["summary"]["signal"])
+            confirm_input = json.loads(run.call_args.args[1]["messages"][1]["content"])
+            self.assertEqual(confirm_input["proposed"], [0])
+            self.assertNotIn(proposal["reason"], str(confirm_input))
+
+    def test_quoted_omissions_preserve_word_order(self):
+        source = "Maybe later. I still have to decide."
+        self.assertTrue(grounded_excerpt("maybe later... to decide", source))
+        for evidence in ("decide… maybe", "ate", "...", "maybe tomorrow"):
+            self.assertFalse(grounded_excerpt(evidence, source))
 
     def test_rejoins_and_devices(self):
         self.assertEqual(union_seconds(self.call()["castIntervals"]), 80)
