@@ -466,7 +466,7 @@
       "What are the payment options?",
       "Can a reality buyer pay monthly over ten months?"
     ],
-    "text": "Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner. The previously listed paid-in-full, two-, three- and four-payment options remain separate. The re-engagement offer is for previous leads who did not buy. Existing buyers are not generally eligible to switch retroactively. Rudy authorized one specific exception for someone who had just paid a deposit; any comparable switch needs individual approval.",
+    "text": "Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner. The previously listed paid-in-full, two-, three- and four-payment options remain separate. The re-engagement offer is for previous leads who did not buy. Existing buyers are not generally eligible to switch retroactively. Rudy authorized one specific exception for someone who had just paid a deposit; any comparable switch needs individual approval. The ten-month reality option is available for new sales, including previous leads who never bought; it is not a Black Friday discount. For filming before final payment, Rudy said eight on-time $2,000 payments with no bounced payments would likely be acceptable in the example. That is not a guaranteed filming threshold or permission to waive the balance. Confirm the actual contract and production clearance for the individual.",
     "scopes": [
       "reality"
     ],
@@ -474,9 +474,12 @@
       "https://docs.google.com/document/d/1flX8PyJiZQYiOrItCfvcRVNpCQM2-FchSLhf2UpvAJU/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329",
       "https://www.loom.com/share/ed4b65aa61a2425da93c41c7b2f51755",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795452534820619"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795452534820619",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795542523024239",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795480654137789",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795542582572149"
     ],
-    "reviewedAt": "2026-11-23T21:50:00Z",
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -1256,9 +1259,10 @@
     "title": "Reality offers use their own contract and payment links",
     "questions": [
       "What is the Entrepreneurs Island deposit and where is the contract?",
-      "What are reality Standard and VIP payment plans?"
+      "What are reality Standard and VIP payment plans?",
+      "The agreement shows different installments from the payment plan. What do I send?"
     ],
-    "text": "Rich announced separate reality contracts and payment links in the master spreadsheet on September 8. The refreshed September 14 contract list includes explicit Reality Standard and VIP rows. Use the exact reality product and approved installment row; do not reuse a normal-show link solely because the amount is the same. Discount rows in the workbook do not by themselves grant permission to discount. October 8 current sheet review: in Inside Success - All Links, the Inside Success Reality Show section lists Standard $20,000 paid in full, 4 x $5,000, 3 x $7,000 (total $21,000), or 2 x $10,000; VIP $30,000 paid in full, 4 x $7,500, 3 x $10,000, or 2 x $15,000. Those four-payment plans start at $5,000 and $7,500 respectively. These are the reality rows, including Entrepreneurs Island; use the corresponding current agreement/payment link and confirm the selected plan. Do not apply anniversary documentary pricing to reality or infer bankruptcy eligibility from a payment plan. The sheet lists links and plans, not an automatic background-review approval. Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner.",
+    "text": "Rich announced separate reality contracts and payment links in the master spreadsheet on September 8. The refreshed September 14 contract list includes explicit Reality Standard and VIP rows. Use the exact reality product and approved installment row; do not reuse a normal-show link solely because the amount is the same. Discount rows in the workbook do not by themselves grant permission to discount. October 8 current sheet review: in Inside Success - All Links, the Inside Success Reality Show section lists Standard $20,000 paid in full, 4 x $5,000, 3 x $7,000 (total $21,000), or 2 x $10,000; VIP $30,000 paid in full, 4 x $7,500, 3 x $10,000, or 2 x $15,000. Those four-payment plans start at $5,000 and $7,500 respectively. These are the reality rows, including Entrepreneurs Island; use the corresponding current agreement/payment link and confirm the selected plan. Do not apply anniversary documentary pricing to reality or infer bankruptcy eligibility from a payment plan. The sheet lists links and plans, not an automatic background-review approval. Reality Standard can now start at $2,000 per month for 10 months ($20,000 total), and Reality VIP at $3,000 per month for 10 months ($30,000 total). These are approved installment plans, not holding deposits or discounts. Open the HubSpot contact, choose Payment Links → Reality Show, select the matching ten-month plan and generate the link. Generated links are logged in contact notes. Do not extend these plans to documentary or Daymond offers. Use the actual selected agreement for due dates; the announcement does not say how a remaining ten-month balance is handled if filming starts sooner. Reps found a generated Reality Standard $2,000 x 10 signing link opened a $14,000 x 2 agreement. Use the Contract Automation List MC workbook, Inside Success - All Links tab, Reality Standard 2kx10 row for the signing agreement. The corrected form opens as 'ISTV Reality - Standard Agreement 2kx10'. The separate Emergency Links workbook's contract cell for that same plan opened a documentary VIP 14kx2 form during the November 24 check. Avoid that signing cell; the payment processor columns serve a different purpose. Open the agreement and verify the show, total, amount and number of payments before sending. If the terms differ, stop and ask Sales Tech for the current matching agreement. Do not substitute another row or circulate an unverified direct signing link.",
     "scopes": [
       "reality"
     ],
@@ -1266,9 +1270,12 @@
       "slack:1788884225.101759",
       "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329",
-      "https://www.loom.com/share/ed4b65aa61a2425da93c41c7b2f51755"
+      "https://www.loom.com/share/ed4b65aa61a2425da93c41c7b2f51755",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795537196890669",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795545911569439",
+      "https://docs.google.com/spreadsheets/d/12bgREaw7G0K81SntPo5XtTBIre5iucqw1olcrrlpdBQ/edit"
     ],
-    "reviewedAt": "2026-11-23T21:50:00Z",
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 10,
     "kind": "policy",
     "risk": "high",
@@ -3208,7 +3215,7 @@
       "How do I use the Green Light letter on Call 2?",
       "What are the ten things to sell on the second call?"
     ],
-    "text": "The current training framework says do not just read the Green Light document back: discuss its meaning with the prospect. Its ten themes are story, mission, what they want to be known for, opportunity cost of invisibility, authority, documentary as a reusable asset, the content/PR/podcast/website/sales uses around it (the “fame stack”), legacy, their future identity, and belief in their story/mission. Useful questions include what stood out in their story, what they are trying to change, what one thing they want to be known for, how they could use the documentary, and what they want remembered in ten years. Adapt these as conversational coaching to the prospect’s answers. These positioning themes are not new contractual deliverables or guarantees of fame, customers, revenue, trust, referrals, rankings or ROI. Keep promised assets within their actual package. The document focuses on documentary Green Light/Call 2; do not import documentary entitlements into reality or DJ packages. The October 7 regular Call 2 script limits story/visualization to 5–10 minutes maximum: ask what their five-year vision looks like, pause for the answer, then ask how TV could help that vision. Listen and adapt; do not turn the prospect's hopes into a guaranteed result.",
+    "text": "The current training framework says do not just read the Green Light document back: discuss its meaning with the prospect. Its ten themes are story, mission, what they want to be known for, opportunity cost of invisibility, authority, documentary as a reusable asset, the content/PR/podcast/website/sales uses around it (the “fame stack”), legacy, their future identity, and belief in their story/mission. Useful questions include what stood out in their story, what they are trying to change, what one thing they want to be known for, how they could use the documentary, and what they want remembered in ten years. Adapt these as conversational coaching to the prospect’s answers. These positioning themes are not new contractual deliverables or guarantees of fame, customers, revenue, trust, referrals, rankings or ROI. Keep promised assets within their actual package. The document focuses on documentary Green Light/Call 2; do not import documentary entitlements into reality or DJ packages. The October 7 regular Call 2 script limits story/visualization to 5–10 minutes maximum: ask what their five-year vision looks like, pause for the answer, then ask how TV could help that vision. Listen and adapt; do not turn the prospect's hopes into a guaranteed result. The November 24 documentary Call 2 script opens by asking whether the prospect reviewed the contract sent overnight, and directs the rep to share the review video if needed. Check what this prospect actually received. This documentary script cue does not establish that all documentary applicants receive the reality-specific cast agreement or its payment process.",
     "scopes": [
       "main_istv"
     ],
@@ -3217,7 +3224,7 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1790258384235079",
       "https://docs.google.com/document/d/1kKDjGpCWrVAaLh6cKTSZKJ_YZEqtczHUcpuYFTAt3jo/edit"
     ],
-    "reviewedAt": "2026-10-08",
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 12,
     "kind": "coaching",
     "risk": "medium",
@@ -5726,9 +5733,10 @@
     "questions": [
       "The payment page says select a TV show but there is no dropdown. What should I do?",
       "Why does my $12,000 payment link show $17,000?",
-      "Will a custom payment link automatically open the contract?"
+      "Will a custom payment link automatically open the contract?",
+      "What else can I use if Whop fails its security check?"
     ],
-    "text": "Use the regular payment link generated from the HubSpot contact first. Igor reaffirmed this October 13; Sayim's October 14 instruction reserves emergency payment links for when the regular HubSpot link is not working for that client. In the reviewed October 13 incident, Igor separated two problems: Whop card attempts failed the bank's 3D Secure verification, while a legacy Keap emergency form incorrectly required a TV-show field it did not display. Do not assume every error is a bank decline or that one cause explains all links. Sayim reported the emergency forms fixed and says a show-name selection should appear before checkout; after renewed reports he requested screenshots, so do not promise every client/link is now fixed. Supply Tech the exact link, show, plan and error screenshot for diagnosis; an 'oops broken' report remained under investigation. Igor also stated custom links did not currently include a contract redirect, so the approved matching contract had to be sent manually. Verify payment and the applicable contract through the existing process; do not assume missing redirect means payment succeeded or bypass signature requirements. For a $12,000 link showing about $17,000, Igor confirmed switching the checkout display to USD; check currency before concluding the price changed. This is not a price increase, exchange-rate guarantee or permission to charge an unapproved amount. Safi's October 15 technical clarification says Deal owner is compulsory to generate a payment link. If it is missing, have Tech/Safi set the correct owner; do not select an arbitrary owner, take another rep's lead or assume a bank problem. The updated How to Close a Live Call document's rough bank-block estimate is not evidence that every payment error is bank-side. Its removal of an individual Pay Me step is not an announcement abolishing the separate sale-reporting process. November 4 Tech reaffirmed regular HubSpot payment links first and emergency links only as a fallback, and asked reps to post payment issues in #sales-tech-requests for diagnosis. A payment receipt does not prove a signed contract: November 5 Tech said both parties should receive signed copies by email and asked the rep to confirm the actual signer name/email when no record could be found. Check the matching contract and identity before repeating payment or signature attempts. November 7 Tech says emergency-link payments currently do not feed directly into the HubSpot contact card; integration is being worked on. Check actual payment receipts and the separately maintained commission ledger before concluding a payment failed or asking the client to pay again. A missing ledger entry is a separate issue to report. November 6 Tech says ledger sales are usually added at end of day or early next morning, not immediately. November 7 Tech confirmed signed contracts should appear in the signed-contract channel; payment receipt alone still does not prove signature. Custom payment-link generation is not currently enabled for reps according to Tech; use approved prebuilt plans and request authorized help for splits. Rep anecdotes about using another product’s link or lowering amounts to bypass 3D Secure are not new approved payment policy. November 10 Contract Automation List reread: main payment-link cells were cleared and links appear in the WP tab; this is a sheet layout change, not cancellation of the listed plans or permission to reconstruct URLs. Use the current HubSpot generator for payment, signing and emergency links and the maintained sheet for the correct product/plan. Missing link warnings require Tech/Finance help, not a guessed URL. November 9 custom one-time amounts were requested but not approved; Rudy again rejected $1,000-down as a working approach. A rep suggestion of $2,000 does not establish a universal new deposit minimum.",
+    "text": "Use the regular payment link generated from the HubSpot contact first. Igor reaffirmed this October 13; Sayim's October 14 instruction reserves emergency payment links for when the regular HubSpot link is not working for that client. In the reviewed October 13 incident, Igor separated two problems: Whop card attempts failed the bank's 3D Secure verification, while a legacy Keap emergency form incorrectly required a TV-show field it did not display. Do not assume every error is a bank decline or that one cause explains all links. Sayim reported the emergency forms fixed and says a show-name selection should appear before checkout; after renewed reports he requested screenshots, so do not promise every client/link is now fixed. Supply Tech the exact link, show, plan and error screenshot for diagnosis; an 'oops broken' report remained under investigation. Igor also stated custom links did not currently include a contract redirect, so the approved matching contract had to be sent manually. Verify payment and the applicable contract through the existing process; do not assume missing redirect means payment succeeded or bypass signature requirements. For a $12,000 link showing about $17,000, Igor confirmed switching the checkout display to USD; check currency before concluding the price changed. This is not a price increase, exchange-rate guarantee or permission to charge an unapproved amount. Safi's October 15 technical clarification says Deal owner is compulsory to generate a payment link. If it is missing, have Tech/Safi set the correct owner; do not select an arbitrary owner, take another rep's lead or assume a bank problem. The updated How to Close a Live Call document's rough bank-block estimate is not evidence that every payment error is bank-side. Its removal of an individual Pay Me step is not an announcement abolishing the separate sale-reporting process. November 4 Tech reaffirmed regular HubSpot payment links first and emergency links only as a fallback, and asked reps to post payment issues in #sales-tech-requests for diagnosis. A payment receipt does not prove a signed contract: November 5 Tech said both parties should receive signed copies by email and asked the rep to confirm the actual signer name/email when no record could be found. Check the matching contract and identity before repeating payment or signature attempts. November 7 Tech says emergency-link payments currently do not feed directly into the HubSpot contact card; integration is being worked on. Check actual payment receipts and the separately maintained commission ledger before concluding a payment failed or asking the client to pay again. A missing ledger entry is a separate issue to report. November 6 Tech says ledger sales are usually added at end of day or early next morning, not immediately. November 7 Tech confirmed signed contracts should appear in the signed-contract channel; payment receipt alone still does not prove signature. Custom payment-link generation is not currently enabled for reps according to Tech; use approved prebuilt plans and request authorized help for splits. Rep anecdotes about using another product’s link or lowering amounts to bypass 3D Secure are not new approved payment policy. November 10 Contract Automation List reread: main payment-link cells were cleared and links appear in the WP tab; this is a sheet layout change, not cancellation of the listed plans or permission to reconstruct URLs. Use the current HubSpot generator for payment, signing and emergency links and the maintained sheet for the correct product/plan. Missing link warnings require Tech/Finance help, not a guessed URL. November 9 custom one-time amounts were requested but not approved; Rudy again rejected $1,000-down as a working approach. A rep suggestion of $2,000 does not establish a universal new deposit minimum. After a failed regular Whop payment, check the additional Stripe and PayPal fields above Emergency Payment Link in HubSpot, or consult the Emergency Links sheet for the exact program and plan. Authorize, Stripe and PayPal are separate processors. A Stripe checkout can use a Keap form. Processor availability varies: for Reality Standard $2,000 x 10, Tech said PayPal only when asked about the additional Stripe/PayPal options, while the sheet also lists a Stripe URL. Verify current availability with Tech before promising Stripe on that plan. Never retry an uncertain payment until receipt is checked.",
     "scopes": [
       "shared"
     ],
@@ -5749,9 +5757,13 @@
       "https://istvoffical.slack.com/archives/C08QGKL39J6/p1794051322325489",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794222153836549",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1794233327180509",
-      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit"
+      "https://docs.google.com/spreadsheets/d/1N7cKV-vYspESfkVmHqGuZ0XpS_mLmh77ZmTjAe8y5Dg/edit",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795530470582889",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795536471720259",
+      "https://istvoffical.slack.com/archives/C08QGKL39J6/p1795553149505209",
+      "https://docs.google.com/spreadsheets/d/12bgREaw7G0K81SntPo5XtTBIre5iucqw1olcrrlpdBQ/edit"
     ],
-    "reviewedAt": "2026-11-10T12:44:35.525214+00:00",
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -7217,14 +7229,14 @@
       "When must a new rep submit the paired Call 1 and Call 2 recordings?",
       "Do I have seven or fourteen days for ramp-up call review?"
     ],
-    "text": "The November 4 reviewed NEW REP – PASSED RAMP UP document requires one Call 1 recording and one Call 2 recording submitted PAIRED TOGETHER in a Slack DM including Rich Allen, Mike Wisner and Raul Rios. Its Required Call Reviews section now says within the first 14 days, but its separate Deadline paragraph still says within the first 7 days live on calls. This is an unresolved contradiction in the same current source, not confirmed permission to wait until day 14. Practical guidance: submit the pair as soon as possible, aim to meet the earlier 7-day deadline, and confirm the applicable deadline with training leadership if needed. Do not assert either conflicting number is definitively the resolved policy. Incoming calls/Master Calendar activation still require review and approval; do not activate the Master Calendar yourself. This paired ramp-up review is separate from trainee mock recordings and daily live-rep self-reviews.",
+    "text": "The November 24 reviewed NEW REP – PASSED RAMP UP document requires one Call 1 recording and one Call 2 recording submitted PAIRED TOGETHER in a Slack DM to Mike Wisner and Raul Rios. Its Required Call Reviews section now says within the first 14 days, but its separate Deadline paragraph still says within the first 7 days live on calls. This is an unresolved contradiction in the same current source, not confirmed permission to wait until day 14. Practical guidance: submit the pair as soon as possible, aim to meet the earlier 7-day deadline, and confirm the applicable deadline with training leadership if needed. Do not assert either conflicting number is definitively the resolved policy. Incoming calls/Master Calendar activation still require review and approval; do not activate the Master Calendar yourself. This paired ramp-up review is separate from trainee mock recordings and daily live-rep self-reviews.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1jt2iJUBIwOkcqnnbHfaD10Uk_Nfr9xmLo9VRqqjIm8E/edit"
     ],
-    "reviewedAt": "2026-11-04T15:37:02.466906+00:00",
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -8162,7 +8174,7 @@
       "When do we send the reality cast agreement?",
       "They did not sign overnight. What do I do on the second call?"
     ],
-    "text": "For the November 23 reality-only trial, end ordinary Call 1 by telling the applicant to expect the Green Light email with a link to review the cast agreement. After approval the Green Light team sends it the next morning; ask them to review it and sign before Call 2 if possible. This agreement covers casting terms without package prices. At the start of Call 2 check whether they reviewed and signed. If needed play the new four-minute cast-agreement walkthrough, answer questions and review the Green Light in the first 15 minutes. Then proceed to the mandatory license presentation, fees and payment. The separate one-page package summary at checkout describes the selected fees and deliverables. Signing the cast agreement does not confirm payment. Rudy described signature notifications as planned; check actual signature status. This trial applies to reality only.",
+    "text": "For the November 23 reality-only trial, end ordinary Call 1 by telling the applicant to expect the Green Light email with a link to review the cast agreement. After approval the Green Light team sends it the next morning; ask them to review it and sign before Call 2 if possible. This agreement covers casting terms without package prices. At the start of Call 2 check whether they reviewed and signed. If needed play the new four-minute cast-agreement walkthrough, answer questions and review the Green Light in the first 15 minutes. Then proceed to the mandatory license presentation, fees and payment. The separate one-page package summary at checkout describes the selected fees and deliverables. Signing the cast agreement does not confirm payment. Rudy described signature notifications as planned; check actual signature status. This trial applies to reality only. The example Green Light email includes the Green Light PDF, a link to review/sign the cast agreement before the second call if possible, and a four-minute optional overview. The current Call 1 script says around 9 a.m. next day; avoid promising an exact delivery time.",
     "scopes": [
       "reality"
     ],
@@ -8170,9 +8182,11 @@
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456471124479",
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795457793576559",
       "https://www.loom.com/share/64c05a35637c4aaf8e362dfc391b7921",
-      "https://www.loom.com/share/8fa61cab9caa4eea95dbf51ab4dff2b1"
+      "https://www.loom.com/share/8fa61cab9caa4eea95dbf51ab4dff2b1",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795530816600059",
+      "https://docs.google.com/document/d/1-G5NlJcpbibkEzclf9MMsOx6NdAanaZlw2kKhWNNSdE/edit"
     ],
-    "reviewedAt": "2026-11-23T21:50:00Z",
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -8188,16 +8202,18 @@
     "questions": [
       "What should I text an old reality lead about monthly payments?"
     ],
-    "text": "Use the approved reality re-engagement text and email script for suitable old reality leads. Personalize the show and send the two short SMS messages back to back, or use the email and invite them to talk today. Verify actual availability before using scarcity wording. The script uses broad year-long language; quote the actual ten-month plan when giving exact terms. The re-engagement offer is for previous leads who did not buy. Existing buyers are not generally eligible to switch retroactively. Rudy authorized one specific exception for someone who had just paid a deposit; any comparable switch needs individual approval.",
+    "text": "Use the approved reality re-engagement text and email script for suitable old reality leads. Personalize the show and send the two short SMS messages back to back, or use the email and invite them to talk today. Verify actual availability before using scarcity wording. The script uses broad year-long language; quote the actual ten-month plan when giving exact terms. The re-engagement offer is for previous leads who did not buy. Existing buyers are not generally eligible to switch retroactively. Rudy authorized one specific exception for someone who had just paid a deposit; any comparable switch needs individual approval. For an existing buyer struggling with the next payment, Mike recommended seeking a one-payment pause through Billing in the case reviewed. Do not offer a retroactive ten-month conversion, refund or automatic pause; take individual exceptions to the authorized team.",
     "scopes": [
       "reality"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795452534820619",
       "https://docs.google.com/document/d/1xslOXQ_B37sOsdYmfPaQF-Rcc4_9Y783SZfUgSomm4o/edit",
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795456440041329",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795553403816659",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795554079286139"
     ],
-    "reviewedAt": "2026-11-23T21:50:00Z",
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -8213,14 +8229,43 @@
     "questions": [
       "How do I handle calls already on my Thanksgiving calendar this week?"
     ],
-    "text": "For calls already booked on Thursday November 26, Rudy directed reps to take them or phone the lead and move the call earlier. Do not cancel them or push them to the following week. This is specific to Thanksgiving 2026. Block availability for new holiday bookings. Rudy explicitly allowed Call 2s on Thanksgiving while warning about low attendance.",
+    "text": "For US Thanksgiving, Thursday November 26, 2026, Rudy explicitly ruled out ALL Call 1s, including existing bookings and reps outside the US. His Tuesday instruction was to phone those leads, hold their calls Tuesday or Wednesday and report the moves to Olivia by end of Tuesday. Block new Thanksgiving bookings. Wednesday outbound for new Friday or Saturday auditions is allowed. For Call 2, previously booked calls were allowed with low attendance expected; avoid booking new ones on the holiday. The strict move-earlier instruction applies to Call 1.",
     "scopes": [
       "shared"
     ],
     "sourceIds": [
-      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795444069321449"
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795444069321449",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795525644271369",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795530848487739",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795553268534479"
     ],
-    "reviewedAt": "2026-11-23T21:50:00Z",
+    "reviewedAt": "2026-11-24T21:58:00Z",
+    "authority": 12,
+    "kind": "policy",
+    "risk": "high",
+    "routeKey": null,
+    "conditions": [],
+    "supersedes": [],
+    "sourceKind": "source_reviewed_governed_policy"
+  },
+  {
+    "id": "documentary-reality-purchase-transfers-2026-11-24",
+    "decisionKey": "documentary-reality-purchase-transfers-2026-11-24",
+    "title": "Moving a paid purchase between documentary and reality shows",
+    "questions": [
+      "Can we apply a paused documentary purchase to a reality show instead?",
+      "Can an existing reality buyer switch their payment over to a documentary?"
+    ],
+    "text": "Rudy said documentary and reality purchases are handled by separate entities. Reps cannot move an existing purchase or apply its payments from documentary to reality or the reverse, including when the buyer has paused or has not yet onboarded. A new purchase, an approved change within the same show family, and a historical individually authorized exception are separate situations.",
+    "scopes": [
+      "main_istv",
+      "reality"
+    ],
+    "sourceIds": [
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795482885096649",
+      "https://istvoffical.slack.com/archives/C0AUQKNR8CF/p1795483136765869"
+    ],
+    "reviewedAt": "2026-11-24T21:58:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
