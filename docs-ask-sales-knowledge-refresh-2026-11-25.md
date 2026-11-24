@@ -7,3 +7,5 @@ The new guidance covers moving already-booked Thanksgiving Call 1s earlier, appr
 The current ramp-up document names Mike and Raul as recipients of paired call recordings. Its seven-day deadline and fourteen-day instruction still conflict. The documentary Call 2 script now checks overnight contract review; its wording alone does not extend the reality trial to documentary.
 
 Direct read-only checks of both form destinations confirmed the Contract Automation workbook opens the Reality Standard 2kx10 agreement. The separate Emergency Links workbook opens a documentary VIP 14kx2 form in the Standard contract cell.
+
+Published through dashboard PR 498. Verified registry 495640795f489c3819319979 with 2,626 active records, one addition and eight revisions. All 562 FAQ tests and 107 static checks passed. Nine final isolated scenarios were reviewed. Two signed-in production questions verified transfer restrictions and the correct signing row. Both stored responses used this registry and had zero validation issues.
