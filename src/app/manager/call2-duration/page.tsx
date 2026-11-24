@@ -4,7 +4,7 @@ import { calls, clock, medianClock } from "./data";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Time After Hesitation | Magic Mike",
+  title: "Call 2 Cast Tracker | Magic Mike",
   robots: { index: false, follow: false },
 };
 
@@ -60,7 +60,7 @@ export default async function CallTiming({
       <div className="mx-auto max-w-4xl space-y-5 px-4 py-8 sm:px-8">
         <header>
           <h1 className="text-3xl font-extrabold text-slate-950">
-            Time After Hesitation
+            Call 2 Cast Tracker
           </h1>
           <p className="mt-2 text-slate-600">
             Call 2 pilot · See the prospect’s first sign of hesitation, the rep’s
