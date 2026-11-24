@@ -71,6 +71,19 @@ class TimingTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 prepare(self.call() | change)
 
+    def test_long_call_schema_still_rejects_a_non_cast_cue(self):
+        call = self.call()
+        call["entries"] *= 1001
+        call["entries"].append(dict(start="00:00:12.000", speaker="Rep", text="Okay."))
+        result = {"candidates": [dict(cue=1001, classification="pullback", reason="test")]}
+        response = {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps(result)}}]}
+        with patch("review.obtain_receipt", return_value=(response, "")) as send:
+            with self.assertRaisesRegex(ValueError, "source-matched cast cues"):
+                review(call, None, "unused")
+        schema = send.call_args.args[1]["response_format"]["json_schema"]["schema"]
+        item = schema["properties"]["candidates"]["items"]
+        self.assertEqual(item["properties"]["cue"], {"type": "integer"})
+
     def test_uncertain_request_is_not_repeated(self):
         db = sqlite3.connect(":memory:")
         db.execute(

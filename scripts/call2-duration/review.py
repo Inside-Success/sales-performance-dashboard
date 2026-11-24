@@ -135,6 +135,11 @@ def review(c, ledger, key):
     transcript, cues, summary = prepare(c)
     if not c.get("officialOutcome"):
         raise ValueError("Missing matched official outcome")
+    # Long calls can exceed the structured-output enum limit. The exact cast
+    # IDs are also validated locally before a mark can be accepted.
+    cue_schema = dict(type="integer")
+    if len(cues) + 3 <= 1000:
+        cue_schema["enum"] = [item["id"] for item in cues]
     payload = dict(
         model=MODEL,
         reasoning_effort="medium",
@@ -154,7 +159,7 @@ def review(c, ledger, key):
                         candidates=dict(type="array", items=dict(
                             type="object",
                             properties=dict(
-                                cue=dict(type="integer", enum=[item["id"] for item in cues]),
+                                cue=cue_schema,
                                 reason=dict(type="string"),
                                 classification=dict(type="string", enum=["engaged", "unclear", "pullback"]),
                             ),
