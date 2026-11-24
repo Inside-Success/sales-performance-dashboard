@@ -1,25 +1,18 @@
 import React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { calls, choices, clock, medianClock } from "./data";
-import { Player } from "./player";
-import { saveMark } from "./actions";
+import { calls, clock, medianClock } from "./data";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Call 2 timing | Magic Mike",
   robots: { index: false, follow: false },
 };
-const path = "/manager/call2-duration";
 
 export default async function CallTiming({
   searchParams,
 }: {
   searchParams: Promise<{
-    edit?: string;
     rep?: string;
-    changed?: string;
-    saved?: string;
   }>;
 }) {
   const [all, query] = await Promise.all([calls(), searchParams]);
@@ -29,8 +22,6 @@ export default async function CallTiming({
     const signal = review ? review.signal : summary.signal;
     return signal ? [summary.total - signal.at] : [];
   });
-  const editing = rows.find((row) => row.occurrence === query.edit);
-  const options = editing ? await choices(editing.occurrence) : [];
   return (
     <main className="magic-page">
       <div className="mx-auto max-w-4xl space-y-5 px-4 py-8 sm:px-8">
@@ -81,11 +72,6 @@ export default async function CallTiming({
             member’s first sign of reluctance to the end of the meeting.
           </p>
         </section>
-        {query.changed && (
-          <p role="status">
-            This call changed. Review its latest mark before saving.
-          </p>
-        )}
         <form className="flex flex-wrap items-center gap-3">
           <label htmlFor="rep">Rep</label>
           <select
@@ -165,7 +151,7 @@ export default async function CallTiming({
                   ) : (
                     <p>
                       The transcript does not identify a rep reply at this
-                      moment. Listen to the exchange to review it.
+                      moment.
                     </p>
                   )}
                 </div>
@@ -175,101 +161,29 @@ export default async function CallTiming({
               <p className="text-sm text-slate-700">
                 <strong>Call outcome</strong> · {s.outcome}
               </p>
-              <form action={saveMark} className="space-y-2 border-t pt-3">
-                <input type="hidden" name="id" value={row.occurrence} />
-                <input type="hidden" name="digest" value={row.digest} />
-                <input type="hidden" name="revision" value={row.revision} />
-                <input type="hidden" name="cue" value={cue?.id ?? "none"} />
-                <input type="hidden" name="rep" value={query.rep || ""} />
-                <fieldset>
-                  <legend className="font-semibold">
-                    {cue
-                      ? "Was this the first moment cast started to pull back?"
-                      : "Did you hear cast pull back?"}
-                  </legend>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {(cue
-                      ? [
-                          ["right", "Right moment"],
-                          ["early", "Marked too early"],
-                          ["late", "Marked too late"],
-                          ["none", "No pullback"],
-                        ]
-                      : [
-                          ["none", "No pullback"],
-                          ["missed", "I heard a pullback"],
-                        ]
-                    ).map(([value, label]) => (
-                      <button
-                        key={value}
-                        type="submit"
-                        name="feedback"
-                        value={value}
-                        aria-pressed={row.review?.feedback === value}
-                        className="min-h-10 rounded-lg border px-3 text-sm aria-pressed:bg-slate-900 aria-pressed:text-white"
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </fieldset>
-                {query.saved === row.occurrence && (
-                  <p role="status">Feedback saved.</p>
-                )}
-              </form>
-              <div className="flex flex-wrap gap-x-6">
-                <Player
-                  key={String(cue?.id ?? "none")}
-                  occurrence={row.occurrence}
-                  start={Math.max(0, (cue?.playback ?? 0) - 3)}
-                  marked={Boolean(cue)}
-                />
-                <Link
-                  prefetch={false}
-                  href={
-                    path +
-                    "?" +
-                    new URLSearchParams({
-                      edit: row.occurrence,
-                      ...(query.rep ? { rep: query.rep } : {}),
-                    }) +
-                    "#review"
-                  }
-                  className="inline-flex min-h-11 items-center text-slate-700 underline"
-                >
-                  Choose a different transcript line
-                </Link>
-              </div>
-              {editing?.occurrence === row.occurrence && (
-                <form
-                  id="review"
-                  action={saveMark}
-                  className="space-y-2 border-t pt-4"
-                >
-                  <input type="hidden" name="id" value={row.occurrence} />
-                  <input type="hidden" name="digest" value={row.digest} />
-                  <input type="hidden" name="revision" value={row.revision} />
-                  <input type="hidden" name="rep" value={query.rep || ""} />
-                  <label className="block font-semibold" htmlFor="cue">
-                    First signal from cast
-                  </label>
-                  <select
-                    id="cue"
-                    name="cue"
-                    className="min-h-11 w-full rounded-lg border bg-white px-2"
-                    defaultValue={cue?.id ?? "none"}
-                  >
-                    <option value="none">No pullback heard</option>
-                    {options.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {clock(c.at)} · {c.text}
-                      </option>
-                    ))}
-                  </select>
-                  <button className="min-h-11 rounded-lg bg-slate-900 px-4 font-medium text-white">
-                    Save review
-                  </button>
-                </form>
+              {(row.transcript_doc_id || row.verified_recording_url) && (
+                <div className="flex flex-wrap gap-x-6">
+                  {row.transcript_doc_id && (
+                    <a
+                      className="inline-flex min-h-11 items-center text-red-700 underline"
+                      href={`https://docs.google.com/document/d/${encodeURIComponent(row.transcript_doc_id)}/edit`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open transcript
+                    </a>
+                  )}
+                  {row.verified_recording_url && (
+                    <a
+                      className="inline-flex min-h-11 items-center text-red-700 underline"
+                      href={row.verified_recording_url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Watch Zoom recording
+                    </a>
+                  )}
+                </div>
               )}
             </article>
           );
