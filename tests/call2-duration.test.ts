@@ -34,10 +34,12 @@ beforeAll(async () => {
   await db.exec(
     readFileSync("migrations/20261124_call2_duration_replies.sql", "utf8"),
   );
+  await db.exec(readFileSync("migrations/20261125_call2_shared_presence.sql", "utf8"));
   await db.query(
     "insert into call2_duration_pilot values ($1,$2,now(),$3,$4,null,null)",
     ["sample", "digest", JSON.stringify(sample), JSON.stringify([cue])],
   );
+  await db.exec('update call2_duration_pilot set shared_intervals = \'[[10,200],[225,375]]\'');
   await db.query("update call2_duration_pilot set rep_replies = $1", [
     JSON.stringify({ 2: "What would you like to think through?" }),
   ]);
@@ -70,18 +72,19 @@ it("renders saved timing and source links without review or playback controls", 
   );
   for (const item of [
     "7:00",
-    "6:43",
-    "4:00",
+    "2:50",
     cue.text,
     "Open transcript",
     "Rep’s next reply",
     "What would you like to think through?",
     "Call outcome",
     "1 of 1",
-    "Median time cast stayed",
+    "Median time reps stayed after an objection",
   ])
     expect(html).toContain(item);
   for (const removed of [
+    "4:00",
+    "Cast present",
     "Listen to exchange",
     "<audio",
     "Right moment",

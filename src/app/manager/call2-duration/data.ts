@@ -16,6 +16,7 @@ export type Summary = {
   date: string;
 };
 export type PilotCall = {
+  shared_intervals: [number, number][] | null;
   occurrence: string;
   transcript_doc_id: string | null;
   verified_recording_url: string | null;
@@ -26,7 +27,7 @@ export type PilotCall = {
 export async function calls() {
   await requireRepScoringAdmin();
   const sql = neon(process.env.DATABASE_URL!);
-  return (await sql`SELECT occurrence, transcript_doc_id, verified_recording_url, summary, review,
+  return (await sql`SELECT shared_intervals, occurrence, transcript_doc_id, verified_recording_url, summary, review,
     rep_replies ->> (CASE WHEN review IS NULL THEN summary ELSE review END -> 'signal' ->> 'id') AS reply
     FROM call2_duration_pilot ORDER BY started_at DESC, occurrence`) as PilotCall[];
 }
@@ -42,5 +43,14 @@ export function medianClock(seconds: number[]) {
     Math.round(
       (sorted[middle] + sorted[Math.floor((sorted.length - 1) / 2)]) / 2,
     ),
+  );
+}
+
+export function timeWithCast(row: PilotCall) {
+  const cue = (row.review ?? row.summary).signal;
+  if (!cue || !row.shared_intervals) return null;
+  return row.shared_intervals.reduce(
+    (total, [start, end]) => total + Math.max(0, end - Math.max(start, cue.at)),
+    0,
   );
 }

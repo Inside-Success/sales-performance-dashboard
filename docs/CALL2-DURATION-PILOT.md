@@ -4,7 +4,7 @@ The admin directory links to `/manager/call2-duration`. The manager allowlist pr
 
 ## Reading a call
 
-Call length spans the Zoom meeting. Where Zoom supplies only the complete participant report, use the first recorded join through the last departure. Cast present is the union of the verified prospect’s sessions, including reconnects and overlapping devices. A bot or rep can stay behind. Time after hesitation runs from the marked prospect line to the meeting end. The displayed timestamp uses the meeting clock.
+Call length spans the Zoom meeting. Where Zoom supplies only the complete participant report, use the first recorded join through the last departure. Rep time with cast after objection counts the seconds when both the verified rep and cast were present from the effective saved mark onward. Overlapping devices count once, reconnect gaps and time alone do not count. The timestamp uses the meeting clock. Calls without an objection show total call length only.
 
 ## Reproducing a bounded review
 
@@ -28,7 +28,7 @@ The isolated Zoom readers and candidate lookup were switched off after collectio
 
 ## Admin view and source links
 
-The overview follows the rep filter and shows median verified cast attendance, the number of marked calls and median time after hesitation. Each call shows the saved cast quote, the rep’s next reply where attributable, and the official outcome. Existing marks and prior corrections remain available to the reader. The page has no feedback form or embedded media.
+The overview follows the rep filter and shows median rep time with the cast after an objection and the number of marked calls. Each call shows the saved cast quote, the rep’s next reply where attributable, and the official outcome. Existing marks and prior corrections remain available to the reader. The page has no feedback form or embedded media.
 
 For reply context apply `migrations/20261124_call2_duration_replies.sql` and run `scripts/call2-duration/publish-replies.mjs` with the private pilot directory. The importer verifies the 20 results against the database and copies the immediately following rep turn for each eligible cue. Shared playback and other speakers are excluded.
 
@@ -49,3 +49,9 @@ All twenty pilot rows now have v4 results. To reconstruct the raw result set, co
 ## Pilot reply excerpts
 
 The card displays short replies in full. Longer turns show a verbatim preview of up to 180 characters and expand inline. A verified playback handoff followed by the recorded welcome ends the live quote, including when Zoom gives both speakers the same name. The full transcript remains available through the existing link. This display change reads the existing replies without modifying stored cues, timestamps, review decisions or sources. All 20 effective pilot cards were checked against the saved transcripts.
+
+## Rep attendance correction
+
+The same 20 meeting occurrences were matched to complete Zoom participant reports. Match the assigned rep and cast to their Zoom sessions, using a source-verified exact email alias for a different rep display name. Apply `migrations/20261125_call2_shared_presence.sql` and run `node scripts/call2-duration/publish-presence.mjs INPUTS REPORTS_JSON REP_EMAIL_ALIASES_JSON` to validate. Add `--publish` to save the disjoint shared intervals in the pilot table. The timestamps are seconds from meeting start. A missing report is unverified. Do not substitute the meeting end. The active reviewed cue takes precedence over the raw model selection.
+
+The 20-call check found 19 effective marks and one call without an objection. An independent second-by-second attendance check gave a median of 10:50 across the marked calls. Shared time includes video playback while both people are present. Use the cast’s words, the rep’s reply and outcome to judge the exchange. Elapsed time alone does not establish whether the rep gave up.
