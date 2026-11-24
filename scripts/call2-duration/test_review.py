@@ -2,6 +2,7 @@ import json
 import sqlite3
 import unittest
 from unittest.mock import patch
+from audit_mark import audit
 from check_exchange import check, same_exchange
 from review import union_seconds, prepare, review, first_pullback, speech_rows
 
@@ -106,3 +107,30 @@ class TimingTest(unittest.TestCase):
                 self.assertNotIn(call["officialOutcome"], str(messages))
                 self.assertNotIn(call["review"], str(messages))
                 self.assertEqual(json.loads(messages[1]["content"]), [[0, "cast", "", "I need to pause."]])
+
+    def test_mark_audit_skips_absent_clock_and_rejects_mismatched_sources(self):
+        call = self.call()
+        first = {"occurrence": call["uuid"], "summary": {"signal": None}}
+        with patch("audit_mark.obtain_receipt") as send:
+            self.assertEqual(audit(call, first, None, "unused")["decision"], "no_clock")
+            with self.assertRaises(ValueError):
+                audit(call, first | {"occurrence": "other"}, None, "unused")
+            with self.assertRaises(ValueError):
+                audit(call, first | {"summary": {"signal": {"id": 500}}}, None, "unused")
+            send.assert_not_called()
+
+    def test_mark_audit_requires_source_bound_evidence_and_omits_outcome(self):
+        call = self.call()
+        first = {"occurrence": call["uuid"], "summary": {"signal": prepare(call)[1][0]}}
+        for decision, evidence, valid in [("keep", 0, True), ("hold", -1, True), ("keep", -1, False)]:
+            result = {"decision": decision, "evidence": evidence, "reason": "assessment"}
+            response = {"choices": [{"finish_reason": "stop", "message": {"content": json.dumps(result)}}]}
+            with patch("audit_mark.obtain_receipt", return_value=(response, "")) as send:
+                if valid:
+                    self.assertEqual(audit(call, first, None, "unused"), result)
+                else:
+                    with self.assertRaises(ValueError):
+                        audit(call, first, None, "unused")
+                payload = send.call_args.args[1]["messages"][1]["content"]
+                self.assertNotIn(call["officialOutcome"], payload)
+                self.assertEqual(json.loads(payload)["proposed_cue"], 0)
