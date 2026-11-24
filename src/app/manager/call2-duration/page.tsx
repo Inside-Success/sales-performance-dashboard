@@ -4,7 +4,7 @@ import { calls, clock, medianClock } from "./data";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Call 2 timing | Magic Mike",
+  title: "Time After Hesitation | Magic Mike",
   robots: { index: false, follow: false },
 };
 
@@ -60,11 +60,11 @@ export default async function CallTiming({
       <div className="mx-auto max-w-4xl space-y-5 px-4 py-8 sm:px-8">
         <header>
           <h1 className="text-3xl font-extrabold text-slate-950">
-            Call 2 timing
+            Time After Hesitation
           </h1>
           <p className="mt-2 text-slate-600">
-            Pilot calls · Review when cast first pulled back and what happened
-            next.
+            Call 2 pilot · See the prospect’s first sign of hesitation, the rep’s
+            reply, and how much longer the call lasted.
           </p>
         </header>
         <section
@@ -86,11 +86,11 @@ export default async function CallTiming({
                 ),
               ],
               [
-                "Calls with a marked pullback",
+                "Calls with a sign of hesitation",
                 String(pullbackTimes.length) + " of " + rows.length,
               ],
               [
-                "Median time from pullback to call end",
+                "Median time after hesitation",
                 medianClock(pullbackTimes),
               ],
             ].map(([label, value]) => (
@@ -101,8 +101,8 @@ export default async function CallTiming({
             ))}
           </dl>
           <p className="text-sm text-slate-600">
-            Times are minutes and seconds. Pullback timing runs from the cast
-            member’s first sign of reluctance to the end of the meeting.
+            Times are in minutes and seconds. Time after hesitation runs from the
+            first sign of hesitation to the end of the call.
           </p>
         </section>
         <form className="flex flex-wrap items-center gap-3">
@@ -151,7 +151,7 @@ export default async function CallTiming({
                     s.attendance === null ? "Unverified" : clock(s.attendance),
                   ],
                   [
-                    "Time from pullback to call end",
+                    "Time after hesitation",
                     cue ? clock(s.total - cue.at) : "—",
                   ],
                 ].map(([label, value]) => (
@@ -166,7 +166,7 @@ export default async function CallTiming({
               {cue ? (
                 <div>
                   <h3 className="text-sm font-semibold">
-                    Cast’s first sign of reluctance
+                    First sign of hesitation
                   </h3>
                   <blockquote className="border-l-2 border-red-300 pl-3">
                     <span className="mr-2 font-semibold tabular-nums">
@@ -187,7 +187,7 @@ export default async function CallTiming({
                   )}
                 </div>
               ) : (
-                <p>No pullback heard.</p>
+                <p>No sign of hesitation heard.</p>
               )}
               <p className="text-sm text-slate-700">
                 <strong>Call outcome</strong> · {s.outcome}

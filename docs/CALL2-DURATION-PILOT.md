@@ -1,10 +1,10 @@
-# Call 2 timing pilot
+# Time After Hesitation pilot
 
 The admin directory links to `/manager/call2-duration`. The manager allowlist protects the layout and the data reader. Reps and FAQ-only admins receive no tracker navigation or results. The page reads saved results. Filtering and viewing source links make no model requests.
 
 ## Reading a call
 
-Call length spans the Zoom meeting. Where Zoom supplies only the complete participant report, use the first recorded join through the last departure. Cast present is the union of the verified prospect’s sessions, including reconnects and overlapping devices. A bot or rep can stay behind. Time from pullback to call end runs from the marked prospect line to the meeting end. The displayed timestamp uses the meeting clock.
+Call length spans the Zoom meeting. Where Zoom supplies only the complete participant report, use the first recorded join through the last departure. Cast present is the union of the verified prospect’s sessions, including reconnects and overlapping devices. A bot or rep can stay behind. Time after hesitation runs from the marked prospect line to the meeting end. The displayed timestamp uses the meeting clock.
 
 ## Reproducing a bounded review
 
@@ -28,7 +28,7 @@ The isolated Zoom readers and candidate lookup were switched off after collectio
 
 ## Admin view and source links
 
-The overview follows the rep filter and shows median verified cast attendance, the number of marked calls and median time from pullback to meeting end. Each call shows the saved cast quote, the rep’s next reply where attributable, and the official outcome. Existing marks and prior corrections remain available to the reader. The page has no feedback form or embedded media.
+The overview follows the rep filter and shows median verified cast attendance, the number of marked calls and median time after hesitation. Each call shows the saved cast quote, the rep’s next reply where attributable, and the official outcome. Existing marks and prior corrections remain available to the reader. The page has no feedback form or embedded media.
 
 For reply context apply `migrations/20261124_call2_duration_replies.sql` and run `scripts/call2-duration/publish-replies.mjs` with the private pilot directory. The importer verifies the 20 results against the database and copies the immediately following rep turn for each eligible cue. Shared playback and other speakers are excluded.
 
