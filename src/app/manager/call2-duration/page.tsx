@@ -5,7 +5,7 @@ import { calls, clock, PAGE_SIZE, timeWithCast } from "./data";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "Call 2 Cast Tracker | Magic Mike",
+  title: "Call 2 Rep Tracker | Magic Mike",
   robots: { index: false, follow: false },
 };
 
@@ -60,10 +60,10 @@ export default async function CallTiming({
       <div className="mx-auto max-w-4xl space-y-5 px-4 py-8 sm:px-8">
         <header>
           <h1 className="text-3xl font-extrabold text-slate-950">
-            Call 2 Cast Tracker
+            Call 2 Rep Tracker
           </h1>
           <p className="mt-2 text-slate-600">
-            See how long each rep stayed with the cast member after their first clear objection.
+            How long each rep stayed on the call after the cast member raised a clear objection.
           </p>
         </header>
         <form className="flex flex-wrap items-center gap-3">
@@ -93,7 +93,7 @@ export default async function CallTiming({
           </h2>
           <dl className="grid gap-4 sm:grid-cols-2">
             {[
-              ["Median time reps stayed after an objection", building ? "Building sample" : median === null ? "—" : clock(median)],
+              ["Median rep time after an objection", building ? "Building sample" : median === null ? "—" : clock(median)],
               ["Calls with a measured objection", measured + " of " + total],
             ].map(([label, value]) => (
               <div key={label}>
@@ -103,7 +103,7 @@ export default async function CallTiming({
             ))}
           </dl>
           <p className="text-sm text-slate-600">
-            {building ? "The median appears after 10 calls with a measured objection." : "Time counts only while the rep and cast member were both on Zoom after the objection."}
+            {building ? "The median appears after 10 calls with a measured objection." : "Rep time starts at the first clear objection and counts only the time both people were on Zoom."}
           </p>
         </section>
         {rows.length === 0 && <p>No calls on this page.</p>}
@@ -123,14 +123,14 @@ export default async function CallTiming({
               className="magic-card space-y-4 p-5 sm:p-6"
             >
               <header>
-                <h2 className="text-xl font-bold">{s.cast}</h2>
+                <h2 className="text-xl font-bold">{s.rep}</h2>
                 <p className="text-sm text-slate-600">
-                  {s.rep} · {s.show} · {date}
+                  Call with {s.cast} · {s.show} · {date}
                 </p>
               </header>
               <dl className="flex flex-wrap gap-x-8 gap-y-3">
                 {[
-                  ...(cue ? [["Rep time with cast after objection", shared === null ? "Unverified" : clock(shared)]] : []),
+                  ...(cue ? [["Time the rep stayed after the objection", shared === null ? "Unverified" : clock(shared)]] : []),
                   ["Call length", clock(s.total)],
                 ].map(([label, value]) => (
                   <div key={label}>
@@ -147,7 +147,7 @@ export default async function CallTiming({
               {cue ? (
                 <div>
                   <h3 className="text-sm font-semibold">
-                    Cast’s first sign of an objection
+                    Cast member’s first clear objection
                   </h3>
                   <blockquote className="border-l-2 border-red-300 pl-3">
                     <span className="mr-2 font-semibold tabular-nums">

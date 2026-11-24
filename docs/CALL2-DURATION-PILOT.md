@@ -1,4 +1,4 @@
-# Call 2 Cast Tracker
+# Call 2 Rep Tracker
 
 The admin directory links to `/manager/call2-duration`. The manager allowlist protects the layout and the data reader. Reps and FAQ-only admins receive no tracker navigation or results. The page reads saved results. Filtering and viewing source links make no model requests.
 
@@ -12,7 +12,7 @@ Intake matches an exact source record and transcript link, checks an identified 
 
 ## Reading a call
 
-Call length spans the Zoom meeting. Where Zoom supplies only the complete participant report, use the first recorded join through the last departure. Rep time with cast after objection counts the seconds when both the verified rep and cast were present from the effective saved mark onward. Overlapping devices count once, reconnect gaps and time alone do not count. The timestamp uses the meeting clock. Calls without an objection show total call length only.
+Call length spans the Zoom meeting. Where Zoom supplies only the complete participant report, use the first recorded join through the last departure. Time the rep stayed after the objection counts the seconds when both the verified rep and cast were present from the effective saved mark onward. Overlapping devices count once, reconnect gaps and time alone do not count. The timestamp uses the meeting clock. Calls without an objection show total call length only.
 
 ## Reproducing a bounded review
 
