@@ -1,7 +1,7 @@
 import sqlite3
 import unittest
 from unittest.mock import patch
-from review import union_seconds, prepare, review
+from review import union_seconds, prepare, review, first_pullback, speech_rows
 
 
 class TimingTest(unittest.TestCase):
@@ -26,6 +26,26 @@ class TimingTest(unittest.TestCase):
             date="2026-11-23T00:00:00Z",
             recording="sample",
         )
+
+    def test_media_is_context_and_live_interruption_stays_eligible(self):
+        entries = [dict(speaker=s, text=t) for s, t in [
+            ("Audio shared by Host", "Welcome"), ("Guest", "Please pause the offer."),
+            ("Audio shared by Host", "Our history"), ("Host", "What concerns you?"),
+        ]]
+        rows = speech_rows(entries, ["Guest"])
+        self.assertEqual([r[1] for r in rows], ["shared_media", "cast", "shared_media", "other_live"])
+        self.assertEqual(rows[1][2], "between_media_cues")
+
+    def test_earliest_supported_candidate_or_none(self):
+        candidates = [dict(cue=i, classification=k) for i, k in
+                      [(9, "pullback"), (1, "unclear"), (3, "engaged"), (5, "pullback")]]
+        ids = {1, 3, 5, 9}
+        self.assertEqual(first_pullback(candidates, ids), 5)
+        self.assertIsNone(first_pullback(candidates[1:3], ids))
+        with self.assertRaises(ValueError):
+            first_pullback(candidates, {9})
+        with self.assertRaises(ValueError):
+            first_pullback(candidates * 2, ids)
 
     def test_rejoins_and_devices(self):
         self.assertEqual(union_seconds(self.call()["castIntervals"]), 80)
