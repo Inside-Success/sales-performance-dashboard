@@ -38,10 +38,16 @@ beforeAll(async () => {
   await db.exec(
     readFileSync("migrations/20261124_call2_duration_audio.sql", "utf8"),
   );
+  await db.exec(
+    readFileSync("migrations/20261124_call2_duration_replies.sql", "utf8"),
+  );
   await db.query(
     "insert into call2_duration_pilot values ($1,$2,now(),$3,$4,null,null)",
     ["sample", "digest", JSON.stringify(sample), JSON.stringify([cue])],
   );
+  await db.query("update call2_duration_pilot set rep_replies = $1", [
+    JSON.stringify({ 2: "What would you like to think through?" }),
+  ]);
 });
 beforeEach(() => {
   mocks.query.mockImplementation(
@@ -82,8 +88,22 @@ it("renders saved timing and jumps to the aligned cue with lead-in", async () =>
   const html = renderToStaticMarkup(
     await Page({ searchParams: Promise.resolve({}) }),
   );
-  for (const item of ["7:00", "6:43", "4:00", cue.text, "Listen to exchange"])
+  for (const item of [
+    "7:00",
+    "6:43",
+    "4:00",
+    cue.text,
+    "Listen to exchange",
+    "Rep’s next reply",
+    "What would you like to think through?",
+    "Call outcome",
+    "1 of 1",
+    "Median time cast stayed",
+  ])
     expect(html).toContain(item);
+  expect(html.indexOf("Pilot overview")).toBeLessThan(
+    html.indexOf("Cast member"),
+  );
 });
 it("saves a correction without rewriting the original and prevents stale overwrites", async () => {
   mocks.auth.mockResolvedValue({ user: { email: "tester@example.com" } });
@@ -121,4 +141,28 @@ it("requires admin access to audio and supports byte-exact seeking", async () =>
   expect(
     (await GET(new Request(url, { headers: { range: "bytes=10-20" } }))).status,
   ).toBe(416);
+});
+
+it("records quick timing feedback without requiring a replacement cue", async () => {
+  const [row] = await calls();
+  const f = form("2", row.revision);
+  f.set("feedback", "early");
+  await expect(saveMark(f)).rejects.toThrow("saved=sample");
+  expect((await calls())[0].review).toMatchObject({
+    signal: cue,
+    feedback: "early",
+  });
+});
+
+it("updates the overview and hides the old reply when a reviewer hears no pullback", async () => {
+  const [row] = await calls();
+  const f = form("2", row.revision);
+  f.set("feedback", "none");
+  await expect(saveMark(f)).rejects.toThrow("saved=sample");
+  const html = renderToStaticMarkup(
+    await Page({ searchParams: Promise.resolve({ rep: sample.rep }) }),
+  );
+  expect(html).toContain("0 of 1");
+  expect(html).toContain("I heard a pullback");
+  expect(html).not.toContain("What would you like to think through?");
 });
