@@ -130,3 +130,9 @@ The backfill checked source identity and receipt consistency for all 50 calls. I
 When an eligible call has a transcript and a Zoom participant report but the cast cannot be matched to both, or the rep cannot be identified separately, the worker records `identity_hold` with no retry date. This happens before a model request or dashboard write. The sweep continues processing other calls. Provider, reader, database and receipt failures still fail the GitHub job.
 
 To reconsider a hold, first establish speaker-specific transcript and attendance evidence for the exact occurrence. A greeting or a shared Zoom device label is insufficient. After the source evidence is corrected, an operator can set the held intake row's retry date to now for a single normal recheck. Preserve its receipt and existing publication checks.
+
+### Verified guest channels
+
+When neither transcript nor attendance carries the cast name, the worker can measure the prospect side of a confirmed second call. It requires an identified rep, one distinct guest display label in attendance, and the same channels in the live transcript. Shared presentation audio is excluded. The guest must match the source client email on every guest session or have all three corroborating signals: the scheduled full name in the title, the rep greeting the prospect by first name with a reply on that channel, and the guest introducing themselves or reading named correspondence in the opening exchange. Conflicting accounts, unmatched channels and partial identity matches stay held.
+
+These cards attribute the objection to the guest side. The booking identifies the call, while the transcript and Zoom sessions establish the objection and shared connection time. People sharing the guest microphone cannot be distinguished individually. The existing frozen Luna prompt and the per-rep sample threshold apply.

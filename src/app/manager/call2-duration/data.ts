@@ -6,6 +6,7 @@ export type Cue = { id: number; at: number; playback: number; text: string };
 export type Summary = {
   rep: string;
   cast: string;
+  guestChannel?: boolean;
   show: string;
   total: number;
   attendance: number | null;

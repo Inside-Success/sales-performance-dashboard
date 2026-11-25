@@ -63,7 +63,7 @@ export default async function CallTiming({
             Call 2 Rep Tracker
           </h1>
           <p className="mt-2 text-slate-600">
-            How long each rep stayed on the call after the cast member raised a clear objection.
+            How long each rep stayed on the call after the first clear objection from the guest side.
           </p>
         </header>
         <form className="flex flex-wrap items-center gap-3">
@@ -103,7 +103,7 @@ export default async function CallTiming({
             ))}
           </dl>
           <p className="text-sm text-slate-600">
-            {building ? "The median appears after 10 calls with a measured objection." : "Rep time starts at the first clear objection and counts only the time both people were on Zoom."}
+            {building ? "The median appears after 10 calls with a measured objection." : "Rep time starts at the first clear objection and counts only the time the rep and guest were connected on Zoom."}
           </p>
         </section>
         {rows.length === 0 && <p>No calls on this page.</p>}
@@ -147,7 +147,7 @@ export default async function CallTiming({
               {cue ? (
                 <div>
                   <h3 className="text-sm font-semibold">
-                    Cast member’s first clear objection
+                    {s.guestChannel ? "First clear objection from the guest side" : "Cast member’s first clear objection"}
                   </h3>
                   <blockquote className="border-l-2 border-red-300 pl-3">
                     <span className="mr-2 font-semibold tabular-nums">

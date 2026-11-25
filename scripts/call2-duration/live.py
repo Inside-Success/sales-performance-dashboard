@@ -37,7 +37,7 @@ def source_read(tag, body):
 
 
 def shared_intervals(c, sessions, row):
-    reps = [p for p in sessions if p["name"] == c["rep"] or (
+    reps = [p for p in sessions if p["name"].strip().casefold() == c["rep"].strip().casefold() or (
         p.get("email") and p["email"].lower() == (row.get("Rep Email") or "").lower()
     )]
     cast_labels = {name.strip().casefold() for name in c["castSpeakers"]}
@@ -57,6 +57,51 @@ def shared_intervals(c, sessions, row):
     if not merged:
         raise ValueError("Missing shared attendance")
     return merged, {p["name"] for p in reps} | {c["rep"]}
+
+
+def guest_channel(row, sessions, es):
+    """Verify the prospect side of a two-endpoint meeting, without naming its voice."""
+    def label(value):
+        return (value or "").strip().casefold()
+
+    rep = label(row["Rep Name"])
+    rep_email = label(row.get("Rep Email"))
+    rep_labels = set()
+    guests = []
+    for session in sessions:
+        display, email = label(session["name"]), label(session.get("email"))
+        if display == rep or (rep_email and email == rep_email):
+            if display == rep and email and rep_email and email != rep_email:
+                raise IdentityHold("Conflicting rep account")
+            rep_labels.add(display)
+        else:
+            guests.append(session)
+    labels = {label(p["name"]) for p in guests}
+    if not rep_labels or len(labels) != 1 or labels & rep_labels:
+        raise IdentityHold("Guest channel is ambiguous")
+    guest = next(iter(labels))
+    live_labels = {label(e["speaker"]) for e in es if not label(e["speaker"]).startswith("audio shared by ")}
+    if (not guest or guest in {"unknown", "unidentified"} or guest.startswith("audio shared by ")
+            or guest not in live_labels or not live_labels & rep_labels or live_labels - rep_labels - labels):
+        raise IdentityHold("Transcript channels do not match attendance")
+    emails = {label(p.get("email")) for p in guests if label(p.get("email"))}
+    client_email = label(row.get("Client Email"))
+    if len(emails) > 1 or (emails and client_email and emails != {client_email}):
+        raise IdentityHold("Conflicting guest account")
+    if not (client_email and all(label(p.get("email")) == client_email for p in guests)):
+        full = label(row["Client Name"])
+        first = re.escape(full.split()[0])
+        title_matches = len(full.split()) >= 2 and re.search(
+            rf"(?<!\w){re.escape(full)}(?!\w)", label(row.get("Meeting Title")))
+        greeting = rf"^\s*(?:hey|hi|hello|good (?:morning|afternoon|evening))[, ]+{first}\b"
+        greeted = any(label(a["speaker"]) in rep_labels and label(b["speaker"]) == guest
+                      and re.search(greeting, a["text"], re.I) for a, b in zip(es[:80], es[1:81]))
+        guest_confirmation = any(label(e["speaker"]) == guest and re.search(
+            rf"\b(?:my name is|this is|dear)\s+{first}\b", e["text"], re.I) for e in es[:80])
+        if not (title_matches and greeted and guest_confirmation):
+            raise IdentityHold("Guest channel has insufficient corroboration")
+    return ({e["speaker"] for e in es if label(e["speaker"]) == guest},
+            {p["name"] for p in guests})
 
 
 def verified_input(row, history, zoom, outcome, require_history=False):
@@ -83,9 +128,14 @@ def verified_input(row, history, zoom, outcome, require_history=False):
     emails = {p["email"].strip().casefold() for p in cast_sessions if p.get("email")}
     if len(emails) > 1:
         raise IdentityHold("Cast display name shared by different accounts")
-    if not name or len(speakers) != 1 or not participants or name.casefold() == row["Rep Name"].strip().casefold():
+    channel_only = not speakers and not participants
+    if channel_only and name and name.casefold() != row["Rep Name"].strip().casefold():
+        speakers, participants = guest_channel(row, zoom["sessions"], es)
+    if not name or not speakers or (not channel_only and len(speakers) != 1) or not participants or name.casefold() == row["Rep Name"].strip().casefold():
         raise IdentityHold("Cast identity unavailable")
     c = normalize(row, zoom, second, sorted(speakers), sorted(participants), name, history)
+    if channel_only:
+        c["guestChannel"] = True
     c["officialOutcome"] = outcome
     prepare(c)
     shared, rep_names = shared_intervals(c, zoom["sessions"], row)
@@ -122,6 +172,8 @@ def publish(db, c, shared, reps, doc):
     if db.execute("SELECT 1 FROM call2_duration_pilot WHERE occurrence=%s", (c["uuid"],)).fetchone():
         return "existing"
     result = review(c, db, os.environ["CALL2_DURATION_OPENAI_API_KEY"], receipt_store=pg_receipt, retry_length=False)
+    if c.get("guestChannel"):
+        result["summary"]["guestChannel"] = True
     cue = result["summary"]["signal"]
     replies = {}
     if cue:
