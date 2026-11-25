@@ -16,6 +16,7 @@ it("opens the exact video selected by the companion Sheet", async () => {
   expect(container.querySelectorAll("details")).toHaveLength(2);
   const selected = container.querySelector("details[open]");
   expect(selected?.id).toBe("clip-1");
+  expect(container.querySelector("details")).toBe(selected);
   expect(selected?.querySelector("video")?.getAttribute("src")).toBe("/api/training-clips/clip-1");
 });
 it("filters the same report to one rep", async () => {

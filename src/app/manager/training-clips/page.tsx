@@ -15,6 +15,9 @@ export default async function TrainingClips({ searchParams }: {
   const picks: Pick[] = report?.picks ?? [];
   const reps = [...new Set(picks.map(p => p.rep))].sort();
   const filtered = picks.filter(p => !rep || p.rep === rep);
+  // A sign-in redirect can drop the URL fragment. Keep the linked clip in view.
+  const selected = filtered.find(p => p.id === clip);
+  const visible = selected ? [selected, ...filtered.filter(p => p !== selected)] : filtered;
   return <main className="mx-auto max-w-4xl space-y-5 px-4 py-6">
     <header className="flex flex-wrap items-center justify-between gap-4">
       <div><h1 className="text-2xl font-semibold">Training Clips</h1>
@@ -28,7 +31,7 @@ export default async function TrainingClips({ searchParams }: {
       </select><button className="rounded border px-3 py-2">Apply</button>
     </form>
     {!filtered.length && <p>{report ? "No clips for this selection." : "No report published yet."}</p>}
-    {filtered.map(p => <details key={p.id} id={p.id} open={clip === p.id} className="rounded-lg border p-4">
+    {visible.map(p => <details key={p.id} id={p.id} open={clip === p.id} className="rounded-lg border p-4">
       <summary className="cursor-pointer"><strong>{p.topic}</strong>
         <span className="mt-1 block text-sm">{p.moment[0]}</span>
         <span className="mt-1 block text-sm text-slate-500">{p.rep} · {p.show} · {p.date} · {p.duration} ({p.range})</span>
