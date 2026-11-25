@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 
-from live import Ineligible, process, shared_intervals, verified_input
+from live import IdentityHold, Reconcile, run, Ineligible, process, shared_intervals, verified_input
 
 
 class LiveTrackerTest(unittest.TestCase):
@@ -30,7 +30,7 @@ class LiveTrackerTest(unittest.TestCase):
     def test_call_two_label_alone_is_insufficient(self):
         row = {"Client Name": "Test Guest", "Meeting Start Date": "2026-11-25", "Rep Name": "Rep"}
         with self.assertRaises(Ineligible):
-            verified_input(row, {}, {"transcript": ""}, "Follow-up")
+            verified_input(dict(row, **{"Zoom Meeting UUID": "m"}), {}, self.zoom(), "Follow-up")
 
     def test_backfill_rejects_another_followup_even_with_second_call_language(self):
         row = {"Client Name": "Test Guest", "Rep Name": "Rep", "Meeting Start Date": "2026-11-25",
@@ -45,3 +45,51 @@ class LiveTrackerTest(unittest.TestCase):
         sessions = [{"name": "Rep", "join": a, "leave": b} for a,b in [(0, 30), (40, 100)]]
         with patch("live.seconds", side_effect=lambda x: x):
             self.assertEqual(shared_intervals(c, sessions, {})[0], [[10, 30], [40, 70]])
+
+    @staticmethod
+    def zoom():
+        return {"uuid": "m", "sessions": [{"name": "Test Guest"}],
+                "transcript": "00:00:01.000 --> 00:00:02.000\nTest Guest: Hello"}
+
+    def test_source_vs_identity_failures(self):
+        row = {"Client Name": "Test Guest", "Rep Name": "Rep", "Meeting Start Date": "today",
+               "Zoom Meeting UUID": "m"}
+        with patch("live.confirmed_history", return_value=True), patch("live.normalize") as normalize:
+            for update, expected in [
+                ({"transcript": ""}, ValueError), ({"sessions": []}, ValueError),
+                ({"uuid": "wrong"}, ValueError),
+                ({"transcript": self.zoom()["transcript"].replace("Test Guest", "unknown")}, IdentityHold),
+                ({"sessions": [{"name": "alias"}]}, IdentityHold),
+                ({"sessions": [{"name": "Test Guest", "email": e} for e in ("a@x", "b@x")]}, IdentityHold),
+            ]:
+                with self.subTest(update=update), self.assertRaises(expected) as error:
+                    verified_input(row, {}, dict(self.zoom(), **update), "Follow-up")
+                self.assertIs(type(error.exception), expected)
+            normalize.assert_not_called()
+
+    def test_missing_and_overlapping_rep_identity(self):
+        c = {"rep": "Rep", "castSpeakers": ["Guest"]}
+        for sessions in ([], [{"name": "GUEST", "email": "rep@example.org"}]):
+            with self.assertRaises(IdentityHold):
+                shared_intervals(c, sessions, {"Rep Email": "rep@example.org"})
+
+    def test_identity_hold_continues_sweep_and_real_failures_alert(self):
+        from datetime import datetime, timezone
+        for failure, status in [(None, "published"), (ValueError("source"), "retry"),
+                                (TimeoutError(), "retry"), (Reconcile(), "reconcile")]:
+            connect = Mock()
+            connect.return_value = unittest.mock.MagicMock()
+            with self.subTest(status=status), patch.dict("sys.modules", {"psycopg": Mock(connect=connect)}), patch.dict(
+                "os.environ", {"CALL2_DATABASE_URL": "test"}
+            ), patch("live.process", side_effect=[IdentityHold(), failure or status]):
+                db = connect.return_value.__enter__.return_value
+                db.execute.return_value.fetchone.return_value = (datetime.now(timezone.utc),)
+                db.execute.return_value.fetchall.return_value = [("held", False), ("other", False)]
+                if failure:
+                    with self.assertRaises(SystemExit) as exit_status:
+                        run()
+                    self.assertEqual(exit_status.exception.code, 1)
+                else:
+                    run()
+                writes = [args.args[1] for args in db.execute.call_args_list if "INSERT" in args.args[0]]
+                self.assertEqual(writes, [("held", "identity_hold", False), ("other", status, status == "retry")])
