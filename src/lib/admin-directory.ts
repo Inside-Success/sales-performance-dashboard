@@ -1,4 +1,5 @@
 export const ADMIN_DIRECTORY_LINKS = [
+  { name: "Training Clips", href: "/manager/training-clips", group: "sales", navLabel: "Training Clips", scope: "manager" },
   { name: "Call 2 Rep Tracker", href: "/manager/call2-duration", group: "sales", navLabel: "Call 2 Rep Tracker", scope: "manager" },
   { name: "Sales Script Adherence · Pilot", href: "/manager/script-adherence", group: "sales", navLabel: "Script Adherence", scope: "manager" },
   { name: "AI Coaching Rep Usage", href: "/manager/usage", group: "coaching", navLabel: "Rep Usage", scope: "manager" },
