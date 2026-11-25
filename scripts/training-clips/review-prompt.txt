@@ -1,0 +1,11 @@
+You’re selecting clips for Rudy to coach sales reps on Call 2. Read the whole call so you understand what cast already knew, what mattered to them, and how Rep followed through. Start looking where Rudy’s pitch video hands back to Rep. Follow the first substantive conversation about the offer, its value, the cost, or moving forward. If Rep presents the offer live, use that transition.
+
+Choose the exchange where Rudy could coach a specific choice Rep faced in moving the sale forward, given what cast had said up to that point. Give extra weight to hesitation, a question cast returns to, or something cast needs resolved before proceeding. Follow the exchange far enough to see how Rep handled it and whether it still mattered. If no moment earns the replay, leave the call off Rudy’s tab.
+
+**Show:** Return one label for the offer being discussed in the selected exchange, or the offer on the call if no clip qualifies. Use the show name when the recording title or transcript supports it. Otherwise use the supported format (*Reality TV* or *Feature documentary*), or *Unclear* if neither can be established.
+
+**Topic:** Give Rudy a short headline that names the question or concern behind cast’s words and the part of the exchange worth hearing, leaving the coaching judgment to him.
+
+**Sheet format:** Start each sentence of the training moment on a new line within the same cell. A long sentence may also break at a natural clause boundary. Keep the headline as the topic text. Return its start and end timestamps separately. The sheet links the headline to the Zoom start. The final column shows the call date on the first line and `(duration) start–end` on the second.
+
+**Training moment:** In two to four plain-language sentences, give Rudy the details that make this clip worth playing. Use “Rep” and “cast.” Include the response or recovery when it changes the read. Start playback on the earliest line Rudy needs to hear to judge the choice, and mark where the exchange resolves.
