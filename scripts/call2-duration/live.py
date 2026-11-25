@@ -16,6 +16,10 @@ class Ineligible(ValueError):
     pass
 
 
+class IdentityHold(ValueError):
+    """Complete source evidence cannot uniquely identify the people on the call."""
+
+
 class Reconcile(RuntimeError):
     pass
 
@@ -36,8 +40,9 @@ def shared_intervals(c, sessions, row):
     reps = [p for p in sessions if p["name"] == c["rep"] or (
         p.get("email") and p["email"].lower() == (row.get("Rep Email") or "").lower()
     )]
-    if any(p["name"] in c["castSpeakers"] for p in reps):
-        raise ValueError("Ambiguous speakers")
+    cast_labels = {name.strip().casefold() for name in c["castSpeakers"]}
+    if not reps or any(p["name"].strip().casefold() in cast_labels for p in reps):
+        raise IdentityHold("Rep identity unavailable or overlaps cast")
     spans = sorted((round(max(a, seconds(p["join"])) - c["meetingStart"]),
                     round(min(b, seconds(p["leave"])) - c["meetingStart"]))
                    for a, b in c["castIntervals"] for p in reps)
@@ -55,7 +60,7 @@ def shared_intervals(c, sessions, row):
 
 
 def verified_input(row, history, zoom, outcome, require_history=False):
-    name = row["Client Name"].strip()
+    name = (row.get("Client Name") or "").strip()
     prior = {f.get("Zoom Meeting UUID"): f for record in history.get("records", [])
              if (f := record["fields"]).get("Meeting Start Date", "") < row["Meeting Start Date"]
              and f.get("Zoom Meeting UUID") != row["Zoom Meeting UUID"]
@@ -64,14 +69,22 @@ def verified_input(row, history, zoom, outcome, require_history=False):
     if history.get("offset") or any(f.get("Call #") == "Call 2+" for f in prior.values()):
         raise Ineligible("Prior second or ambiguous history")
     es = entries(zoom.get("transcript") or "")
+    if zoom["uuid"] != row["Zoom Meeting UUID"]:
+        raise ValueError("Wrong recording occurrence")
+    if not es or not zoom["sessions"]:
+        raise ValueError("Missing transcript or attendance")
     second = next((e["text"] for e in es[:110] if e["speaker"] == row["Rep Name"] and
                    re.search(r"\b(?:welcome (?:back )?to|this is|we(?: are|.re) here for) (?:the |your |our )?second (?:call|interview|audition)\b", e["text"], re.I)), None)
     if not confirmed_history(row, history) and (require_history or not second):
         raise Ineligible("Second call unconfirmed")
     speakers = {e["speaker"] for e in es if e["speaker"].strip().casefold() == name.casefold()}
-    participants = {p["name"] for p in zoom["sessions"] if p["name"].strip().casefold() == name.casefold()}
-    if len(speakers) != 1 or not participants or name.casefold() == row["Rep Name"].casefold():
-        raise ValueError("Cast identity unavailable")
+    cast_sessions = [p for p in zoom["sessions"] if p["name"].strip().casefold() == name.casefold()]
+    participants = {p["name"] for p in cast_sessions}
+    emails = {p["email"].strip().casefold() for p in cast_sessions if p.get("email")}
+    if len(emails) > 1:
+        raise IdentityHold("Cast display name shared by different accounts")
+    if not name or len(speakers) != 1 or not participants or name.casefold() == row["Rep Name"].strip().casefold():
+        raise IdentityHold("Cast identity unavailable")
     c = normalize(row, zoom, second, sorted(speakers), sorted(participants), name, history)
     c["officialOutcome"] = outcome
     prepare(c)
@@ -152,6 +165,8 @@ def process(db, source, start, *, backfill=False):
     uuid = row["Zoom Meeting UUID"]
     if db.execute("SELECT 1 FROM call2_duration_pilot WHERE occurrence=%s", (uuid,)).fetchone():
         return "existing"
+    if not (row.get("Client Name") or "").strip() or not (row.get("Rep Name") or "").strip():
+        raise IdentityHold("Missing cast or rep identity")
     history = source_read("source", {"name": row["Client Name"], "email": row.get("Client Email")})
     tag = "legacy" if "ELrPkucySZ2nxcs4fpyAaA" in row["Automation Key"] else "main"
     zoom = source_read(tag, {"uuid": uuid, "file": row["Recording File ID"]})
@@ -172,6 +187,8 @@ def run():
         for source, backfill in sources:
             try:
                 status = process(db, source, start.timestamp(), backfill=backfill)
+            except IdentityHold:
+                status = "identity_hold"
             except Ineligible:
                 status = "unconfirmed"
             except Reconcile:
