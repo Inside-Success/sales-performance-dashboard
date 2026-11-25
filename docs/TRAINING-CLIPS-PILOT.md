@@ -13,3 +13,21 @@ Render selected exchanges from the opening cue start through the closing cue end
 The database schema is in `migrations/20261125_training_clips.sql`. Both the page and media route check the management policy. Private media supports HTTP byte ranges and uses private, no-store responses. There is no scheduled intake or publishing workflow. Rudy's signed-in playback and usefulness check precedes any scheduling decision.
 
 The manual command is `python3 scripts/training-clips/run-review.py INPUTS PRIVATE_STATE --model gpt-6-luna`. Repeat with `gpt-6.1-terra` for a paired comparison. Configure `TRAINING_CLIPS_OPENAI_API_KEY` in the runner environment. Inputs contain the verified call, title and matched video manifest. Publication is a separate operation, so reloading the UI or repairing Sheet formatting cannot trigger another model pass.
+
+## November 25 report and comparison
+
+The report covers November 18–24 inclusive in New York. The bounded source inventory had 520 Call 2+ rows. Confirmation used call history, direct second-call evidence or a unique match to Tyler’s independently reviewed sample. The model input contained the call, without reference decisions or other model outputs. Both models completed the same 193 verified transcripts at medium reasoning effort. The remaining source rows include later calls, unconfirmed call stage/attendance, and ambiguous recording or participant evidence. Treat coverage as verified sources only.
+
+| Paired result | GPT-6 Luna | GPT-6.1 Terra |
+| --- | ---: | ---: |
+| Suggested candidates | 183 | 185 |
+| Candidate/No clip match against 20 reference calls | 15 | 15 |
+| Matched the 7 reference No clip decisions | 2 | 2 |
+| Overlapped any part of the 13 reference clips | 9 | 9 |
+| Intersection at least half of the union of the two time ranges | 6 | 6 |
+| Median absolute opening-time difference on the 13 reference positives | 76 s | 49 s |
+| Estimated inference cost, 193 calls | $0.523 | $4.810 |
+
+Estimates use provider-reported tokens and the project’s standard per-million uncached/cached/output rates: Luna $0.10/$0.01/$0.50 and Terra $1.00/$0.05/$5.00. An earlier 38 requests per model exposed an ambiguous numeric cue schema and added approximately $1.014. The release schema uses labeled source cue IDs. The published report uses a human-curated shortlist of Luna candidates; the master Sheet retains the decisions for every verified call. Several endpoints were adjusted against the source. Use manager feedback to assess value; a valid cue and a plausible summary alone do not establish meeting usefulness.
+
+For manual playback materialization use `render_clip.py SOURCE FIRST_CUE LAST_CUE PRIVATE_MEDIA`. For publication, run `publish.py MANIFEST PRIVATE_MEDIA` with the target dashboard database; it checks byte hashes and rejects conflicting dated selections. The manifest contains date, sheet URL, and the list of picks with stable media IDs and display fields. Production access must be verified with an actual approved login. No tasks are scheduled by these scripts.
