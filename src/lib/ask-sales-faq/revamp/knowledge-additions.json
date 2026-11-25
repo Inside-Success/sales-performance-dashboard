@@ -2087,15 +2087,16 @@
     "decisionKey": "main-qualification-current-framework",
     "title": "Main ISTV qualification: story, brand or business, and readiness",
     "questions": [],
-    "text": "The maintained Sales Master FAQ describes a qualified lead as having a real story or expertise, a brand/business or clear direction (early stage can be fine), a reason to use exposure, and ability to pay personally or through a legitimate sponsor. The approved qualification rubric also allows some legacy/story-led exceptions. Do not impose a universal incorporated-business or profitable-established-business requirement across every main show. Assess the specific show's fit and the actual story/brand; sensitive eligibility remains subject to the applicable review. This is not automatic casting approval and does not override profession-specific requirements (a nurse is not a doctor for America's Best Doctors), owner authorization to feature someone else's business, or separate DJ/reality eligibility.",
+    "text": "The maintained Sales Master FAQ describes a qualified lead as having a real story or expertise, a brand/business or clear direction (early stage can be fine), a reason to use exposure, and ability to pay personally or through a legitimate sponsor. The approved qualification rubric also allows some legacy/story-led exceptions. Do not impose a universal incorporated-business or profitable-established-business requirement across every main show. Assess the specific show's fit and the actual story/brand; sensitive eligibility remains subject to the applicable review. This is not automatic casting approval and does not override profession-specific requirements (a nurse is not a doctor for America's Best Doctors), owner authorization to feature someone else's business, or separate DJ/reality eligibility. The November 25 $100,000 annual business revenue screen is specific to the Entrepreneurs Island reality application. Do not apply it to regular documentary prospects.",
     "scopes": [
       "main_istv"
     ],
     "sourceIds": [
       "https://docs.google.com/document/d/1pawkadA9Tx-wwKqepY1yVhJP9ry8bahnffOk3uJfOzI/edit",
-      "kb:knowledge-base/qualification-show-fit/qualification-and-show-fit-rubric.md"
+      "kb:knowledge-base/qualification-show-fit/qualification-and-show-fit-rubric.md",
+      "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795623559570129"
     ],
-    "reviewedAt": "2026-09-15",
+    "reviewedAt": "2026-11-25T21:58:00Z",
     "authority": 12,
     "kind": "policy",
     "risk": "high",
@@ -8316,9 +8317,10 @@
       "What revenue does the Entrepreneurs Island application ask about?",
       "Is the $100k application question for every show?"
     ],
-    "text": "The Entrepreneurs Island application asks whether the applicant currently owns and operates a successful business generating at least $100,000 annually and is willing to be tested and challenged. The affirmative option describes an established company with staff and a track record, with revenue from at least one company the applicant owns. Use this as the Island application screen. It is not a universal revenue threshold for every show, a license price or an acceptance guarantee.",
+    "text": "The Entrepreneurs Island application asks whether the applicant currently owns and operates a successful business generating at least $100,000 annually and is willing to be tested and challenged. The affirmative option describes an established company with staff and a track record, with revenue from at least one company the applicant owns. Use this as the Island application screen. It is not a universal revenue threshold for every show, a license price or an acceptance guarantee. Regular documentary story qualification remains separate.",
     "scopes": [
-      "reality"
+      "reality",
+      "main_istv"
     ],
     "sourceIds": [
       "https://istvoffical.slack.com/archives/C09AF0NQJE7/p1795623559570129"
