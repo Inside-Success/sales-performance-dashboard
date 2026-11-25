@@ -29,10 +29,11 @@ describe('November 11 source reconciliation', () => {
   const text=evidence('Can I sell Millionaire Match House and what are its living arrangements?', 'reality');
   expect(text).toContain('Millionaire Match House is no longer offered');
  });
- it('retrieves outbound price conflict without changing Call 1 pricing', () => {
+ it('resolves the former outbound discrepancy and preserves separate Call 1 rules', () => {
   const text=evidence('The outbound booking script says both 8000 and 10000 minimum. Which is right?');
-  expect(text).toContain('internal pricing inconsistency');
-  expect(text).toContain('narrow nonnumeric financial-fit exception');
+  expect(text).toContain('$10,000 as a financial-readiness example');
+  expect(text).toContain('does not quote a package price');
+  expect(text).toContain('On the scheduled Call 1 follow its own pricing rules');
  });
  it('retrieves meeting confidentiality instead of publishing illustrative challenges', () => {
   const text=evidence('Can I send the November 10 production challenge slides to a prospect?', 'reality');
