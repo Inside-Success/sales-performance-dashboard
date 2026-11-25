@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 
 from normalize import confirmed_history, entries, normalize, seconds
+from recording_tail import TailReview, verify_silence
 from review import VERSION, prepare, request_model, review
 
 
@@ -133,7 +134,7 @@ def verified_input(row, history, zoom, outcome, require_history=False):
         speakers, participants = guest_channel(row, zoom["sessions"], es)
     if not name or not speakers or (not channel_only and len(speakers) != 1) or not participants or name.casefold() == row["Rep Name"].strip().casefold():
         raise IdentityHold("Cast identity unavailable")
-    c = normalize(row, zoom, second, sorted(speakers), sorted(participants), name, history)
+    c = normalize(row, zoom, second, sorted(speakers), sorted(participants), name, history, tail_check=verify_silence)
     if channel_only:
         c["guestChannel"] = True
     c["officialOutcome"] = outcome
@@ -175,6 +176,10 @@ def publish(db, c, shared, reps, doc):
     if c.get("guestChannel"):
         result["summary"]["guestChannel"] = True
     cue = result["summary"]["signal"]
+    if "verifiedTail" in c:
+        if cue and not any(a <= cue["at"] <= b for a, b in shared):
+            raise TailReview("Objection outside verified shared attendance")
+        result["summary"]["verifiedTail"] = c["verifiedTail"]
     replies = {}
     if cue:
         i = cue["id"] + 1
@@ -232,13 +237,19 @@ def run():
         sources = db.execute("""SELECT DISTINCT r.source, false AS backfill FROM call2_tracker_reports r
           LEFT JOIN call2_tracker_intake i ON i.source=r.source
           WHERE r.created_at >= %s AND r.outcome IS NOT NULL AND
-          (i.source IS NULL OR (i.retry_at <= now() AND NOT i.backfill))
+          (i.source IS NULL OR (NOT i.backfill AND
+            ((i.status <> 'tail_review' AND i.retry_at <= now()) OR
+             (i.status = 'tail_review' AND r.created_at > i.retry_at))))
           UNION SELECT source, true FROM call2_tracker_intake
-          WHERE backfill AND retry_at <= now() ORDER BY backfill DESC, source LIMIT 150""", (start,)).fetchall()
+          WHERE backfill AND ((status <> 'tail_review' AND retry_at <= now()) OR
+            (status = 'tail_review' AND EXISTS (SELECT 1 FROM call2_tracker_reports r
+             WHERE r.source=call2_tracker_intake.source AND r.created_at > retry_at AND r.outcome IS NOT NULL))) ORDER BY backfill DESC, source LIMIT 150""", (start,)).fetchall()
         counts = Counter()
         for source, backfill in sources:
             try:
                 status = process(db, source, start.timestamp(), backfill=backfill)
+            except TailReview:
+                status = "tail_review"
             except IdentityHold:
                 status = "identity_hold"
             except Ineligible:
@@ -249,10 +260,10 @@ def run():
                 status = "retry"
                 print("Source deferred:", type(error).__name__, flush=True)
             db.execute("""INSERT INTO call2_tracker_intake(source,status,retry_at) VALUES(%s,%s,
-                CASE WHEN %s THEN now()+interval '2 hours' END)
+                CASE WHEN %s THEN now()+interval '2 hours' WHEN %s THEN now() END)
                 ON CONFLICT(source) DO UPDATE SET attempts=call2_tracker_intake.attempts+1,status=excluded.status,
-                retry_at=CASE WHEN call2_tracker_intake.attempts<8 THEN excluded.retry_at END""",
-                (source, status, status == "retry"))
+                retry_at=CASE WHEN excluded.status='tail_review' OR call2_tracker_intake.attempts<8 THEN excluded.retry_at END""",
+                (source, status, status == "retry", status == "tail_review"))
             counts[status] += 1
         print("Tracker sweep", dict(counts), flush=True)
         if counts["retry"] or counts["reconcile"]:

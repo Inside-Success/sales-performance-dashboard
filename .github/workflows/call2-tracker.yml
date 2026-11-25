@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install 'psycopg[binary]==3.2.13'
+      - run: pip install 'psycopg[binary]==3.2.13' 'imageio-ffmpeg==0.6.0'
       - run: python scripts/call2-duration/live.py
         env:
           CALL2_DATABASE_URL: ${{ secrets.CALL2_DATABASE_URL }}

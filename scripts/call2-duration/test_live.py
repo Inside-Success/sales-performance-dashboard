@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 
-from live import guest_channel, IdentityHold, Reconcile, run, Ineligible, process, shared_intervals, verified_input
+from live import TailReview, guest_channel, IdentityHold, Reconcile, run, Ineligible, process, shared_intervals, verified_input
 
 
 class LiveTrackerTest(unittest.TestCase):
@@ -75,7 +75,7 @@ class LiveTrackerTest(unittest.TestCase):
 
     def test_identity_hold_continues_sweep_and_real_failures_alert(self):
         from datetime import datetime, timezone
-        for failure, status in [(None, "published"), (ValueError("source"), "retry"),
+        for failure, status in [(None, "published"), (TailReview(), "tail_review"), (ValueError("source"), "retry"),
                                 (TimeoutError(), "retry"), (Reconcile(), "reconcile")]:
             connect = Mock()
             connect.return_value = unittest.mock.MagicMock()
@@ -85,14 +85,14 @@ class LiveTrackerTest(unittest.TestCase):
                 db = connect.return_value.__enter__.return_value
                 db.execute.return_value.fetchone.return_value = (datetime.now(timezone.utc),)
                 db.execute.return_value.fetchall.return_value = [("held", False), ("other", False)]
-                if failure:
+                if status in ("retry", "reconcile"):
                     with self.assertRaises(SystemExit) as exit_status:
                         run()
                     self.assertEqual(exit_status.exception.code, 1)
                 else:
                     run()
                 writes = [args.args[1] for args in db.execute.call_args_list if "INSERT" in args.args[0]]
-                self.assertEqual(writes, [("held", "identity_hold", False), ("other", status, status == "retry")])
+                self.assertEqual(writes, [("held", "identity_hold", False, False), ("other", status, status == "retry", status == "tail_review")])
 
     def test_guest_channel_requires_independent_evidence(self):
         row = {"Rep Name": "Rep", "Rep Email": "rep@x", "Client Name": "Alex Smith",

@@ -57,7 +57,7 @@ def confirmed_history(row, history):
 
 
 def normalize(
-    row, zoom, proof, speakers, participant_names, display_name, history=None
+    row, zoom, proof, speakers, participant_names, display_name, history=None, *, tail_check=None
 ):
     if (
         row["Call #"] != "Call 2+"
@@ -100,8 +100,12 @@ def normalize(
         raise ValueError("Transcript is empty")
     from review import timestamp
 
-    if re_ - rs - timestamp(es[-1]["end"]) > 120:
-        raise ValueError("Transcript stops before recording ends")
+    cue_end = max(timestamp(e["end"]) for e in es)
+    tail = None
+    if re_ - rs - cue_end > 120:
+        if tail_check is None:
+            raise ValueError("Transcript stops before recording ends")
+        tail = tail_check(files, transcript, cue_end, re_ - rs)
     if any(timestamp(e["end"]) < timestamp(e["start"]) for e in es):
         raise ValueError("Invalid transcript timestamps")
     if not speakers or not set(speakers) <= set(e["speaker"] for e in es):
@@ -127,4 +131,5 @@ def normalize(
         castIntervals=intervals,
         castSpeakers=speakers,
         entries=es,
+        **({"verifiedTail": tail} if tail else {}),
     )
