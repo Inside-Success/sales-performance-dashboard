@@ -1,4 +1,6 @@
-export const ADMIN_DIRECTORY_LINKS = [
+import { scriptAdherenceVisible } from "./script-adherence/visibility";
+
+const ADMIN_DESTINATIONS = [
   { name: "Training Clips", href: "/manager/training-clips", group: "sales", navLabel: "Training Clips", scope: "manager" },
   { name: "Call 2 Rep Tracker", href: "/manager/call2-duration", group: "sales", navLabel: "Call 2 Rep Tracker", scope: "manager" },
   { name: "Sales Script Adherence · Pilot", href: "/manager/script-adherence", group: "sales", navLabel: "Script Adherence", scope: "manager" },
@@ -14,7 +16,10 @@ export const ADMIN_DIRECTORY_LINKS = [
   { name: "AI Coaching Closer Scorecard", href: "/manager/rep-scoring", group: "coaching", navLabel: "Closer Scorecard", scope: "manager" },
 ] as const;
 
-export type AdminNavigationLink = (typeof ADMIN_DIRECTORY_LINKS)[number];
+export const ADMIN_DIRECTORY_LINKS = ADMIN_DESTINATIONS.filter(
+  link => scriptAdherenceVisible || link.href !== "/manager/script-adherence",
+);
+export type AdminNavigationLink = (typeof ADMIN_DESTINATIONS)[number];
 export const ADMIN_NAV_GROUPS = [
   { id: "coaching", label: "Coaching" },
   { id: "sales", label: "Sales Operations" },

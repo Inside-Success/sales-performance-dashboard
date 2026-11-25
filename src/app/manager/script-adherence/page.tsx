@@ -3,9 +3,12 @@ import {parseFilters} from "@/lib/script-adherence/filters";
 import { requireRepScoringAdmin } from "@/lib/rep-scoring/access";
 import { readAdherence } from "@/lib/script-adherence/data";
 import { AdherenceView } from "./view";
+import { notFound } from "next/navigation";
+import { scriptAdherenceVisible } from "@/lib/script-adherence/visibility";
 export const dynamic="force-dynamic";
 export const metadata={title:"Script Adherence | Magic Mike",robots:{index:false,follow:false}};
 export default async function Page({searchParams}:{searchParams?:Promise<Record<string,string|string[]|undefined>>}){
+  if (!scriptAdherenceVisible) notFound();
   const session=await requireRepScoringAdmin();
   const raw=await searchParams??{},filters=parseFilters(raw),page=Math.max(1,Math.min(1000000,Number(raw.page)||1));
   const [data,operatorHealth]=await Promise.all([readAdherence(filters,'',Math.floor(page)).catch(()=>null),readOperatorHealth(session?.user?.email)]);

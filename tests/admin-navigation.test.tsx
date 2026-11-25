@@ -18,7 +18,7 @@ it('projects only permitted destinations, including FAQ-only legacy admins',()=>
 it('matches the most specific destination without confusing sibling and nested routes',()=>{
  expect(activeAdminLink('/ask-sales-faq/admin/usage',ADMIN_DIRECTORY_LINKS)?.navLabel).toBe('Usage');
  expect(activeAdminLink('/ask-sales-faq/admin',ADMIN_DIRECTORY_LINKS)?.navLabel).toBe('Conversations');
- expect(activeAdminLink('/manager/script-adherence/rep/some-rep',ADMIN_DIRECTORY_LINKS)?.navLabel).toBe('Script Adherence');
+ expect(activeAdminLink('/manager/script-adherence/rep/some-rep',ADMIN_DIRECTORY_LINKS)).toBeUndefined();
  expect(activeAdminLink('/manager/rep-scoring/v7-validation/call/123',ADMIN_DIRECTORY_LINKS)?.navLabel).toBe('Closer Scorecard');
  expect(activeAdminLink('/manager/usage-other',ADMIN_DIRECTORY_LINKS)).toBeUndefined();
  expect(activeAdminLink('/coaching',ADMIN_DIRECTORY_LINKS)).toBeUndefined();
@@ -38,6 +38,7 @@ it('exposes every authorized page as a direct link without menu triggers',()=>{
  expect(html).not.toContain('role="menu');
  for(const link of ADMIN_DIRECTORY_LINKS) expect(html).toContain(`href="${link.href}"`);
  expect(html).toContain('FAQ Usage');expect(html).toContain('FAQ Conversations');
+ expect(html).not.toContain('/manager/script-adherence');
  expect(html.match(/<a[^>]*href="\/manager\/usage"[^>]*>/)?.[0]).toContain('aria-current="page"');
  expect(html.match(/aria-current="page"/g)).toHaveLength(1);
  expect(html).toContain('target="_blank" rel="noopener noreferrer"');
