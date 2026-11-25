@@ -1,6 +1,6 @@
 # Training Clips pilot
 
-The manager directory opens `/manager/training-clips`. The page reads one saved report. Its rep filter and media requests never invoke a model. The Google Sheet shows the same selection and links each Topic to the matched source recording at the selected cue. The inline video is a bounded MP4 so managers can play the exchange through its endpoint on mobile and desktop.
+The manager directory opens `/manager/training-clips`. The page reads one saved report. Its rep filter and media requests never invoke a model. The Google Sheet shows the same selection and links each Topic directly to the same open Magic Mike player. The timing cell retains the timestamped Zoom source. The inline video is a bounded MP4 so managers can play the exchange through its endpoint on mobile and desktop.
 
 ## Manual pilot
 
