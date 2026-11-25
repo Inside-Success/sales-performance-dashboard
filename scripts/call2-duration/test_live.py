@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 
-from live import IdentityHold, Reconcile, run, Ineligible, process, shared_intervals, verified_input
+from live import guest_channel, IdentityHold, Reconcile, run, Ineligible, process, shared_intervals, verified_input
 
 
 class LiveTrackerTest(unittest.TestCase):
@@ -93,3 +93,26 @@ class LiveTrackerTest(unittest.TestCase):
                     run()
                 writes = [args.args[1] for args in db.execute.call_args_list if "INSERT" in args.args[0]]
                 self.assertEqual(writes, [("held", "identity_hold", False), ("other", status, status == "retry")])
+
+    def test_guest_channel_requires_independent_evidence(self):
+        row = {"Rep Name": "Rep", "Rep Email": "rep@x", "Client Name": "Alex Smith",
+               "Meeting Title": "Followup - Alex Smith"}
+        sessions = [{"name": "Rep", "email": "rep@x"}, {"name": "Tablet"}]
+        es = [{"speaker": "Rep", "text": "Hi, Alex!"},
+              {"speaker": "Tablet", "text": "The invitation says Dear Alex."},
+              {"speaker": "Audio shared by Rep", "text": "Welcome back."}]
+        expected = ({"Tablet"}, {"Tablet"})
+        self.assertEqual(guest_channel(row, sessions, es), expected)
+        self.assertEqual(guest_channel(dict(row, **{"Client Email": "a@x"}),
+                         [sessions[0], dict(sessions[1], email="a@x")], es[1:] + [dict(es[0], text="Welcome")]), expected)
+        for r, ss, ee in [
+            (dict(row, **{"Meeting Title": "Alex Smithson"}), sessions, es),
+            (row, sessions, [es[0], dict(es[1], text="Hello")]),
+            (row, sessions + [{"name": "Observer"}], es),
+            (row, sessions, es + [{"speaker": "Observer", "text": "Hi"}]),
+            (row, sessions[1:], es),
+            (row, [dict(sessions[0], email="wrong@x"), sessions[1]], es),
+            (dict(row, **{"Client Email": "a@x"}), [sessions[0],dict(sessions[1], email="other@x")], es),
+        ]:
+            with self.subTest(r=r, ss=ss, ee=ee), self.assertRaises(IdentityHold):
+                guest_channel(r, ss, ee)

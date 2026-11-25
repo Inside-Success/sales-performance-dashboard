@@ -151,3 +151,12 @@ it("shows a rep median only at ten measured calls, including zero-second measure
   expect((await calls(rep, 2)).total).toBe(12);
   expect((await calls(rep, 2)).rows).toHaveLength(0);
 });
+
+it("attributes a shared-device objection to the guest side", async () => {
+  mocks.query.mockResolvedValueOnce([{ rows: [{ occurrence: "shared", summary: { ...sample, guestChannel: true },
+    shared_intervals: [[0, 420]], review: null }], reps: [sample.rep], total: 1, measured: 1, median: 240 }]);
+  const html = renderToStaticMarkup(await Page({ searchParams: Promise.resolve({}) }));
+  expect(html).toContain("First clear objection from the guest side");
+  expect(html).not.toContain("Cast member’s first clear objection");
+  expect(html).toContain("4:00");
+});

@@ -108,7 +108,7 @@ export function TranscriptEvidence({ evidence, reportType, reportId, transcriptU
               {selectedTime ? `${pilot ? "Objection" : "Evidence"} at ${formatCoachingTimestamp(selectedTime)}` : "Full transcript"}
             </SheetTitle>
             <SheetDescription id={descriptionId} className="text-sm leading-6 text-slate-500">
-              {pilot ? (evidence.length ? "The highlight marks the cast’s words in the recording transcript." : "No objection was marked on this call.") : "The relevant line is highlighted below when its timestamp appears in the transcript."}
+              {pilot ? (evidence.length ? "The highlight marks the objection in the recording transcript." : "No objection was marked on this call.") : "The relevant line is highlighted below when its timestamp appears in the transcript."}
             </SheetDescription>
             {evidence.length > 1 ? (
               <div className="flex flex-wrap gap-2 pt-2" aria-label="Evidence times">
