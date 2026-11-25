@@ -12,7 +12,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const { id } = await params;
   if (!/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/.test(id)) return new Response(null, { status: 404 });
   const sql = neon(process.env.DATABASE_URL!);
-  const [media] = await sql`SELECT size_bytes FROM training_clip_media WHERE id = ${id}`;
+  const [media] = await sql`SELECT size_bytes FROM training_clip_media WHERE id = ${id}
+    AND EXISTS (SELECT 1 FROM training_clip_reports WHERE picks @> jsonb_build_array(jsonb_build_object('id', ${id}::text)))`;
   if (!media) return new Response(null, { status: 404 });
   const size = Number(media.size_bytes);
   let start = 0;
