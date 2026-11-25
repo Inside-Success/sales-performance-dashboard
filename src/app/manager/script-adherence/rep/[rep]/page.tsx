@@ -5,9 +5,11 @@ import {requireRepScoringAdmin} from '@/lib/rep-scoring/access';
 import {readAdherence,readRepNames} from '@/lib/script-adherence/data';
 import {AdherenceView} from '../../view';
 import {parseFilters} from '@/lib/script-adherence/filters';
+import {scriptAdherenceVisible} from '@/lib/script-adherence/visibility';
 export const dynamic='force-dynamic';
 export const metadata={title:'Rep Script Adherence | Magic Mike',robots:{index:false,follow:false}};
 export default async function RepPage({params,searchParams}:{params:Promise<{rep:string}>;searchParams:Promise<Record<string,string|string[]|undefined>>}){
+ if (!scriptAdherenceVisible) notFound();
  const session=await requireRepScoringAdmin();
  const {rep:segment}=await params;
  const names=await readRepNames(),rep=resolveRep(segment,names);if(!rep)notFound();
