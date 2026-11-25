@@ -29,11 +29,12 @@ def store_video(db, ident, path):
                     while block := file.read(BLOCK):
                         copy.write_row((ident, part, block))
                         part += 1
-        checksum = hashlib.sha256()
-        for (block,) in db.execute("SELECT content FROM training_clip_chunks WHERE media_id=%s ORDER BY part", (ident,)):
-            checksum.update(block)
+        (digest,) = db.execute("""
+            SELECT encode(sha256(string_agg(content, ''::bytea ORDER BY part)), 'hex')
+            FROM training_clip_chunks WHERE media_id=%s
+        """, (ident,)).fetchone()
         with path.open("rb") as file:
-            if checksum.digest() != hashlib.file_digest(file, "sha256").digest():
+            if digest != hashlib.file_digest(file, "sha256").hexdigest():
                 raise ValueError("Media failed readback")
 
 
